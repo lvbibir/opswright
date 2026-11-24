@@ -92,35 +92,13 @@ SSHYardは、macOS、Windows、Linux向けのネイティブデスクトップSS
   - トレイに閉じて、トレイのポップオーバーからホストにすぐ接続
   - 英語、簡体字中国語、繁体字中国語、韓国語、日本語に対応
 
-## Linuxの認証情報と依存関係
+## 機密情報とマスターパスワード
 
-SSHYardはrootや`sudo`を使わず、通常のデスクトップユーザーとして実行してください。認証情報の保存とロック解除には、libsecret 0.19以降（`libsecret-1.so.0`）、現在のユーザーのセッションD-Bus、そして利用可能でロック解除された[Secret Service](https://specifications.freedesktop.org/secret-service/latest/)プロバイダー（デスクトップに設定済みのGNOME Keyringやその他の互換プロバイダーなど）が必要です。libsecretをインストールしただけでは、実行中のSecret Serviceは用意されません。システムのサービスにはSSHYardのマスターキーだけが保存され、認証情報はローカルの`secrets.enc`に暗号化されたまま残ります。
+SSHYard は root や `sudo` を使わず、通常のデスクトップユーザーとして実行してください。認証情報の保存とロック解除に追加の設定は不要です。1つの**マスターパスワード**がランダムなマスターキーを `master.enc` に封印し、そのキーが SSHYard の保存物 (`secrets.enc`) を暗号化します。
 
-- **Debian / Ubuntu：** `.deb`はGTKに加えて`libsecret-1-0 (>= 0.19)`を依存関係として宣言しています。`sudo apt install ./sshyard_<version>_amd64.deb`のように依存関係を解決できるパッケージマネージャーでインストールし、ファイル名は実際にダウンロードしたものに置き換えてください
-- **Arch Linux：** 生成される`PKGBUILD`は`libsecret`と`gtk3`を宣言します。MyGoのDebianからArchへの対応付けではバージョン制約が外れるため、libsecretが0.19以降であることを確認してください
-- **アーカイブ / `install.sh`：** ユーザーごとに`~/.local`へインストールし、libsecret、GTK、Secret Serviceプロバイダーは自動でインストールしません。先に依存関係を用意し、スクリプトをrootで実行しないでください
+初回起動時にマスターパスワードを設定します。その後このコンピューターはキーを自分のキーチェーン (Windows 資格情報マネージャー、macOS キーチェーン、Linux の libsecret。OS が管理します) に記憶し、以降の起動では入力を求めません。手動でのロック (ショートカット、トレイ、設定) の後は、その実行中のみパスワードが必要で、次の起動ではまた記憶されています。アイドル、画面ロック、スリープはウィンドウを隠すだけで、パスワードは求めません。
 
-システムパッケージが不足している場合や、テナントのポリシーでセッションD-Bus / Secret Serviceが無効になっている場合は、管理者による対応が必要になることがあります。コレクションのロック解除が必要なときは、デスクトップの既存のキーリングマネージャーを使ってください。SSHYardはネイティブUIを使うため、WebKitGTKは不要です。
-
-管理者権限のないテナントアカウントなどで利用できるSecret Serviceがない場合、SSHYardは代わりにローカルマスターパスワードでマスター鍵を保護できます。ロック解除に失敗し、まだ何も保存していないときに、エラーダイアログで**ローカルマスターパスワードを使用…**を選んでください。マスター鍵はそのパスワード（Argon2id）で封印されて`secrets.enc`の隣の`master.enc`に保存され、システムキーチェーンには何も書き込まれません。起動するたびに、保存された機密情報が最初に必要になったときにパスワードを入力します。SSHYardはパスワードを保存しないため、忘れた場合、保存された機密情報はバックアップからのみ復元できます。**設定 → このアプリについて → 秘密情報の保存先**でパスワードを変更したり、システムキーチェーンが使えるようになったらマスター鍵を戻したりできます。同じダイアログの**診断情報をコピー**は、問題の報告用に資格情報サービス自身のエラーメッセージをコピーします。機密情報は含まれません。
-
-読み取り専用の接続確認は、SSHYardと**同じデスクトップのログインセッション**のターミナルから、`sudo`を付けずに実行してください（`gdbus`が必要です）。
-
-```sh
-gdbus call --session --dest org.freedesktop.secrets \
-  --object-path /org/freedesktop/secrets \
-  --method org.freedesktop.Secret.Service.ReadAlias default
-```
-
-コレクションのパスが返ればサービスに到達でき、`/`が返ればデフォルトのコレクションがありません。コレクションのパスが返った場合は、下の`/returned/collection/path`をそのパスに置き換えるとロック状態を確認できます。
-
-```sh
-gdbus call --session --dest org.freedesktop.secrets \
-  --object-path /returned/collection/path \
-  --method org.freedesktop.DBus.Properties.Get org.freedesktop.Secret.Collection Locked
-```
-
-`true`はロック中、`false`はロック解除済みを意味します。これらの呼び出しはセッションサービスを起動することがありますが、パスワードの読み取り、コレクションのロック解除、キーリング項目の変更・削除は行わず、接続とコレクションの状態を確認するだけです。コレクションがロック解除されていても、SSHYardがマスターキーを読み書きできるとは限りません。D-Busの接続エラーはログインセッションやアクセスポリシーの問題を示し、`ServiceUnknown`は通常、起動できるSecret Serviceプロバイダーがないことを意味します。戻り値については[ReadAlias API](https://specifications.freedesktop.org/secret-service/latest/org.freedesktop.Secret.Service.html#org.freedesktop.Secret.Service.ReadAlias)を参照してください。
+データフォルダーを別のコンピューターや別の OS ユーザーへ移すと `master.enc` も移動するため、そのコンピューターでは一度だけパスワードを入力し、その後は記憶されます。SSHYard はパスワードを保存しません。忘れた場合、保存された機密はバックアップからしか復元できず、ロック画面のリセットはそれらを削除します。**設定 → このアプリについて → 機密情報の保存先**でパスワードを変更でき、このコンピューターに記憶させないこともできます。Linux パッケージは SSHYard のために libsecret を要求せず、WebKitGTK も不要です。
 
 ## 開発
 

@@ -92,35 +92,13 @@ SSHYard is a native desktop SSH / SFTP client for macOS, Windows and Linux, brin
   - Close to the tray and connect to hosts from the tray popover
   - English, Simplified Chinese, Traditional Chinese, Korean and Japanese
 
-## Linux credentials and dependencies
+## Secrets and the master password
 
-Run SSHYard as your normal desktop user, without root or `sudo`. Saving and unlocking credentials requires libsecret 0.19 or newer (`libsecret-1.so.0`), your user's session D-Bus, and an available, unlocked [Secret Service](https://specifications.freedesktop.org/secret-service/latest/) provider, such as GNOME Keyring or another compatible provider configured for your desktop. Installing libsecret alone does not provide a running Secret Service. The system service stores SSHYard's master key; credentials remain encrypted locally in `secrets.enc`.
+Run SSHYard as your normal desktop user, without root or `sudo`. Saving and unlocking credentials needs no setup of its own: a single **master password** seals a random master key in `master.enc`, and that key encrypts everything SSHYard saves in `secrets.enc`.
 
-- **Debian / Ubuntu:** the `.deb` declares `libsecret-1-0 (>= 0.19)` alongside GTK; install through a dependency-resolving package manager, for example `sudo apt install ./sshyard_<version>_amd64.deb`, using the actual downloaded filename
-- **Arch Linux:** the generated `PKGBUILD` declares `libsecret` and `gtk3`; MyGo's Debian-to-Arch mapping drops version constraints, so ensure libsecret is at least 0.19
-- **Archive / `install.sh`:** installation is per-user under `~/.local` and does not automatically install libsecret, GTK or a Secret Service provider; arrange these dependencies first, and do not run the script as root
+The first time you use SSHYard it asks you to set the master password. That computer then remembers the key in its own keychain (Windows Credential Manager, the macOS keychain, or libsecret on Linux, through the operating system itself), so later launches open without asking. A lock you ask for by hand — the shortcut, the tray, the settings — needs the password again for the rest of that run; the next launch is remembered again. Idle time, screen lock and sleep only hide the windows and never ask.
 
-Missing system packages or a tenant policy disabling session D-Bus / Secret Service may require an administrator to resolve. Use your desktop's existing keyring manager to unlock its collection when needed. SSHYard uses native UI and does not require WebKitGTK.
-
-Without a usable Secret Service, for example on a tenant account without administrator rights, SSHYard can protect the master key with a local master password instead: when unlocking fails and nothing is saved yet, choose **Use local master password…** in the error dialog. The master key is then sealed under that password (Argon2id) in `master.enc` beside `secrets.enc`, nothing is written to the system keychain, and you enter the password the first time saved secrets are needed after each launch. SSHYard never stores the password; if you forget it, saved secrets can only be recovered from a backup. **Settings → About → Secret storage** changes it, or moves the master key back to the system keychain once one is available. **Copy diagnostics** in the same dialog copies the credential service's own error message for a bug report; it contains no secrets.
-
-For a read-only connectivity check, run this from a terminal in the **same desktop login session** as SSHYard, without `sudo` (requires `gdbus`):
-
-```sh
-gdbus call --session --dest org.freedesktop.secrets \
-  --object-path /org/freedesktop/secrets \
-  --method org.freedesktop.Secret.Service.ReadAlias default
-```
-
-A returned collection path means the service is reachable; `/` means it has no default collection. If a collection path is returned, replace `/returned/collection/path` below with that exact path to inspect its lock state:
-
-```sh
-gdbus call --session --dest org.freedesktop.secrets \
-  --object-path /returned/collection/path \
-  --method org.freedesktop.DBus.Properties.Get org.freedesktop.Secret.Collection Locked
-```
-
-`true` means locked and `false` means unlocked. These calls may activate the session service, but do not read passwords, unlock collections or modify/delete keyring entries. They only inspect connectivity and collection state; even an unlocked collection does not guarantee SSHYard can read or save its master key. A D-Bus connection error points to the login session or its access policy; `ServiceUnknown` usually means no Secret Service provider is available for activation. See the [ReadAlias API](https://specifications.freedesktop.org/secret-service/latest/org.freedesktop.Secret.Service.html#org.freedesktop.Secret.Service.ReadAlias) for its return values.
+Copying your data folder to another computer, or to another OS user, carries `master.enc`, so that computer asks for the password once and then remembers it too. SSHYard never stores the password: if you forget it, saved secrets can only be recovered from a backup, and the lock screen's reset deletes them. **Settings → About → Secret storage** changes the password, and forgets the key on this computer if you want to be asked again. Linux packages need no libsecret for SSHYard's own use, and SSHYard uses native UI without WebKitGTK.
 
 ## Development
 
@@ -131,8 +109,7 @@ Built with [mygo](https://github.com/egoist/mygo). Requires Go 1.27.3 (`GOTOOLCH
 go run .
 
 # run the development app; on macOS prefer an "Apple Development" identity
-# stable signing can reduce keychain prompts; self-signing does not guarantee
-# access across rebuilds, and macOS may still request authorization
+# stable signing keeps the app's own permissions across rebuilds
 scripts/run-dev-app.sh
 
 # keep data in a separate directory

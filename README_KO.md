@@ -92,35 +92,13 @@ SSHYard는 macOS, Windows 및 Linux용 네이티브 데스크톱 SSH / SFTP 클�
   - 트레이로 닫고 트레이 팝업에서 호스트에 바로 연결
   - 영어, 중국어 간체, 중국어 번체, 한국어 및 일본어 지원
 
-## Linux 자격 증명과 의존성
+## 비밀 정보와 마스터 비밀번호
 
-SSHYard는 root나 `sudo` 없이 일반 데스크톱 사용자로 실행하세요. 자격 증명을 저장하고 잠금 해제하려면 libsecret 0.19 이상(`libsecret-1.so.0`), 현재 사용자의 세션 D-Bus, 그리고 사용 가능하고 잠금 해제된 [Secret Service](https://specifications.freedesktop.org/secret-service/latest/) 제공자(데스크톱에 설정된 GNOME Keyring 또는 다른 호환 제공자 등)가 필요합니다. libsecret만 설치해서는 실행 중인 Secret Service가 제공되지 않습니다. 시스템 서비스에는 SSHYard의 마스터 키만 저장되며, 자격 증명은 로컬 `secrets.enc`에 암호화된 채로 남습니다.
+SSHYard는 root나 `sudo` 없이 일반 데스크톱 사용자로 실행하세요. 자격 증명 저장과 잠금 해제에 별도 설정이 필요하지 않습니다. 하나의 **마스터 비밀번호**가 무작위 마스터 키를 `master.enc`에 봉인하고, 그 키가 SSHYard가 저장하는 모든 것(`secrets.enc`)을 암호화합니다.
 
-- **Debian / Ubuntu:** `.deb`는 GTK와 함께 `libsecret-1-0 (>= 0.19)`를 의존성으로 선언합니다. `sudo apt install ./sshyard_<version>_amd64.deb`처럼 의존성을 처리하는 패키지 관리자로 설치하고, 파일 이름은 실제로 내려받은 이름을 사용하세요
-- **Arch Linux:** 생성된 `PKGBUILD`는 `libsecret`과 `gtk3`를 선언합니다. MyGo의 Debian→Arch 매핑은 버전 제약을 없애므로 libsecret이 0.19 이상인지 직접 확인하세요
-- **압축 파일 / `install.sh`:** 사용자별로 `~/.local`에 설치하며 libsecret, GTK, Secret Service 제공자를 자동으로 설치하지 않습니다. 의존성을 먼저 준비하고 스크립트를 root로 실행하지 마세요
+처음 실행할 때 마스터 비밀번호를 설정합니다. 그다음 이 컴퓨터는 키를 자체 키체인(Windows 자격 증명 관리자, macOS 키체인, Linux의 libsecret — 운영체제가 관리합니다)에 기억하므로 이후 실행에서는 입력하지 않습니다. 직접 잠그면(단축키, 트레이, 설정) 그 실행 동안에는 비밀번호가 필요하고, 다음 실행에서는 다시 기억됩니다. 유휴, 화면 잠금, 절전은 창을 숨길 뿐 비밀번호를 묻지 않습니다.
 
-시스템 패키지가 없거나 테넌트 정책으로 세션 D-Bus / Secret Service가 비활성화된 경우 관리자의 조치가 필요할 수 있습니다. 컬렉션 잠금 해제가 필요하면 데스크톱의 기존 키링 관리자를 사용하세요. SSHYard는 네이티브 UI를 사용하므로 WebKitGTK가 필요하지 않습니다.
-
-관리자 권한이 없는 테넌트 계정처럼 사용할 수 있는 Secret Service가 없으면, SSHYard는 대신 로컬 마스터 비밀번호로 마스터 키를 보호할 수 있습니다. 잠금 해제에 실패했고 아직 저장된 항목이 없을 때 오류 대화상자에서 **로컬 마스터 비밀번호 사용…**을 선택하세요. 마스터 키는 그 비밀번호(Argon2id)로 봉인되어 `secrets.enc` 옆의 `master.enc`에 저장되고, 시스템 키체인에는 아무것도 기록되지 않으며, 실행할 때마다 저장된 비밀 정보가 처음 필요할 때 비밀번호를 입력합니다. SSHYard는 비밀번호를 저장하지 않으므로 잊으면 저장된 비밀 정보는 백업에서만 복구할 수 있습니다. **설정 → 정보 → 비밀 정보 저장소**에서 비밀번호를 변경하거나, 시스템 키체인을 사용할 수 있게 되면 마스터 키를 다시 옮길 수 있습니다. 같은 대화상자의 **진단 정보 복사**는 문제 보고용으로 자격 증명 서비스 자체의 오류 메시지를 복사하며, 비밀 정보는 포함되지 않습니다.
-
-읽기 전용 연결 확인은 SSHYard와 **같은 데스크톱 로그인 세션**의 터미널에서 `sudo` 없이 실행하세요(`gdbus` 필요).
-
-```sh
-gdbus call --session --dest org.freedesktop.secrets \
-  --object-path /org/freedesktop/secrets \
-  --method org.freedesktop.Secret.Service.ReadAlias default
-```
-
-컬렉션 경로가 반환되면 서비스에 연결할 수 있다는 뜻이고, `/`가 반환되면 기본 컬렉션이 없다는 뜻입니다. 컬렉션 경로가 반환되었다면 아래의 `/returned/collection/path`를 그 경로로 바꿔 잠금 상태를 확인할 수 있습니다.
-
-```sh
-gdbus call --session --dest org.freedesktop.secrets \
-  --object-path /returned/collection/path \
-  --method org.freedesktop.DBus.Properties.Get org.freedesktop.Secret.Collection Locked
-```
-
-`true`는 잠김, `false`는 잠금 해제를 뜻합니다. 이 호출은 세션 서비스를 활성화할 수 있지만 비밀번호를 읽거나 컬렉션을 잠금 해제하거나 키링 항목을 수정·삭제하지 않으며, 연결과 컬렉션 상태만 확인합니다. 컬렉션이 잠금 해제되어 있어도 SSHYard가 마스터 키를 읽거나 저장할 수 있다고 보장되지는 않습니다. D-Bus 연결 오류는 로그인 세션이나 접근 정책 문제를 가리키며, `ServiceUnknown`은 대개 활성화할 수 있는 Secret Service 제공자가 없다는 뜻입니다. 반환 값은 [ReadAlias API](https://specifications.freedesktop.org/secret-service/latest/org.freedesktop.Secret.Service.html#org.freedesktop.Secret.Service.ReadAlias)를 참고하세요.
+데이터 폴더를 다른 컴퓨터나 다른 OS 사용자로 옮기면 `master.enc`가 함께 가므로, 그 컴퓨터에서는 한 번 비밀번호를 입력하고 이후 기억됩니다. SSHYard는 비밀번호를 저장하지 않습니다. 잊으면 저장된 비밀 정보는 백업에서만 복구할 수 있고, 잠금 화면의 재설정은 이를 삭제합니다. **설정 → 정보 → 비밀 정보 저장소**에서 비밀번호를 바꾸고 이 컴퓨터에서 기억하지 않게 할 수 있습니다. Linux 패키지는 SSHYard를 위해 libsecret을 요구하지 않으며 WebKitGTK도 필요 없습니다.
 
 ## 개발
 

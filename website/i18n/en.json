@@ -194,7 +194,7 @@
       }
     ],
     "boot": {
-      "keychain": "Unlocking system keychain…",
+      "keychain": "Unlocking saved secrets…",
       "hosts": "Loading encrypted host store…",
       "connecting": "Restoring workspace & sessions…",
       "skip": "Skip"
@@ -654,8 +654,8 @@
     "steps": [
       {
         "icon": "key-2-line",
-        "title": "System keychain",
-        "text": "Holds one random 256-bit master key for SSHYard, and nothing else."
+        "title": "Master password",
+        "text": "One password seals a random 256-bit master key for SSHYard, in a local file. It is never stored, and moving your data folder to another computer only needs it again."
       },
       {
         "icon": "safe-2-line",
@@ -665,12 +665,12 @@
       {
         "icon": "shield-keyhole-line",
         "title": "Sealed backups",
-        "text": "Backups are compressed and encrypted on your device with a key derived from your password, using Argon2id and XChaCha20-Poly1305."
+        "text": "Backups are compressed and encrypted on your device with a key derived from your master password, using Argon2id and XChaCha20-Poly1305."
       },
       {
         "icon": "upload-cloud-2-line",
         "title": "Your storage",
-        "text": "WebDAV, S3-compatible storage and GitHub Gists only ever receive sealed files. The backup password itself is never stored."
+        "text": "WebDAV, S3-compatible storage and GitHub Gists only ever receive sealed files. The master password itself is never stored."
       }
     ],
     "points": [
@@ -796,7 +796,7 @@
       },
       {
         "q": "Where are my passwords and keys stored?",
-        "a": "On your device, encrypted. The system keychain holds only a random master key, and passwords, private keys, passphrases and API keys are encrypted with it in a local file. Nothing leaves the device unless you make a backup, and backups are encrypted before they do."
+        "a": "On your device, encrypted. One master password seals a random master key in a local file, and passwords, private keys, passphrases and API keys are encrypted with it. Nothing leaves the device unless you make a backup, and backups are encrypted before they do."
       },
       {
         "q": "How does the AI assistant work, and can I control it?",
@@ -820,7 +820,7 @@
       },
       {
         "q": "How do backup and restore work?",
-        "a": "SSHYard compresses hosts, credentials, snippets and settings into one file and encrypts it with your backup password on your device. You can keep it locally or send it to WebDAV, S3-compatible storage or a private GitHub Gist, by hand or on a schedule, and restore it on another device with the same password."
+        "a": "SSHYard compresses hosts, credentials, snippets and settings into one file and encrypts it on your device with your master password. You can keep it locally or send it to WebDAV, S3-compatible storage or a private GitHub Gist, by hand or on a schedule, and restore it on another device with the same password."
       },
       {
         "q": "Can I move over from another SSH client?",

@@ -92,35 +92,13 @@ SSHYard 是一款原生桌面 SSH / SFTP 客户端，支持 macOS、Windows 和 
   - 可关闭到托盘，从托盘弹窗快速连接主机
   - 支持英文、简体中文、繁体中文、韩文和日文
 
-## Linux 凭据与依赖
+## 机密与主密码
 
-请以普通桌面用户运行 SSHYard，无需 root 或 `sudo`，保存和解锁凭据需要 libsecret 0.19 或更新版本（`libsecret-1.so.0`）、当前用户会话的 D-Bus，以及可用且已解锁的 [Secret Service](https://specifications.freedesktop.org/secret-service/latest/) 服务，例如桌面环境已配置的 GNOME Keyring 或其他兼容服务，仅安装 libsecret 不会提供运行中的 Secret Service；系统服务保存 SSHYard 的主密钥，凭据仍在本机 `secrets.enc` 中加密保存
+请以普通桌面用户运行 SSHYard,无需 root 或 `sudo`。保存和解锁凭据不需要任何额外配置:一个**主密码**把随机主密钥封存在 `master.enc` 中,主密钥再加密 `secrets.enc` 里 SSHYard 保存的一切。
 
-- **Debian / Ubuntu：** `.deb` 在 GTK 之外声明 `libsecret-1-0 (>= 0.19)`，请使用能够处理依赖的包管理器安装，例如 `sudo apt install ./sshyard_<version>_amd64.deb`，文件名以实际下载为准
-- **Arch Linux：** 生成的 `PKGBUILD` 声明 `libsecret` 和 `gtk3`，MyGo 的 Debian 到 Arch 映射会移除版本约束，请确保 libsecret 版本至少为 0.19
-- **压缩包 / `install.sh`：** 按用户安装到 `~/.local`，不会自动安装 libsecret、GTK 或 Secret Service 服务，请先备齐依赖，不要以 root 运行脚本
+首次使用时 SSHYard 会让你设置主密码。之后这台电脑会把它记在自己系统的钥匙串里(Windows 凭据管理器、macOS 钥匙串,或 Linux 的 libsecret,由操作系统负责),以后打开无需再输入。手动锁定(快捷键、托盘、设置)后,本次运行内需要重新输入主密码;下次启动又会记住。空闲、锁屏与休眠只会隐藏窗口,不会要求密码。
 
-系统缺少软件包，或租户策略禁用会话 D-Bus / Secret Service 时，可能需要管理员处理，需要解锁集合时请使用桌面环境现有的密钥环管理器；SSHYard 使用原生界面，无需 WebKitGTK
-
-没有可用的 Secret Service 时，例如没有管理员权限的租户账号，SSHYard 可改用本地主密码保护主密钥：解锁失败且尚未保存任何凭据时，在错误对话框中选择**改用本地主密码…**；主密钥随后以该密码（Argon2id）加密保存在 `secrets.enc` 旁的 `master.enc` 中，不写入系统钥匙串，每次启动后首次使用已保存的机密内容时输入一次；SSHYard 不保存此密码，忘记后已保存的凭据只能从备份找回。之后可在**设置 → 关于 → 机密存储**中修改密码，或在系统钥匙串可用后改回系统钥匙串；同一对话框中的**复制诊断信息**会复制凭据服务自身的错误消息，便于反馈问题，其中不含机密内容
-
-可在与 SSHYard **相同的桌面登录会话**中打开终端，不加 `sudo` 执行以下只读连通性检查（需要 `gdbus`）：
-
-```sh
-gdbus call --session --dest org.freedesktop.secrets \
-  --object-path /org/freedesktop/secrets \
-  --method org.freedesktop.Secret.Service.ReadAlias default
-```
-
-返回集合路径说明服务可达，返回 `/` 表示没有默认集合；若返回了集合路径，可将下面的 `/returned/collection/path` 替换为该路径，查看锁定状态：
-
-```sh
-gdbus call --session --dest org.freedesktop.secrets \
-  --object-path /returned/collection/path \
-  --method org.freedesktop.DBus.Properties.Get org.freedesktop.Secret.Collection Locked
-```
-
-`true` 表示已锁定，`false` 表示已解锁；这些调用可能激活会话服务，但不会读取密码、解锁集合或修改、删除密钥环条目，仅检查连通性和集合状态，即使集合已解锁，也不能保证 SSHYard 能读取或保存主密钥；D-Bus 连接错误指向登录会话或访问策略问题，`ServiceUnknown` 通常表示没有可激活的 Secret Service 服务，返回值定义参见 [ReadAlias API](https://specifications.freedesktop.org/secret-service/latest/org.freedesktop.Secret.Service.html#org.freedesktop.Secret.Service.ReadAlias)
+把数据文件夹拷到另一台电脑或另一个系统用户时,`master.enc` 会跟着走,该电脑首次打开需要输入主密码,之后也会记住。SSHYard 不会保存主密码:忘记后已保存的机密只能从备份找回,锁屏上的重置会删除它们。**设置 → 关于 → 机密存储**可以修改主密码,也可以让本机不再记住(下次重新要求输入)。Linux 包不再为 SSHYard 声明 libsecret,界面为原生,不需要 WebKitGTK。
 
 ## 开发
 
