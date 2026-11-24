@@ -85,6 +85,12 @@ go tool mygo build \
 
 This fork is developed on WSL2 and targets Windows only. The machine setup (Go under `/usr/local/go`), the daily loop (headless tests in WSL, `go tool mygo build -platform windows/amd64` into `/mnt/c`), and its caveats (Windows-only behaviour is verified by running the exe on Windows, portable data folders, NSIS, update signing, syncing `upstream`, CI minutes) are in [docs/development-wsl.md](docs/development-wsl.md) (in Chinese). Read it before building, running or packaging anything on this machine.
 
+## Commits
+
+- Every commit goes through the git-commit skill: stage the logical change, then let it read the diff and derive the conventional type, scope and message. Never hand-write a message from memory of the edits.
+- Commit messages are in Chinese: the description and body are Chinese, while the conventional-commit keyword and a code-area scope stay English, e.g. `feat(shortcuts): 标签切换快捷键可录制为 Alt/⌥ 加数字`. git-cliff groups the release notes by that keyword (`cliff.toml`), so the prefix itself is never translated.
+- One logical change per commit. `bump.sh`'s release commit keeps its exact English wording (`chore(release): bump version to <x.y.z>`): `cliff.toml` skips it by that pattern, and a translated one would leak into the release notes.
+
 ## CI and releases
 
 - CI is GitHub Actions (`.github/workflows/ci.yml`, `release.yml`); keep both green. `ci.yml` runs the full checks, tests and builds on every push to `main`, on `v*` tags and by hand; pushes to `main` touching only `website/`, `docs/`, Markdown, `LICENSE` or `website.yml` are skipped, a newer push to `main` cancels the older run, other branches and pull requests run nothing, and `bump.sh`'s release commit is checked only on its tag (private repo, billed minutes). A tag whose commit differs from one with a passed run on `main` only in `mygo.json`'s version and skipped files reuses that run (`.github/ci-reuse.sh`, waiting for it if still running): no tests, and for a stable tag no builds either, since `release.yml` builds and signs; keep its file list in step with `paths-ignore`. Local verification before a push therefore still follows the change-scoped rules above, including the documentation-only exemption; a release tag also waits for `ci.yml` on that tag.
