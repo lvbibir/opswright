@@ -81,6 +81,10 @@ go tool mygo build \
   -platform linux/amd64,linux/arm64,windows/amd64,windows/arm64,darwin/arm64,darwin/amd64 -o dist
 ```
 
+## Local development on this fork
+
+This fork is developed on WSL2 and targets Windows only. The machine setup (Go under `/usr/local/go`), the daily loop (headless tests in WSL, `go tool mygo build -platform windows/amd64` into `/mnt/c`), and its caveats (Windows-only behaviour is verified by running the exe on Windows, portable data folders, NSIS, update signing, syncing `upstream`, CI minutes) are in [docs/development-wsl.md](docs/development-wsl.md) (in Chinese). Read it before building, running or packaging anything on this machine.
+
 ## CI and releases
 
 - CI is GitHub Actions (`.github/workflows/ci.yml`, `release.yml`); keep both green. `ci.yml` runs the full checks, tests and builds on every push to `main`, on `v*` tags and by hand; pushes to `main` touching only `website/`, `docs/`, Markdown, `LICENSE` or `website.yml` are skipped, a newer push to `main` cancels the older run, other branches and pull requests run nothing, and `bump.sh`'s release commit is checked only on its tag (private repo, billed minutes). A tag whose commit differs from one with a passed run on `main` only in `mygo.json`'s version and skipped files reuses that run (`.github/ci-reuse.sh`, waiting for it if still running): no tests, and for a stable tag no builds either, since `release.yml` builds and signs; keep its file list in step with `paths-ignore`. Local verification before a push therefore still follows the change-scoped rules above, including the documentation-only exemption; a release tag also waits for `ci.yml` on that tag.
