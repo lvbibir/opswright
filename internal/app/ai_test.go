@@ -29,21 +29,14 @@ import (
 	"github.com/egoist/mygo/ui"
 )
 
+// appIn is lockedTestAppIn on an injected store, left unlocked for tests
+// that only need a working app.
 func appIn(t *testing.T, dir string, secrets keychain.Backend) (*App, *ui.Tester) {
 	t.Helper()
 	if secrets == nil {
 		secrets = keychain.NewMemory()
 	}
-	a, err := New(Platform{DataDir: dir, Secrets: secrets, HomeDir: dir, CacheDir: filepath.Join(dir, "cache")})
-	if err != nil {
-		t.Fatal(err)
-	}
-	t.Cleanup(a.Close)
-	a.Start()
-	a.withSecrets(nil)
-	tt := ui.NewTester(a.View, 1200, 760)
-	tt.SetLocale("en")
-	tt.Frame()
+	a, tt := lockedTestAppIn(t, dir, secrets)
 	waitFor(t, tt, "credential store unlocked", a.unlocked)
 	return a, tt
 }

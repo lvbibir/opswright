@@ -137,7 +137,7 @@ func TestCostlyMigrationKey(t *testing.T) {
 func TestCostlyBackupAsksBeforeOpening(t *testing.T) {
 	src, stt, sdir := backupApp(t)
 	fillStore(t, src)
-	path := export(t, src, stt, sdir, "correct horse", true)
+	path := export(t, src, stt, sdir, true)
 	b, _ := os.ReadFile(path)
 
 	var costly atomic.Int32
@@ -179,7 +179,7 @@ func TestCostlyBackupAsksBeforeOpening(t *testing.T) {
 func TestBackupCloseCancelsOpening(t *testing.T) {
 	src, stt, sdir := backupApp(t)
 	fillStore(t, src)
-	path := export(t, src, stt, sdir, "correct horse", true)
+	path := export(t, src, stt, sdir, true)
 	b, _ := os.ReadFile(path)
 
 	started, done := make(chan struct{}), make(chan error, 1)

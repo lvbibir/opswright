@@ -305,8 +305,8 @@ func TestForwardAsksPasswordAndListsConns(t *testing.T) {
 func TestForwardAutoStart(t *testing.T) {
 	srv := fwdServer(t)
 	dir := t.TempDir()
-	kc := keychain.NewMemory()
-	a, _ := appIn(t, dir, kc)
+	a, att := newLockedTestAppIn(t, dir)
+	setMasterPassword(t, a, att, testBackupPassword)
 	h := addHost(t, a, srv, "box", "secret")
 	a.known.Add(srv.Addr, srv.HostKey.PublicKey())
 	webHost, webPort := webServer(t)
@@ -316,19 +316,20 @@ func TestForwardAutoStart(t *testing.T) {
 		t.Fatal(err)
 	}
 	a.Close()
-	// The next launch waits for an explicit secrets action before auto-starting.
-	b, err := New(Platform{DataDir: dir, Secrets: kc, HomeDir: dir, CacheDir: filepath.Join(dir, "cache")})
+	// The next launch waits for the master password before auto-starting.
+	b, err := New(Platform{DataDir: dir, HomeDir: dir, CacheDir: filepath.Join(dir, "cache"), KDF: cheapKDF, System: keychain.NewMemory()})
 	if err != nil {
 		t.Fatal(err)
 	}
 	defer b.Close()
 	b.Start()
 	tt := ui.NewTester(b.View, 1200, 760)
+	tt.SetLocale("en")
 	tt.Frame()
 	if _, on := b.ForwardStatus(fw.ID); on || b.unlocked() {
-		t.Fatal("auto-forward started before explicit unlock")
+		t.Fatal("auto-forward started before the master password")
 	}
-	b.withSecrets(nil)
+	unlockApp(t, b, tt, testBackupPassword)
 	waitRunning(t, b, tt, fw.ID)
 	if got, err := httpGet(noKeep, "http://127.0.0.1:"+strconv.Itoa(listen)+"/auto"); err != nil || got != "hello from /auto" {
 		t.Errorf("%q %v", got, err)

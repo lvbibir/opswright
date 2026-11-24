@@ -23,7 +23,6 @@ type snippetForm struct {
 
 func (a *App) openSnippet(m locales.Messages, n assets.Snippet, duplicate bool) {
 	if n.ID != "" && !a.unlocked() {
-		a.withSecrets(func() { a.openSnippet(m, n, duplicate) })
 		return
 	}
 
@@ -45,12 +44,6 @@ func (a *App) openSnippet(m locales.Messages, n assets.Snippet, duplicate bool) 
 }
 func (a *App) saveSnippetForm(m locales.Messages) bool {
 	if a.snippets.form != nil && !a.unlocked() {
-		draft := a.snippets.form
-		a.withSecrets(func() {
-			if a.snippets.form == draft {
-				a.saveSnippetForm(m)
-			}
-		})
 		return false
 	}
 
@@ -75,12 +68,6 @@ func (a *App) saveSnippetForm(m locales.Messages) bool {
 func (a *App) confirmSnippetDelete(m locales.Messages) {
 	if err := a.deleteSnippet(a.snippets.deleteID); err != nil {
 		if errors.Is(err, keychain.ErrLocked) && !a.unlocked() {
-			id := a.snippets.deleteID
-			a.withSecrets(func() {
-				if a.snippets.deleteID == id {
-					a.confirmSnippetDelete(m)
-				}
-			})
 			return
 		}
 		a.snippets.err = m.SnippetDeleteFailed(snippetErrorText(m, err))
@@ -258,9 +245,7 @@ func snippetErrorText(m locales.Messages, err error) string {
 		return m.SnippetBusy()
 	}
 	var op *keychain.OpError
-	var system *keychain.SystemError
-	var linux *keychain.LinuxServiceError
-	if errors.As(err, &op) || errors.As(err, &system) || errors.As(err, &linux) {
+	if errors.As(err, &op) {
 		return unlockErrorText(m, err)
 	}
 	for _, known := range []error{keychain.ErrLocked, keychain.ErrBusy, keychain.ErrMasterMissing, keychain.ErrMasterInvalid, keychain.ErrCorrupt, keychain.ErrVersion, keychain.ErrUnavailable} {

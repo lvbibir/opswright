@@ -104,7 +104,7 @@ func TestLayoutWorkspaceRoundTrip(t *testing.T) {
 	}
 }
 
-func TestLayoutLockedStartupReconnectsOnceWithoutReplay(t *testing.T) {
+func TestLayoutStartupReconnectsOnceWithoutReplay(t *testing.T) {
 	srv, sh := startScript(t, "PRIVATE_OLD_OUTPUT\r\n")
 	dir, backend := t.TempDir(), keychain.NewMemory()
 	rememberLayoutIn(t, dir)
@@ -138,11 +138,10 @@ func TestLayoutLockedStartupReconnectsOnceWithoutReplay(t *testing.T) {
 	if len(again.ws.Tabs) != 1 || len(again.conns) != 1 || again.focused() == nil || again.focused().host.ID != old.host.ID {
 		t.Fatalf("restored remote plus duplicate local: tabs=%d conns=%d", len(again.ws.Tabs), len(again.conns))
 	}
-	if b.calls.Load() != 0 || srv.Logins() != 1 || again.prompting || again.unlock.modal {
-		t.Fatalf("startup interacted: keychain=%d logins=%d", b.calls.Load(), srv.Logins())
+	waitFor(t, tt, "fresh SSH login", func() bool { return again.unlocked() && again.focused().s.Status().State == session.Connected })
+	if srv.Logins() != 2 || again.prompting {
+		t.Fatalf("startup interacted: logins=%d", srv.Logins())
 	}
-	again.withSecrets(nil)
-	waitFor(t, tt, "unlock and fresh SSH login", func() bool { return again.unlocked() && again.focused().s.Status().State == session.Connected })
 	fresh := again.focused()
 	if fresh.cwd != "" || startOnce(fresh) != "" || strings.Contains(fresh.s.Term.ScreenText(), "PRIVATE_") {
 		t.Fatal("restarted terminal retained session content")
@@ -154,34 +153,6 @@ func TestLayoutLockedStartupReconnectsOnceWithoutReplay(t *testing.T) {
 	waitFor(t, tt, "fresh shell input", func() bool { read += sh.take(); return strings.Contains(read, "FRESH_PROBE") })
 	if strings.Contains(read, "PRIVATE_") || srv.Logins() != 2 || len(again.ws.Tabs) != 1 {
 		t.Fatalf("replayed commands or started duplicate session: input=%q logins=%d tabs=%d", read, srv.Logins(), len(again.ws.Tabs))
-	}
-}
-
-type layoutSilentBackend struct{ *authorizationBackend }
-
-func (b layoutSilentBackend) GetSilently(key string) ([]byte, error) { return b.Memory.Get(key) }
-
-func TestLayoutSilentUnlockStartsSavedConnection(t *testing.T) {
-	srv, _ := startScript(t, "ready\r\n")
-	dir, backend := t.TempDir(), keychain.NewMemory()
-	rememberLayoutIn(t, dir)
-	a, tt := appIn(t, dir, backend)
-	connected(t, a, tt, srv)
-	a.Close()
-	b := layoutSilentBackend{&authorizationBackend{Memory: backend}}
-	again, err := New(Platform{DataDir: dir, Secrets: b, HomeDir: dir, CacheDir: filepath.Join(dir, "cache")})
-	if err != nil {
-		t.Fatal(err)
-	}
-	t.Cleanup(again.Close)
-	again.Start()
-	tt = ui.NewTester(again.View, 1200, 760)
-	tt.SetLocale("en")
-	waitFor(t, tt, "silent unlock and restored login", func() bool {
-		return again.unlocked() && again.focused() != nil && again.focused().s.Status().State == session.Connected
-	})
-	if b.calls.Load() != 0 || srv.Logins() != 2 || again.prompting || again.unlock.modal {
-		t.Fatalf("silent startup interacted or duplicated login: keychain=%d logins=%d", b.calls.Load(), srv.Logins())
 	}
 }
 

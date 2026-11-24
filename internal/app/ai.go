@@ -607,12 +607,6 @@ func (a *App) RetryAI(id, i int) {
 		return
 	}
 	if !a.unlocked() && a.aiNeedsSecrets(c) {
-		text := c.ai.items[i].text
-		a.withSecrets(func() {
-			if c := a.conns[id]; c != nil && c.ai != nil && i < len(c.ai.items) && c.ai.items[i].text == text {
-				a.RetryAI(id, i)
-			}
-		})
 		return
 	}
 	// The provider or model may have changed since: the session asks the

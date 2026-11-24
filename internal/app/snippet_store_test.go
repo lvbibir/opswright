@@ -23,7 +23,7 @@ func blockSnippetMetadata(t *testing.T, a *App) {
 }
 
 func TestSnippetEncryptedCRUD(t *testing.T) {
-	a, _ := newTestApp(t)
+	a, _ := unlockedTestApp(t)
 	content := "  printf 'private-command-marker'\r\n\ttrue "
 	n, err := a.saveSnippet(assets.Snippet{Name: " name ", Group: " group ", SendEnter: true}, content)
 	if err != nil {

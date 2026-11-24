@@ -243,7 +243,6 @@ func (a *App) Import(m locales.Messages) (importResult, bool) {
 		}
 	}
 	if !a.unlocked() && a.importNeedsSecrets(m, f) {
-		a.withSecrets(func() { a.retryImport(m, f) })
 		return res, false
 	}
 	ids := map[string]string{}   // alias → host ID

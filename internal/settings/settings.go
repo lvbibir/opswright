@@ -254,10 +254,6 @@ type Settings struct {
 	// BackupTargets are the places this device backs up to. They belong
 	// to this device: a backup neither holds nor replaces them.
 	BackupTargets []BackupTarget `json:"backupTargets,omitempty"`
-	// DefaultBackupPassword says a default backup password is set: the key
-	// derived from it is in the keychain (keychain.DefaultBackupKey). It
-	// belongs to this device too.
-	DefaultBackupPassword bool `json:"defaultBackupPassword,omitempty"`
 	// RenewalNotify shows a system notification as the renewal of a
 	// host's subscription comes within its reminder. On by default.
 	RenewalNotify bool `json:"renewalNotify"`
@@ -373,9 +369,6 @@ type BackupTarget struct {
 	// Keep is how many of this device's backups stay; older ones are
 	// deleted after a backup. 0 keeps them all.
 	Keep int `json:"keep"`
-	// DefaultPassword seals its backups with the default backup password
-	// (keychain.DefaultBackupKey) rather than its own.
-	DefaultPassword bool `json:"defaultPassword,omitempty"`
 	// OmitSecrets leaves the secrets out of its backups.
 	OmitSecrets bool `json:"omitSecrets,omitempty"`
 	// AutoHours is the time between automatic backups, one of

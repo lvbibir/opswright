@@ -18,9 +18,9 @@ import (
 func TestLayoutRememberedLocalCredentialsWaitForUnlock(t *testing.T) {
 	for _, where := range []string{"target", "jump", "none"} {
 		t.Run(where, func(t *testing.T) {
-			dir, backend := t.TempDir(), keychain.NewMemory()
+			dir := t.TempDir()
 			rememberLayoutIn(t, dir)
-			a, _ := appIn(t, dir, backend)
+			a, _ := appIn(t, dir, nil)
 			h := savedHost(t, a, "target", "127.0.0.1")
 			rememberedHost := h
 			if where == "jump" {
@@ -35,9 +35,6 @@ func TestLayoutRememberedLocalCredentialsWaitForUnlock(t *testing.T) {
 			// network after credential selection; the dial then fails deliberately.
 			pub := homeKey(t, a, "id_ed25519", "test-passphrase")
 			keyID := session.KeyID(pub)
-			if err := a.kc.Set(keychain.LocalKeyPassphrase(keyID), []byte("test-passphrase")); err != nil {
-				t.Fatal(err)
-			}
 			if where != "none" {
 				if err := a.lk.Remember(localkeys.Remembered{ID: keyID}); err != nil {
 					t.Fatal(err)
@@ -52,9 +49,25 @@ func TestLayoutRememberedLocalCredentialsWaitForUnlock(t *testing.T) {
 			}
 			a.ws.Open(pane.item())
 			a.Close()
-			b := &authorizationBackend{Memory: backend}
+			// The next start has a real store under a master password, so
+			// the remembered key stays shut until that password opens it.
+			store, err := keychain.OpenLocked(keychain.OpenOptions{Path: filepath.Join(dir, "secrets.enc"), LockPath: filepath.Join(dir, "secrets.lock"), Scope: "sshyard", KDF: cheapKDF})
+			if err != nil {
+				t.Fatal(err)
+			}
+			if err := store.SetupPassword([]byte(testBackupPassword)); err != nil {
+				t.Fatal(err)
+			}
+			if where != "none" {
+				if err := store.Set(keychain.LocalKeyPassphrase(keyID), []byte("test-passphrase")); err != nil {
+					t.Fatal(err)
+				}
+			}
+			if err := store.Close(); err != nil {
+				t.Fatal(err)
+			}
 			var dials atomic.Int32
-			again, err := New(Platform{DataDir: dir, Secrets: b, HomeDir: dir, CacheDir: filepath.Join(dir, "cache"), Dial: func(context.Context, string, string) (net.Conn, error) {
+			again, err := New(Platform{DataDir: dir, HomeDir: dir, CacheDir: filepath.Join(dir, "cache"), KDF: cheapKDF, System: keychain.NewMemory(), Dial: func(context.Context, string, string) (net.Conn, error) {
 				dials.Add(1)
 				return nil, errors.New("test dial stopped")
 			}})
@@ -66,6 +79,9 @@ func TestLayoutRememberedLocalCredentialsWaitForUnlock(t *testing.T) {
 			tt := ui.NewTester(again.View, 1200, 760)
 			tt.SetLocale("en")
 			tt.Frame()
+			if !again.appLocked() {
+				t.Fatal("the next start did not wait for the master password")
+			}
 			restored := again.focused()
 			if restored == nil || !restored.restoredQuiet {
 				t.Fatal("missing quiet restored pane")
@@ -77,16 +93,13 @@ func TestLayoutRememberedLocalCredentialsWaitForUnlock(t *testing.T) {
 				if !again.restoredConnectionNeedsSecrets(h) {
 					t.Fatal("remembered metadata not recognized")
 				}
-				again.withSecrets(nil)
 			}
+			unlockApp(t, again, tt, testBackupPassword)
 			waitFor(t, tt, "fresh noninteractive dial", func() bool { return dials.Load() == 1 && restored.s.Status().State == session.Failed })
-			if again.prompting || again.hostKey != nil || again.unlock.modal {
+			if again.prompting || again.hostKey != nil {
 				t.Fatal("restoration opened an interactive prompt")
 			}
-			if where == "none" && b.calls.Load() != 0 {
-				t.Fatal("unremembered default authentication requested authorization")
-			}
-			if where != "none" && (!again.unlocked() || b.calls.Load() != 1 || restored.restorePending || restored.waitingSecrets) {
+			if where != "none" && (!again.unlocked() || restored.restorePending || restored.waitingSecrets) {
 				t.Fatal("unlock did not start the pending connection once")
 			}
 		})

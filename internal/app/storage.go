@@ -83,11 +83,7 @@ func (a *App) storageRow(c *ui.Context, m locales.Messages, g *settingsGroup) {
 	}
 	msg := m.StorageMoveToAppData(s.AppDataDir)
 	if !s.Portable {
-		secrets := m.StorageSecretsKeychain()
-		if a.kc != nil && a.kc.PasswordProtected() {
-			secrets = m.StorageSecretsPassword()
-		}
-		msg = m.StorageMoveToPortable(s.PortableDir) + "\n\n" + secrets
+		msg = m.StorageMoveToPortable(s.PortableDir) + "\n\n" + m.StorageSecretsKeychain()
 	}
 	if ui.AlertDialog(c.Key("storagemove"), &st.asking, m.StorageMoveTitle(), msg, m.Cancel(), m.StorageMoveRestart()) == 1 {
 		if err := s.Move(); err != nil {

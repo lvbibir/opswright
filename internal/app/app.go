@@ -80,8 +80,20 @@ type Platform struct {
 	// unless ResolveStorage supplies the persistent storage paths.
 	DataDir string
 	Version string
-	// Secrets stores only the random master key; failures keep the app locked.
-	Secrets        keychain.Backend
+	// Secrets is an explicitly injected test store; production leaves it
+	// nil, and the store then opens from secrets.enc under the master
+	// password (keychain).
+	Secrets keychain.Backend
+	// System is the computer's keychain, which caches the master key so
+	// this computer opens the store without asking; production leaves it
+	// nil for keychain.System, and tests may inject their own.
+	System keychain.Backend
+	// HideWindows hides the main window and its panels as the idle and
+	// sleep choices ask; nil leaves them alone.
+	HideWindows func()
+	// KDF is what the master password derives with in tests; production
+	// leaves it zero for vault.DefaultParams.
+	KDF            vault.Params
 	SecretLockPath string
 	SecretScope    string
 	StartupError   error
@@ -304,7 +316,6 @@ type App struct {
 	background backgroundState
 	store      *assets.Store
 	kc         *keychain.Keychain
-	keychainOK bool
 	unlock     unlockState
 	known      *session.KnownHosts
 	ws         *layout.Workspace
@@ -662,12 +673,7 @@ type App struct {
 	costHold focusHold
 	costKeys map[[32]byte]costlyKey
 	costSalt []byte
-	// defaultPw is the sheet setting the default backup password
-	defaultPw        *passwordForm
-	settingDefaultPw bool
-	defaultPwHold    focusHold
-	// masterPw is the local master password sheet: to unlock, set it up
-	// in place of an unusable system keychain, change it or leave it
+	// masterPw is the sheet changing the master password
 	masterPw     *masterPwForm
 	masterPwOpen bool
 	masterPwHold focusHold
@@ -695,7 +701,10 @@ func New(p Platform) (*App, error) {
 	a.awake = awake.New(p.Awake)
 	a.settings = settings.Default()
 	a.shells = detectShells()
-	a.kdf = vault.DefaultParams
+	a.kdf = p.KDF
+	if a.kdf == (vault.Params{}) {
+		a.kdf = vault.DefaultParams
+	}
 	a.cloudCtx, a.cloudStop = context.WithCancel(context.Background())
 	a.kc = keychain.New(lockedSecrets{})
 	a.upd = p.Updates
@@ -708,6 +717,10 @@ func New(p Platform) (*App, error) {
 	a.syncChoices()
 	a.resolveFonts(false, false, false)
 	a.updateCheck = a.settings.CheckUpdates
+	if err == nil {
+		// The key this computer cached opens the store without asking.
+		a.probeUnlock()
+	}
 	return a, err
 }
 
@@ -796,9 +809,6 @@ func (a *App) Settings() settings.Settings { return a.settings }
 
 // Store returns the host store.
 func (a *App) Store() *assets.Store { return a.store }
-
-// Keychain returns the keychain in use, and whether it is the system's.
-func (a *App) Keychain() (*keychain.Keychain, bool) { return a.kc, a.keychainOK }
 
 // ApplySettings applies and saves settings.
 func (a *App) ApplySettings(s settings.Settings) error {
@@ -905,11 +915,9 @@ func (a *App) Start() {
 		a.p.SetLocale(a.settings.Language)
 	}
 	if !a.ready() {
-		a.unlock.modal = true
 		return
 	}
 	a.startIndependent()
-	a.probeUnlock()
 }
 
 func (a *App) applyWindowSettings() {
@@ -1010,7 +1018,6 @@ func (a *App) Close() {
 	a.unlock.mu.Lock()
 	defer a.unlock.mu.Unlock()
 	a.unlock.closed = true
-	a.unlock.after = nil
 	a.cloudStop()
 	if a.netStop != nil {
 		a.netStop()
@@ -1043,7 +1050,7 @@ func (a *App) Close() {
 	a.clipAsk = nil
 	a.xfer = xferState{}
 	a.fwds = map[string]*fwdRun{}
-	if a.kc != nil && (!a.unlock.busy || a.unlock.completed) {
+	if !a.unlock.busy || a.unlock.completed {
 		a.closeSecrets(a.kc)
 	}
 	a.unlock.ready.Store(false)

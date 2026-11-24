@@ -160,6 +160,12 @@ func (d *desktop) close(e *mygo.CloseEvent) {
 		d.reportTrayError()
 		return
 	}
+	d.hide()
+}
+
+// hide hides the main window the way close-to-tray does, for the idle and
+// sleep choices; the tray brings it back.
+func (d *desktop) hide() {
 	d.app.SetMinimized(true)
 	d.changingVisibility = true
 	defer func() { d.changingVisibility = false }()

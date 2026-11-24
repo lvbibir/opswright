@@ -249,9 +249,6 @@ func (a *App) settingsSection(c *ui.Context, tok theme.Tokens, ic *icons.Icon, t
 }
 
 func (a *App) settingsPage(c *ui.Context, m locales.Messages, tok theme.Tokens) {
-	if !a.unlocked() {
-		a.secretsBanner(c, m, tok)
-	}
 	s := a.settings
 	changed := false
 	cur := a.prefNow()
@@ -954,16 +951,16 @@ func (a *App) aboutPage(c *ui.Context, m locales.Messages, tok theme.Tokens) {
 			}
 		})
 		a.storageRow(c, m, g)
-		if !a.kc.PasswordProtected() {
-			g.row(m.AboutSecrets(), "", value(m.SecretsKeychain()))
-			return
-		}
-		g.row(m.AboutSecrets(), m.SecretsMasterPassword(), func() {
-			if pill(c, m.UseSystemKeychainEllipsis(), false, false, false) {
-				a.withSecrets(func() { a.openMasterPassword(masterPwSystem) })
-			}
+		g.row(m.AboutSecrets(), m.SecretsKeychain(), func() {
 			if pill(c, m.ChangePasswordEllipsis(), false, false, false) {
-				a.withSecrets(func() { a.openMasterPassword(masterPwChange) })
+				a.openMasterPassword()
+			}
+			if pill(c, m.ForgetSystemEllipsis(), false, false, false) {
+				if msg := a.ForgetSystem(m); msg != "" {
+					c.AddToast(ui.Toast{Title: msg, Type: "error"})
+				} else {
+					c.AddToast(ui.Toast{Title: m.ForgetSystemNote(), Type: "success"})
+				}
 			}
 		})
 	})

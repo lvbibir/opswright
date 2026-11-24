@@ -409,7 +409,6 @@ func (a *App) snippetMenu(m locales.Messages, n assets.Snippet, disabled bool) [
 }
 func (a *App) startSnippet(m locales.Messages, id string, enter bool) {
 	if !a.unlocked() {
-		a.withSecrets(func() { a.startSnippet(m, id, enter) })
 		return
 	}
 

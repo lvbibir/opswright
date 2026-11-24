@@ -83,9 +83,6 @@ func (a *App) View(c *ui.Context) {
 	a.drawBackground(c, tok)
 	ui.Column(c).Fill().TextColor(tok.Text).Children(func() {
 		a.titleBar(c, m, tok, clear)
-		if a.showSecretsStatus() && a.page != pageSettings {
-			a.secretsBanner(c, m, tok)
-		}
 		// The sidebar and the content, split at a line the user drags to
 		// size the sidebar; hidden, the content takes the whole width.
 		sidebar := func() {
@@ -147,7 +144,6 @@ func (a *App) View(c *ui.Context) {
 	a.targetView(c, m)
 	a.remoteListView(c, m)
 	a.backupView(c, m)
-	a.defaultPasswordView(c, m)
 	a.fwdView(c, m)
 	a.fwdDeleteView(c, m)
 	a.highlightView(c, m)
@@ -164,9 +160,7 @@ func (a *App) View(c *ui.Context) {
 	a.aiAttachmentPreviewView(c, m, tok)
 	a.contextMenuView(c)
 	a.costView(c, m)
-	a.unlockModal(c, m, tok)
 	a.masterPasswordView(c, m)
-	a.lockFormView(c, m)
 	a.observeLayout(c)
 }
 

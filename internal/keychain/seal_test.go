@@ -47,15 +47,16 @@ func TestSealRoundTripAndBinding(t *testing.T) {
 	if _, err := k.Unseal("ai-history/v1", sealed, []byte("host/1")); !errors.Is(err, ErrLocked) {
 		t.Fatalf("closed store unsealed: %v", err)
 	}
-	k2, err := Open(o)
-	if err != nil {
-		t.Fatal(err)
-	}
-	defer k2.Close()
+	k2 := unlockTest(t, o, testPassword)
 	if got, err := k2.Unseal("ai-history/v1", sealed, []byte("host/1")); err != nil || !bytes.Equal(got, plain) {
 		t.Fatalf("reopened unseal %q, %v", got, err)
 	}
-	if _, err := New(NewMemory()).Seal("x", plain, nil); !errors.Is(err, ErrUnavailable) {
-		t.Fatalf("memory backend sealed: %v", err)
+	// An injected store seals too, under a master key of its own.
+	other, err := New(NewMemory()).Seal("ai-history/v1", plain, []byte("host/1"))
+	if err != nil {
+		t.Fatalf("injected store sealed: %v", err)
+	}
+	if _, err := k2.Unseal("ai-history/v1", other, []byte("host/1")); !errors.Is(err, ErrCorrupt) {
+		t.Fatalf("another store's master opened it: %v", err)
 	}
 }

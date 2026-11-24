@@ -333,11 +333,6 @@ func (a *App) altTabKey(ev ui.InputEvent) bool {
 func (a *App) runAction(id string) {
 	switch id {
 	case actLock:
-		// With no lock set up, it shows where one is.
-		if !a.lock.cfg.Enabled() {
-			a.openSettings(prefSecurity)
-			return
-		}
 		a.LockApp()
 	case actCommandPalette:
 		a.openPalette()

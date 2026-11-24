@@ -201,11 +201,6 @@ func (a *App) SwitchToKey(hostID, credID, user string) error {
 
 func (a *App) startInstall(m locales.Messages, f *installForm, h assets.Host) {
 	if !a.unlocked() {
-		a.withSecrets(func() {
-			if a.install == f {
-				a.startInstall(m, f, h)
-			}
-		})
 		return
 	}
 

@@ -110,12 +110,6 @@ func (a *App) SaveProxyForm(m locales.Messages) bool {
 		return false
 	}
 	if !a.unlocked() && (f.password != "" || (!f.isNew && f.orig.User != "" && strings.TrimSpace(p.User) == "")) {
-		draft := a.proxyForm
-		a.withSecrets(func() {
-			if a.proxyForm == draft {
-				a.SaveProxyForm(m)
-			}
-		})
 		return false
 	}
 	key := keychain.ProxyPassword(p.ID)

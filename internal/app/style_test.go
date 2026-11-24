@@ -19,7 +19,7 @@ func TestStickySheets(t *testing.T) {
 	}{
 		{"text import", a.openTextMigration, a.migrationView, &a.migrationOpen},
 		{"backup", a.openExport, a.backupView, &a.backingUp},
-		{"default password", a.openDefaultPassword, a.defaultPasswordView, &a.settingDefaultPw},
+		{"master password", a.openMasterPassword, a.masterPasswordView, &a.masterPwOpen},
 		{"backup location", func() { a.openTargetForm(nil) }, a.targetView, &a.targetEditing},
 		{"remote backups", func() {
 			a.remotes, a.listingRemote = &remoteList{target: settings.BackupTarget{ID: "nas", Name: "NAS", Kind: settings.BackupWebDAV}}, true
@@ -49,7 +49,7 @@ func TestStickySheets(t *testing.T) {
 			t.Fatalf("%s stays open on Escape", s.name)
 		}
 	}
-	if a.migration != nil || a.backup != nil || a.defaultPw != nil || a.target != nil || a.remotes != nil {
+	if a.migration != nil || a.backup != nil || a.masterPw != nil || a.target != nil || a.remotes != nil {
 		t.Fatal("a sheet closed on Escape kept its form")
 	}
 }

@@ -16,7 +16,7 @@ func TestSnippetBackupRoundTrip(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	path := export(t, src, tt, dir, "correct horse", true)
+	path := export(t, src, tt, dir, true)
 	sealed, err := os.ReadFile(path)
 	if err != nil {
 		t.Fatal(err)
@@ -93,7 +93,7 @@ func TestSnippetRestoreFailureRollsBackBodies(t *testing.T) {
 	for _, withBody := range []bool{false, true} {
 		t.Run(map[bool]string{false: "missing-body", true: "replacement-body"}[withBody], func(t *testing.T) {
 			a, _, _ := backupApp(t)
-			opts, _ := installBackupStore(t, a)
+			opts := installBackupStore(t, a, testBackupPassword)
 			n, err := a.saveSnippet(assets.Snippet{Name: "original"}, "echo old")
 			if err != nil {
 				t.Fatal(err)
@@ -112,10 +112,7 @@ func TestSnippetRestoreFailureRollsBackBodies(t *testing.T) {
 			if err := a.kc.Close(); err != nil {
 				t.Fatal(err)
 			}
-			a.kc, err = keychain.Open(opts)
-			if err != nil {
-				t.Fatal(err)
-			}
+			a.kc = reopenBackupStore(t, opts, testBackupPassword)
 			if got, err := a.snippetContent(n.ID); err != nil || got != "echo old" {
 				t.Fatal("encrypted body rollback not persisted", err)
 			}

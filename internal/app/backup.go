@@ -10,7 +10,6 @@ import (
 	"os"
 	"path/filepath"
 	"slices"
-	"strconv"
 	"strings"
 	"time"
 
@@ -29,8 +28,9 @@ import (
 // A backup is everything SSHYard keeps (the hosts and what they use, the
 // preferences, the trusted host keys and, unless left out, their secrets
 // from the encrypted local store) in one compressed archive (package
-// backup) sealed with a password (package vault), to keep, here or in the
-// cloud, or to move to another device. Restoring merges it in.
+// backup) sealed under the master password (package vault), to keep, here
+// or in the cloud, or to move to another device; that password opens it
+// anywhere. Restoring merges it in.
 
 // backupPayload is what a backup file holds once opened. A backup from
 // before archives is this, as JSON.
@@ -104,30 +104,25 @@ func unpackBackup(plain []byte) (backupPayload, error) {
 // backupExt is the extension of a backup file.
 const backupExt = backup.Ext
 
-// minBackupPassword is the shortest backup password taken, in characters.
-const minBackupPassword = 8
-
 // maxBackupFile bounds what a restore reads.
 const maxBackupFile = backup.MaxSize
 
-// backupForm is the backup sheet: exporting, with the default backup
-// password or a new one typed twice, or restoring the file data with its
-// password. The password lives here only while the sheet is open.
+// backupForm is the backup sheet: exporting, or restoring the file data
+// with the master password it was sealed under. That password lives here
+// only while the sheet is open.
 type backupForm struct {
 	restore bool
-	// source is where an export's password comes from, pwDefault or
-	// pwCustom
-	source            int
-	password, confirm string
+	// password is the master password a restore is opened with
+	password string
 	// secrets puts the local store's secrets in an export; on by default
 	secrets bool
 	// name, data and created are the backup file being restored
 	name    string
 	data    []byte
 	created time.Time
-	// busy is set while the password is derived and the file sealed or
-	// opened, off the UI thread; cancel stops a restore's opening before
-	// its next derivation, when the sheet closes
+	// busy is set while the file is sealed or opened, off the UI thread;
+	// cancel stops a restore's opening before its next derivation, when
+	// the sheet closes
 	busy   bool
 	cancel context.CancelFunc
 	err    string
@@ -173,7 +168,7 @@ func backupSecretKeys(snap assets.Snapshot, provs []settings.AIProvider) []strin
 // backup missing secrets it seems to have is worse than none.
 func (a *App) collectBackup(secrets bool) (backupPayload, error) {
 	p := backupPayload{Assets: a.store.Snapshot(), Settings: a.settings}
-	p.Settings.BackupTargets, p.Settings.DefaultBackupPassword = nil, false
+	p.Settings.BackupTargets = nil
 	p.Settings.Background = settings.DefaultBackground()
 	// What starts a program on this computer is not taken by a restore,
 	// so it is not put in a backup either.
@@ -397,8 +392,8 @@ func backupIDs(snap assets.Snapshot, provs []settings.AIProvider) []string {
 // mergeSettings are the preferences of a backup, in, over those of this
 // device, cur: what belongs to this device stays (the window's layout and
 // materials, the layout of its files panes and editor windows, the fonts
-// installed here, the MCP endpoint, the places it backs up to and its
-// default backup password, the folder of its session logs, the external
+// installed here, the MCP endpoint, the places it backs up to, the folder
+// of its session logs, the external
 // ACP agents it starts and its default agent), AI providers are merged by
 // ID and the hosts that confirmed AI use are joined.
 func mergeSettings(cur, in settings.Settings) settings.Settings {
@@ -416,7 +411,7 @@ func mergeSettings(cur, in settings.Settings) settings.Settings {
 	out.MCPEnabled, out.MCPPort, out.LocalKeysMCP = cur.MCPEnabled, cur.MCPPort, cur.LocalKeysMCP
 	// Nor does it choose where this device backs up to, nor where it
 	// keeps its session logs.
-	out.BackupTargets, out.DefaultBackupPassword = slices.Clone(cur.BackupTargets), cur.DefaultBackupPassword
+	out.BackupTargets = slices.Clone(cur.BackupTargets)
 	out.SessionLog = cur.SessionLog
 	// Nor does it add or change a program this computer starts: an ACP
 	// agent's executable and arguments, and the default agent that may
@@ -460,10 +455,6 @@ func backupErrText(m locales.Messages, err error) string {
 		return m.ErrCloudAuth()
 	case errors.Is(err, backup.ErrNotFound):
 		return m.ErrCloudNotFound()
-	case errors.Is(err, errBackupKey):
-		return m.ErrBackupKeyMissing()
-	case errors.Is(err, errDefaultBackupKey):
-		return m.ErrDefaultBackupKeyMissing()
 	case errors.Is(err, errBackupProxy):
 		return m.ErrBackupProxyMissing()
 	}
@@ -476,11 +467,7 @@ func (a *App) toastError(msg string) {
 }
 
 func (a *App) openExport() {
-	f := &backupForm{secrets: true, source: pwCustom}
-	if a.settings.DefaultBackupPassword {
-		f.source = pwDefault
-	}
-	a.backup, a.backingUp = f, true
+	a.backup, a.backingUp = &backupForm{secrets: true}, true
 }
 
 func (a *App) closeBackup() {
@@ -490,32 +477,20 @@ func (a *App) closeBackup() {
 	a.backup, a.backingUp = nil, false
 }
 
-// ExportBackup checks the sheet's password and gathers the backup, then,
-// off the UI thread, asks where to save it and seals it there.
+// ExportBackup gathers the backup and, off the UI thread, asks where to
+// save it and seals it there under the master password.
 func (a *App) ExportBackup(m locales.Messages) bool {
 	f := a.backup
 	if f == nil || f.restore || f.busy || a.p.SaveFile == nil {
 		return false
 	}
 	f.err = ""
-	withDefault := f.source == pwDefault && a.settings.DefaultBackupPassword
-	switch {
-	case withDefault:
-	case len([]rune(f.password)) < minBackupPassword:
-		f.err = m.BackupPasswordShort(strconv.Itoa(minBackupPassword))
-		return false
-	case f.password != f.confirm:
-		f.err = m.BackupPasswordMismatch()
+	if !a.unlocked() {
 		return false
 	}
-	// The default backup password's key is in the store too.
-	if (f.secrets || withDefault) && !a.unlocked() {
-		draft := a.backup
-		a.withSecrets(func() {
-			if a.backup == draft {
-				a.ExportBackup(m)
-			}
-		})
+	key, err := a.kc.BackupKey()
+	if err != nil {
+		f.err = backupErrText(m, err)
 		return false
 	}
 	p, err := a.collectBackup(f.secrets)
@@ -524,17 +499,11 @@ func (a *App) ExportBackup(m locales.Messages) bool {
 		data, err = a.packBackup(p)
 	}
 	if err != nil {
+		key.Clear()
 		f.err = m.BackupExportFailed(secretStoreErrorText(m, err))
 		return false
 	}
-	var key vault.Key
-	if withDefault {
-		if key, err = a.defaultBackupKey(); err != nil {
-			f.err = backupErrText(m, err)
-			return false
-		}
-	}
-	pw, cost, title := []byte(f.password), a.kdf, m.ExportBackup()
+	title := m.ExportBackup()
 	def := filepath.Join(a.homeDir(), "SSHYard-"+time.Now().Format("2006-01-02")+backupExt)
 	f.busy = true
 	go func() {
@@ -546,11 +515,7 @@ func (a *App) ExportBackup(m locales.Messages) bool {
 		}
 		if err == nil {
 			var sealed []byte
-			if withDefault {
-				sealed, err = key.Seal(data)
-			} else {
-				sealed, err = vault.Seal(data, pw, cost)
-			}
+			sealed, err = key.Seal(data)
 			if err == nil {
 				err = settings.WriteFileAtomic(path, sealed, 0o600)
 			}
@@ -640,7 +605,7 @@ func (a *App) openBackup(m locales.Messages, costly bool) bool {
 		return false
 	}
 	if f.password == "" {
-		f.err = m.RequiredField(m.BackupPassword())
+		f.err = m.RequiredField(m.MasterPassword())
 		return false
 	}
 	f.err, f.busy = "", true
@@ -696,7 +661,6 @@ func (a *App) restoreDone(m locales.Messages, f *backupForm, p backupPayload, er
 		return
 	}
 	if err == nil && !a.unlocked() && a.backupNeedsSecrets(p) {
-		a.withSecrets(func() { a.restoreDone(m, f, p, nil) })
 		return
 	}
 	if err == nil {
@@ -715,7 +679,6 @@ func (a *App) restoreDone(m locales.Messages, f *backupForm, p backupPayload, er
 
 // backupSection is the settings' backup page.
 func (a *App) backupSection(c *ui.Context, m locales.Messages, tok theme.Tokens) {
-	a.defaultPasswordSection(c, m, tok)
 	a.settingsSection(c, tok, nil, "", func(g *settingsGroup) {
 		g.row(m.ExportBackup(), m.ExportBackupNote(), func() {
 			if pill(c, m.ExportEllipsis(), false, false, a.p.SaveFile == nil) {
@@ -753,32 +716,16 @@ func (a *App) backupView(c *ui.Context, m locales.Messages) {
 					}
 				})
 			})
-			choose := !f.restore && a.settings.DefaultBackupPassword
-			typed := !choose || f.source == pwCustom
-			ui.Form(c, func() {
-				if choose {
-					passwordSource(c, m, "bk:source", &f.source)
-				}
-				if !typed {
-					return
-				}
-				ui.Field(c, m.BackupPassword(), func() {
-					in := formTextInput(c.Key("bk:pw"), &f.password).Password().AutoFocus().Disabled(f.busy)
-					a.backupHold.apply(c, f, in)
-					if in.Submitted() && f.restore {
-						a.RestoreBackup(m)
-					}
-				})
-				if !f.restore {
-					ui.Field(c, m.ConfirmPassword(), func() {
-						if formTextInput(c.Key("bk:confirm"), &f.confirm).Password().Disabled(f.busy).Submitted() {
-							a.ExportBackup(m)
+			if f.restore {
+				ui.Form(c, func() {
+					ui.Field(c, m.MasterPassword(), func() {
+						in := formTextInput(c.Key("bk:pw"), &f.password).Password().AutoFocus().Disabled(f.busy)
+						a.backupHold.apply(c, f, in)
+						if in.Submitted() {
+							a.RestoreBackup(m)
 						}
 					})
-				}
-			})
-			if !typed {
-				ui.Text(c, m.DefaultBackupPasswordUsed()).FontSize(theme.Footnote).TextColor(tok.TextMuted)
+				})
 			}
 			if f.restore {
 				if !f.created.IsZero() {

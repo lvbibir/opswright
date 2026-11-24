@@ -1,10 +1,14 @@
-// Package keychain stores business secrets in a local encrypted file, with only
-// its random master key in the operating system keychain.
+// Package keychain stores business secrets in a local encrypted file whose
+// master key is sealed under the user's one master password; nothing is
+// ever kept in the operating system's keychain.
 package keychain
 
 import (
+	"crypto/rand"
 	"errors"
 	"sync"
+
+	"golang.org/x/crypto/chacha20poly1305"
 )
 
 // Kind is the kind of a credential's secret.
@@ -16,14 +20,13 @@ const (
 	Passphrase Kind = "passphrase"
 )
 
-// Kinds are every kind of secret a credential has.
+// Kinds are every kind of a credential's secret.
 var Kinds = []Kind{Password, PrivateKey, Passphrase}
 
 // The keys of the entries SSHYard keeps; there are no others:
 // host/<id>/<kind>, host/<id>/startup, cred/<id>/<kind>, proxy/<id>/password, forward/<id>/password,
 // snippet/<id>/content, ai/<profileID>/apikey, ai/<agentID>/env/<NAME>,
-// backup/<id>/secret, backup/<id>/key, localkey/<keyID>/passphrase,
-// mcp/token, applock/config and applock/totp.
+// backup/<id>/secret, localkey/<keyID>/passphrase and mcp/token.
 
 // Cred is the entry of a credential's secret: cred/<id>/<kind>.
 // Host is a host-owned secret entry.
@@ -49,13 +52,10 @@ func SnippetContent(id string) string { return "snippet/" + id + "/content" }
 // reached with: backup/<id>/secret.
 func BackupSecret(id string) string { return "backup/" + id + "/secret" }
 
-// BackupKey is the key a backup target's backups are sealed with, derived
-// from its backup password: backup/<id>/key.
-func BackupKey(id string) string { return "backup/" + id + "/key" }
-
-// DefaultBackupKey is the key derived from the default backup password,
-// which exports and backup targets may seal with instead of their own.
-const DefaultBackupKey = "backup/default-key"
+// BackupKey is the entry of the key exports and backup targets seal with:
+// a vault key derived from the master password when it was set or
+// changed, so files it seals open with that password on any device.
+const BackupKey = "backup/key"
 
 // LocalKeyPassphrase is the remembered passphrase of a key file of this
 // computer, by its session.KeyID: localkey/<keyID>/passphrase. It opens
@@ -65,15 +65,6 @@ func LocalKeyPassphrase(keyID string) string { return "localkey/" + keyID + "/pa
 // MCPToken is the bearer token of the MCP endpoint.
 const MCPToken = "mcp/token"
 
-// AppLock is what opens the app lock (applock.Config.Record), which
-// wins over applock.json, so that deleting or replacing that file does
-// not remove the lock.
-const AppLock = "applock/config"
-
-// AppLockTOTP is the secret of the one-time codes that open the app lock
-// on this computer, so no backup holds it.
-const AppLockTOTP = "applock/totp"
-
 // AIKey is the API key of a built-in provider profile: ai/<profileID>/apikey.
 func AIKey(profileID string) string { return "ai/" + profileID + "/apikey" }
 
@@ -82,7 +73,8 @@ func AIKey(profileID string) string { return "ai/" + profileID + "/apikey" }
 // puts the value into a process.
 func AIAgentEnv(agentID, name string) string { return "ai/" + agentID + "/env/" + name }
 
-// Backend is the operating system secret store, or an explicitly injected test store.
+// Backend is an explicitly injected test store. Production always uses
+// OpenLocked, which never falls back to memory.
 type Backend interface {
 	Set(key string, value []byte) error
 	Get(key string) ([]byte, error)
@@ -90,7 +82,7 @@ type Backend interface {
 }
 
 // Keychain is the secret store facade. New is only for explicit test injection;
-// production must use OpenLocked or Open, which never fall back to memory.
+// production must use OpenLocked, which never falls back to memory.
 type Keychain struct {
 	mu       sync.Mutex
 	unlockMu sync.Mutex
@@ -99,13 +91,6 @@ type Keychain struct {
 }
 
 func New(b Backend) *Keychain { return &Keychain{b: b} }
-
-func (k *Keychain) Backend() Backend {
-	if _, ok := k.b.(*encryptedStore); ok {
-		return k
-	}
-	return k.b
-}
 
 func (k *Keychain) Get(key string) ([]byte, error) {
 	k.mu.Lock()
@@ -145,6 +130,20 @@ func (k *Keychain) Exists(key string) (bool, error) {
 		return false, nil
 	}
 	return err == nil, err
+}
+
+// Unlocked reports whether this open store is ready for secret operations.
+// Explicitly injected test backends do not require unlocking.
+func (k *Keychain) Unlocked() bool {
+	k.mu.Lock()
+	defer k.mu.Unlock()
+	if k.closed {
+		return false
+	}
+	if b, ok := k.b.(*encryptedStore); ok {
+		return len(b.key) != 0
+	}
+	return true
 }
 
 // Change is one mutation in an atomic encrypted-file commit.
@@ -209,7 +208,7 @@ func (k *Keychain) DeleteCred(id string) error {
 
 // Wipe deletes every secret, whether or not the store is unlocked: a
 // locked one loses its file, and starts empty when it is unlocked again.
-// The master key stays.
+// The master password and the sealed master key stay.
 func (k *Keychain) Wipe() error {
 	k.mu.Lock()
 	defer k.mu.Unlock()
@@ -240,7 +239,7 @@ func (k *Keychain) Close() error {
 	}
 	k.closed = true
 	k.mu.Unlock()
-	// Keep the lifetime lock until any outstanding system request completes.
+	// Keep the lifetime lock until any outstanding key derivation completes.
 	k.unlockMu.Lock()
 	defer k.unlockMu.Unlock()
 	k.mu.Lock()
@@ -266,12 +265,26 @@ func (m *Memory) Keys() []string {
 type Memory struct {
 	mu sync.Mutex
 	m  map[string][]byte
+	// key is the master key the injected store seals with; it never
+	// leaves memory.
+	key []byte
 	// Fail, when set, is returned by every call.
 	Fail error
 }
 
-// NewMemory returns an empty Memory.
-func NewMemory() *Memory { return &Memory{m: map[string][]byte{}} }
+// memoryScope is what an injected store's sealed data is bound to.
+const memoryScope = "sshyard-memory-test"
+
+// NewMemory returns an empty Memory with a fresh master key.
+func NewMemory() *Memory { return &Memory{m: map[string][]byte{}, key: randomKey()} }
+
+func randomKey() []byte {
+	key := make([]byte, chacha20poly1305.KeySize)
+	if _, err := rand.Read(key); err != nil {
+		panic(err) // crypto/rand does not fail on supported systems
+	}
+	return key
+}
 
 func (m *Memory) Set(key string, v []byte) error {
 	m.mu.Lock()

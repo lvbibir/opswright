@@ -1,6 +1,7 @@
 package app
 
 import (
+	"encoding/json"
 	"os"
 	"path/filepath"
 	"strings"
@@ -16,6 +17,7 @@ import (
 	"github.com/Licoy/sshyard/internal/sftpsvc"
 	"github.com/Licoy/sshyard/internal/sshtest"
 	"github.com/Licoy/sshyard/internal/theme"
+	"github.com/Licoy/sshyard/internal/vault"
 	"github.com/Licoy/sshyard/locales"
 	"github.com/egoist/mygo/ui"
 	"net"
@@ -38,11 +40,37 @@ func newTestAppIn(t *testing.T, dir string) (*App, *ui.Tester) {
 	t.Cleanup(a.Close)
 	a.Start()
 	a.withSecrets(nil)
+	seedBackupKey(t, a, testBackupPassword)
 	tt := ui.NewTester(a.View, 1200, 760)
 	tt.SetLocale("en")
 	tt.Frame()
 	waitFor(t, tt, "credential store unlocked", a.unlocked)
 	return a, tt
+}
+
+// testBackupPassword is the master password the injected test stores are
+// seeded for, and so what their backups open with.
+const testBackupPassword = "correct horse"
+
+// cheapKDF keeps the tests' derivations quick.
+var cheapKDF = vault.Params{Time: 1, Memory: 8, Threads: 1}
+
+// seedBackupKey gives an injected test store the backup key a master
+// password derives to, which production writes when that password is set.
+func seedBackupKey(t *testing.T, a *App, password string) {
+	t.Helper()
+	key, err := vault.Derive([]byte(password), cheapKDF)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer key.Clear()
+	raw, err := json.Marshal(key)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if err := a.kc.Set(keychain.BackupKey, raw); err != nil {
+		t.Fatal(err)
+	}
 }
 
 // waitFor runs frames until cond holds.
@@ -213,7 +241,7 @@ func TestPasswordPrompt(t *testing.T) {
 		t.Fatal(err)
 	}
 	defer srv.Close()
-	a, tt := newTestApp(t)
+	a, tt := unlockedTestApp(t)
 	sealedBefore, err := os.ReadFile(filepath.Join(a.p.DataDir, "secrets.enc"))
 	if err != nil {
 		t.Fatal(err)
@@ -548,7 +576,7 @@ func TestSplitReusesConnection(t *testing.T) {
 		t.Fatal(err)
 	}
 	defer srv.Close()
-	a, tt := newTestApp(t)
+	a, tt := unlockedTestApp(t)
 	sealedBefore, err := os.ReadFile(filepath.Join(a.p.DataDir, "secrets.enc"))
 	if err != nil {
 		t.Fatal(err)
@@ -595,7 +623,7 @@ func TestSplitReusesConnection(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if !a.keychainOK || string(sealedAfter) != string(sealedBefore) {
+	if string(sealedAfter) != string(sealedBefore) {
 		t.Error("the typed password ended up in the encrypted local credential store")
 	}
 }
@@ -906,4 +934,61 @@ func TestClosingFilesFocusesFirstTerminal(t *testing.T) {
 	if a.focusReq != 0 || tab.Focused().ID != second.id {
 		t.Fatalf("focusReq %d, focused %v after closing a hidden tab's files pane", a.focusReq, tab.Focused())
 	}
+}
+
+// newLockedTestApp is newTestApp with a real encrypted store: the app
+// starts locked and its master password is set up by the lock screen.
+func newLockedTestApp(t *testing.T) (*App, *ui.Tester, string) {
+	t.Helper()
+	dir := t.TempDir()
+	a, tt := newLockedTestAppIn(t, dir)
+	return a, tt, dir
+}
+
+// newLockedTestAppIn is newLockedTestApp on the data in dir.
+func newLockedTestAppIn(t *testing.T, dir string) (*App, *ui.Tester) {
+	t.Helper()
+	a, err := New(Platform{DataDir: dir, HomeDir: dir, CacheDir: filepath.Join(dir, "cache"), KDF: cheapKDF, System: keychain.NewMemory()})
+	if err != nil {
+		t.Fatal(err)
+	}
+	t.Cleanup(a.Close)
+	a.Start()
+	tt := ui.NewTester(a.View, 1200, 760)
+	tt.SetLocale("en")
+	tt.Frame()
+	if !a.appLocked() || !a.ready() {
+		t.Fatal("a store without a master password did not start locked")
+	}
+	return a, tt
+}
+
+// unlockedTestApp is a test app with a real encrypted store whose master
+// password is already set, for what is written to secrets.enc on disk.
+func unlockedTestApp(t *testing.T) (*App, *ui.Tester) {
+	t.Helper()
+	a, tt, _ := newLockedTestApp(t)
+	setMasterPassword(t, a, tt, testBackupPassword)
+	return a, tt
+}
+
+// setMasterPassword sets the first master password through the lock
+// screen, as a fresh install does.
+func setMasterPassword(t *testing.T, a *App, tt *ui.Tester, password string) {
+	t.Helper()
+	a.lock.password, a.lock.confirm = password, password
+	if !a.SubmitAppUnlock(en) {
+		t.Fatalf("the master password was not accepted: %q", a.lock.err)
+	}
+	waitFor(t, tt, "the master password set", a.unlocked)
+}
+
+// unlockApp opens the lock screen with password.
+func unlockApp(t *testing.T, a *App, tt *ui.Tester, password string) {
+	t.Helper()
+	a.lock.password = password
+	if !a.SubmitAppUnlock(en) {
+		t.Fatalf("the unlock was not tried: %q", a.lock.err)
+	}
+	waitForIn(t, tt, slowWait, "the lock screen answered", func() bool { return !a.lock.busy })
 }

@@ -113,34 +113,18 @@ func TestMCPPortNormalize(t *testing.T) {
 	}
 }
 
-func TestMCPEnableWaitsForExplicitUnlock(t *testing.T) {
-	b := &authorizationBackend{Memory: keychain.NewMemory()}
-	b.fail.Store(true)
-	a, tt := lockedTestApp(t, b)
+func TestMCPEnableWaitsForMasterPassword(t *testing.T) {
+	a, tt, _ := newLockedTestApp(t)
 	a.settings.MCPPort = freePort(t)
-	a.openSettings(prefAgents)
+	a.settings.MCPEnabled = true
+	// The endpoint needs the access token from the locked store, so
+	// nothing starts until the master password opens it.
+	a.syncMCP()
 	tt.Frame()
-	if b.calls.Load() != 0 {
-		t.Fatal("entering settings requested authorization")
+	if a.mcp.srv != nil {
+		t.Fatal("the MCP endpoint started while the store was locked")
 	}
-	a.mcpAsk = &mcpAsk{open: true}
-	tt.Frame()
-	tt.Advance(mcpWait)
-	tt.Frame()
-	mustClick(t, tt, "I Understand, Turn On")
-	waitFor(t, tt, "MCP unlock failure", func() bool { return a.unlock.modal })
-	if a.settings.MCPEnabled || a.mcp.srv != nil {
-		t.Fatal("MCP enabled before authorization")
-	}
-	mustClick(t, tt, "Cancel")
-	tt.Frame()
-	if a.settings.MCPEnabled || a.mcpAsk == nil {
-		t.Fatal("cancel changed MCP or lost confirmation")
-	}
-	b.fail.Store(false)
-	mustClick(t, tt, "I Understand, Turn On")
-	waitFor(t, tt, "MCP starts after authorization", func() bool { return a.mcp.srv != nil })
-	if !a.settings.MCPEnabled || !a.unlocked() || a.mcpAsk != nil {
-		t.Fatal("MCP enable did not finish")
-	}
+	setMasterPassword(t, a, tt, "correct horse")
+	a.syncMCP()
+	waitFor(t, tt, "the MCP endpoint started", func() bool { return a.mcp.srv != nil })
 }

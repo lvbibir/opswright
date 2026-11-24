@@ -1,7 +1,6 @@
 package app
 
 import (
-	"path/filepath"
 	"strings"
 	"testing"
 	"time"
@@ -192,24 +191,9 @@ func TestHostStartupBackup(t *testing.T) {
 // TestHostStartupNeedsUnlock: a host with startup commands asks for the
 // store to be unlocked before it connects, as its login secrets would.
 func TestHostStartupNeedsUnlock(t *testing.T) {
-	dir := t.TempDir()
-	b := &authorizationBackend{Memory: keychain.NewMemory()}
-	kc, err := keychain.Open(keychain.OpenOptions{Path: filepath.Join(dir, "secrets.enc"), LockPath: filepath.Join(dir, "secrets.lock"), Scope: "sshyard", System: b.Memory})
-	if err != nil {
-		t.Fatal(err)
-	}
-	if err := kc.Set("saved", []byte("value")); err != nil {
-		t.Fatal(err)
-	}
-	if err := kc.Close(); err != nil {
-		t.Fatal(err)
-	}
-	a, err := New(Platform{DataDir: dir, Secrets: b, HomeDir: dir, CacheDir: filepath.Join(dir, "cache")})
-	if err != nil {
-		t.Fatal(err)
-	}
-	defer a.Close()
-	a.Start()
+	a, tt, _ := newLockedTestApp(t)
+	setMasterPassword(t, a, tt, "correct horse")
+	a.LockApp()
 	h := assets.Host{ID: "h1", Address: "localhost", Port: 22, User: "test", Auth: assets.AuthAgent}
 	if a.unlocked() || a.connectionNeedsSecrets(h) {
 		t.Fatal("an agent host asked for an unlock")

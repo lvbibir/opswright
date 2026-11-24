@@ -479,12 +479,6 @@ func (a *App) providerDelete(c *ui.Context, m locales.Messages) {
 
 func (a *App) saveProvider(m locales.Messages) bool {
 	if a.prov != nil && strings.TrimSpace(a.prov.key) != "" && !a.unlocked() {
-		draft := a.prov
-		a.withSecrets(func() {
-			if a.prov == draft {
-				a.saveProvider(m)
-			}
-		})
 		return false
 	}
 
@@ -619,12 +613,6 @@ func (a *App) formKey(f *providerForm) (string, error) {
 
 func (a *App) testProvider() {
 	if a.prov != nil && a.prov.id != "" && strings.TrimSpace(a.prov.key) == "" && !a.unlocked() {
-		draft := a.prov
-		a.withSecrets(func() {
-			if a.prov == draft {
-				a.testProvider()
-			}
-		})
 		return
 	}
 
@@ -669,12 +657,6 @@ func (a *App) testProvider() {
 // the panes' model menu; they are kept when the profile is saved.
 func (a *App) fetchModels() {
 	if a.prov != nil && a.prov.id != "" && strings.TrimSpace(a.prov.key) == "" && !a.unlocked() {
-		draft := a.prov
-		a.withSecrets(func() {
-			if a.prov == draft {
-				a.fetchModels()
-			}
-		})
 		return
 	}
 

@@ -12,152 +12,29 @@ import (
 	"testing"
 )
 
-type failSystem struct {
-	*Memory
-	setErr        error
-	readErr       error
-	reads         int
-	failReadAt    int
-	corruptVerify bool
-}
-
-func (s *failSystem) Set(key string, v []byte) error {
-	if s.setErr != nil {
-		return s.setErr
-	}
-	return s.Memory.Set(key, v)
-}
-func (s *failSystem) Get(key string) ([]byte, error) {
-	s.reads++
-	if s.failReadAt == s.reads {
-		return nil, s.readErr
-	}
-	if s.corruptVerify && s.reads == 2 {
-		return bytes.Repeat([]byte{7}, 32), nil
-	}
-	return s.Memory.Get(key)
-}
-
-func TestFirstOpenFailuresAndRetry(t *testing.T) {
-	for _, stage := range []string{"read", "set", "verify", "mismatch", "file"} {
-		t.Run(stage, func(t *testing.T) {
-			o := options(t)
-			s := &failSystem{Memory: NewMemory()}
-			o.System = s
-			denied := &SystemError{Code: -128, Err: errors.New("authorization denied")}
-			wantOp := "master-read"
-			switch stage {
-			case "read":
-				s.failReadAt = 1
-				s.readErr = denied
-			case "set":
-				s.setErr = denied
-				wantOp = "master-write"
-			case "verify":
-				s.failReadAt = 2
-				s.readErr = denied
-				wantOp = "master-verify"
-			case "mismatch":
-				s.corruptVerify = true
-				wantOp = "master-verify"
-			case "file":
-				if err := os.WriteFile(filepath.Dir(o.Path), []byte("blocked directory"), 0o600); err != nil {
-					t.Fatal(err)
-				}
-				wantOp = "file-read"
-				if runtime.GOOS == "windows" {
-					// Windows reads a path under a file as not found, so
-					// the store is new and making its folder fails.
-					wantOp = "file-write"
-				}
-			}
-			got, err := Open(o)
-			var oe *OpError
-			if got != nil || !errors.As(err, &oe) || oe.Op != wantOp {
-				t.Fatalf("failed stage: %v", err)
-			}
-			if stage != "mismatch" && stage != "file" && !errors.Is(err, denied) {
-				t.Fatal("lost cause", err)
-			}
-			masterBefore, _ := s.Memory.Get(MasterKey)
-			s.failReadAt = 0
-			s.setErr = nil
-			s.corruptVerify = false
-			if stage == "file" {
-				if err := os.Remove(filepath.Dir(o.Path)); err != nil {
-					t.Fatal(err)
-				}
-			}
-			k := openTest(t, o)
-			mustGetMissing(t, k, "no-secret")
-			masterAfter, _ := s.Memory.Get(MasterKey)
-			if len(masterBefore) > 0 && !bytes.Equal(masterBefore, masterAfter) {
-				t.Fatal("retry replaced existing master")
-			}
-		})
-	}
-}
-func mustGetMissing(t *testing.T, k *Keychain, key string) {
-	t.Helper()
-	if _, err := k.Get(key); !errors.Is(err, ErrNotFound) {
-		t.Fatal(err)
-	}
-}
-
-func TestInitialFileCommitFailureKeepsMaster(t *testing.T) {
+func TestOpenFileFailureAndRetry(t *testing.T) {
 	o := options(t)
-	// A nonexistent child of an existing nondirectory passes file ENOENT on
-	// Windows differently, so use a valid target that cannot be renamed over.
-	if err := os.MkdirAll(o.Path, 0o700); err != nil {
+	if err := os.WriteFile(filepath.Dir(o.Path), []byte("blocked directory"), 0o600); err != nil {
 		t.Fatal(err)
 	}
-	// This fails file-read, without ever generating a master.
-	if k, err := Open(o); err == nil || k != nil {
-		t.Fatal("directory accepted")
+	k, err := OpenLocked(o)
+	var oe *OpError
+	want := "file-read"
+	if runtime.GOOS == "windows" {
+		// Windows reads a path under a file as not found, so the store is
+		// new and making its folder fails at the first write instead.
+		want = "file-write"
 	}
-	if err := os.Remove(o.Path); err != nil {
-		t.Fatal(err)
+	if k != nil || !errors.As(err, &oe) {
+		t.Fatalf("failed stage: %v", err)
 	}
-	s := &failSystem{Memory: NewMemory()}
-	o.System = s
-	// After the master is written, replace the target parent with a file.
-	o.System = &onSetSystem{Backend: s, after: func() {
-		if err := os.Remove(filepath.Dir(o.Path)); err != nil {
-			t.Fatal(err)
-		}
-		if err := os.WriteFile(filepath.Dir(o.Path), []byte("block"), 0o600); err != nil {
-			t.Fatal(err)
-		}
-	}}
-	if k, err := Open(o); k != nil || err == nil {
-		t.Fatal("commit unexpectedly succeeded")
-	}
-	masterBefore, _ := s.Memory.Get(MasterKey)
-	if len(masterBefore) != 32 {
-		t.Fatal("master was removed after file failure")
+	if want == "file-read" && oe.Op != want {
+		t.Fatalf("failed stage: %v", err)
 	}
 	if err := os.Remove(filepath.Dir(o.Path)); err != nil {
 		t.Fatal(err)
 	}
-	o.System = s
 	openTest(t, o)
-	after, _ := s.Memory.Get(MasterKey)
-	if !bytes.Equal(masterBefore, after) {
-		t.Fatal("master changed")
-	}
-}
-
-type onSetSystem struct {
-	Backend
-	after func()
-}
-
-func (s *onSetSystem) Set(key string, v []byte) error {
-	if err := s.Backend.Set(key, v); err != nil {
-		return err
-	}
-	s.after()
-	return nil
 }
 
 func TestWriteFailurePreservesOldValuesAndBatch(t *testing.T) {
@@ -183,7 +60,7 @@ func TestWriteFailurePreservesOldValuesAndBatch(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if len(entries) != 1 {
+	if len(entries) != 2 {
 		t.Fatal("temporary files leaked")
 	}
 	if err := os.Remove(o.Path); err != nil {
@@ -196,7 +73,7 @@ func TestWriteFailurePreservesOldValuesAndBatch(t *testing.T) {
 		t.Fatal(err)
 	}
 	k.Close()
-	k = openTest(t, o)
+	k = unlockTest(t, o, testPassword)
 	mustGet(t, k, "one", []byte("new1"))
 	mustGetMissing(t, k, "two")
 	if runtime.GOOS != "windows" {
@@ -212,7 +89,7 @@ func TestLifetimeLockAndConcurrentWrites(t *testing.T) {
 	k := openTest(t, o)
 	other := o
 	other.Path = filepath.Join(t.TempDir(), "different.enc")
-	if second, err := Open(other); second != nil || !errors.Is(err, ErrBusy) {
+	if second, err := OpenLocked(other); second != nil || !errors.Is(err, ErrBusy) {
 		t.Fatalf("shared master raced: %v", err)
 	}
 	var wg sync.WaitGroup
@@ -286,28 +163,29 @@ func TestInjectedBatchFailureRollsBack(t *testing.T) {
 func TestClosedStoreCannotBypassFacade(t *testing.T) {
 	o := options(t)
 	k := openTest(t, o)
-	backend := k.Backend()
 	if err := k.Set("credential", []byte("value")); err != nil {
 		t.Fatal(err)
 	}
-	k.Close()
-	if _, err := backend.Get("credential"); !errors.Is(err, ErrLocked) {
-		t.Fatal("backend bypassed close", err)
+	b := k.b.(*encryptedStore)
+	if err := k.Close(); err != nil {
+		t.Fatal(err)
+	}
+	if _, err := b.Get("credential"); !errors.Is(err, ErrLocked) {
+		t.Fatal("inner store bypassed close", err)
 	}
 	if err := k.Apply([]Change{{Key: "credential", Delete: true}}); !errors.Is(err, ErrLocked) {
+		t.Fatal(err)
+	}
+	if err := k.UnlockPassword([]byte(testPassword)); !errors.Is(err, ErrLocked) {
 		t.Fatal(err)
 	}
 }
 
 // TestWipe: an unlocked store wipes to an empty one, still unlocked; a
-// locked one loses its file without the master key, and opens empty
-// with the same master key after.
+// locked one loses its file, and opens empty with the same password after.
 func TestWipe(t *testing.T) {
 	o := options(t)
-	k, err := Open(o)
-	if err != nil {
-		t.Fatal(err)
-	}
+	k := openTest(t, o)
 	if err := k.Apply([]Change{{Key: "a", Value: []byte("1")}, {Key: "b", Value: []byte("2")}}); err != nil {
 		t.Fatal(err)
 	}
@@ -321,26 +199,25 @@ func TestWipe(t *testing.T) {
 		t.Fatal(err)
 	}
 	k.Close()
-	master, _ := o.System.Get(MasterKey)
-
-	k, err = OpenLocked(o)
+	master, err := os.ReadFile(masterPath(o))
 	if err != nil {
 		t.Fatal(err)
 	}
-	defer k.Close()
+
+	k = openLockedTest(t, o)
 	if err := k.Wipe(); err != nil {
 		t.Fatal(err)
 	}
 	if _, err := os.Stat(o.Path); !errors.Is(err, os.ErrNotExist) {
 		t.Fatalf("file left: %v", err)
 	}
-	if err := k.Unlock(); err != nil {
+	if err := k.UnlockPassword([]byte(testPassword)); err != nil {
 		t.Fatal(err)
 	}
 	if _, err := k.Get("c"); !errors.Is(err, ErrNotFound) {
 		t.Fatalf("secret kept: %v", err)
 	}
-	if now, _ := o.System.Get(MasterKey); !bytes.Equal(now, master) {
+	if now, _ := os.ReadFile(masterPath(o)); !bytes.Equal(now, master) {
 		t.Fatal("master key replaced")
 	}
 }

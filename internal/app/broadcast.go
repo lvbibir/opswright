@@ -237,7 +237,6 @@ func (a *App) startBroadcast(text string, enter, draft bool) {
 // sent, once the secrets are unlocked.
 func (a *App) broadcastSnippet(id string) {
 	if !a.unlocked() {
-		a.withSecrets(func() { a.broadcastSnippet(id) })
 		return
 	}
 	n, ok := a.store.Snippet(id)

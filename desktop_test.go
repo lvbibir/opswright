@@ -63,16 +63,6 @@ func TestDesktopNativeLifecycle(t *testing.T) {
 	}
 }
 
-type nativeSecrets struct {
-	*keychain.Memory
-	release <-chan struct{}
-}
-
-func (s nativeSecrets) GetSilently(key string) ([]byte, error) {
-	<-s.release
-	return s.Get(key)
-}
-
 func nativeCheck(ok bool, message string) {
 	if !ok {
 		panic(message)
@@ -84,19 +74,13 @@ func nativeCheck(ok bool, message string) {
 func runNativeDesktop(mode, dir string) {
 	mygo.App.SetName("SSHYard Native Lifecycle Test")
 	mygo.App.SetPath(mygo.PathUserData, dir)
-	release := make(chan struct{})
-	secrets := nativeSecrets{Memory: keychain.NewMemory(), release: release}
-	store, err := keychain.Open(keychain.OpenOptions{
-		Path: filepath.Join(dir, "secrets.enc"), LockPath: filepath.Join(dir, "secrets.lock"),
-		Scope: "native-test", System: secrets,
-	})
-	nativeCheck(err == nil, fmt.Sprintf("open isolated credentials: %v", err))
+	secrets := keychain.NewMemory()
+	store := keychain.New(secrets)
 	tokenBytes := make([]byte, 32)
-	_, err = rand.Read(tokenBytes)
+	_, err := rand.Read(tokenBytes)
 	nativeCheck(err == nil, "generate test token")
 	token := hex.EncodeToString(tokenBytes)
 	nativeCheck(store.Set(keychain.MCPToken, []byte(token)) == nil, "seed encrypted token")
-	nativeCheck(store.Close() == nil, "close seed credentials")
 	ln, err := net.Listen("tcp", "127.0.0.1:0")
 	nativeCheck(err == nil, "allocate MCP test port")
 	port := ln.Addr().(*net.TCPAddr).Port
@@ -133,7 +117,7 @@ func runNativeDesktop(mode, dir string) {
 			_, err := (&http.Client{Timeout: time.Second}).Get(base + "/api/v1")
 			nativeCheck(err != nil, "MCP listener survived app exit")
 		})
-		go driveNativeDesktop(mode, d, &draft, base, token, release, completed)
+		go driveNativeDesktop(mode, d, &draft, base, token, completed)
 	})
 	err = mygo.App.Run()
 	nativeCheck(err == nil, fmt.Sprintf("native app loop: %v", err))
@@ -167,16 +151,13 @@ func nativeMCP(base, token string) error {
 
 // The long sequential scenario and explicit inputs keep native cancellation,
 // MCP and restore evidence in one place rather than hiding ordering in fixtures.
-func driveNativeDesktop(mode string, d *desktop, draft *string, base, token string, release, completed chan struct{}) {
+func driveNativeDesktop(mode string, d *desktop, draft *string, base, token string, completed chan struct{}) {
 	defer close(completed)
 	mygo.RunOnMain(func() {
 		d.window.Close()
 		nativeCheck(!d.window.IsDestroyed() && !d.window.IsVisible(), "close must hide same native window")
 		nativeCheck(len(mygo.Windows()) == 1, "hide must not create another window")
 		nativeDock(false)
-		// Complete silent unlock only after hiding; its UI callback must start
-		// MCP without a visible view frame to drain the application queue.
-		close(release)
 	})
 	deadline := time.Now().Add(10 * time.Second)
 	for {

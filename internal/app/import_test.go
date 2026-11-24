@@ -235,7 +235,7 @@ func TestImportNoConfig(t *testing.T) {
 
 func TestQuickConnect(t *testing.T) {
 	srv := startServer(t)
-	a, tt := newTestApp(t)
+	a, tt := unlockedTestApp(t)
 	m := locales.In("en")
 	before, err := os.ReadFile(filepath.Join(a.p.DataDir, "secrets.enc"))
 	if err != nil {

@@ -132,7 +132,7 @@ func TestMigrationOverwritePreservesCredentialsAndRouting(t *testing.T) {
 }
 func TestMigrationConsentPersistenceAndCache(t *testing.T) {
 	a, _ := newTestApp(t)
-	opts, _ := installBackupStore(t, a)
+	opts := installBackupStore(t, a, testBackupPassword)
 	path := filepath.Join(t.TempDir(), "hosts.json")
 	var err error
 	a.store, err = assets.Open(path)
@@ -181,10 +181,7 @@ func TestMigrationConsentPersistenceAndCache(t *testing.T) {
 	if err := a.kc.Close(); err != nil {
 		t.Fatal(err)
 	}
-	a.kc, err = keychain.Open(opts)
-	if err != nil {
-		t.Fatal(err)
-	}
+	a.kc = reopenBackupStore(t, opts, testBackupPassword)
 	password, err := a.kc.Get(keychain.Host(h.ID, keychain.Password))
 	if err != nil || !bytes.Equal(password, e.Password) {
 		t.Fatal("encrypted credential reopen failed")

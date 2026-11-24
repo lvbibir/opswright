@@ -7607,24 +7607,14 @@ func (msgs Messages) StorageMoveToAppData(path string) string {
 	return Catalog.Format(msgs.locale, "storageMoveToAppData", map[string]any{"path": path})
 }
 
-// StorageSecretsKeychain says "Saved passwords and keys stay protected by this computer's system keychain: on another computer they cannot be unlock…"
+// StorageSecretsKeychain says "Saved passwords and keys stay protected by your master password, so they open on any computer that has this data folder."
 // in the language the app shows.
 func StorageSecretsKeychain() string { return In(i18n.Locale()).StorageSecretsKeychain() }
 
-// StorageSecretsKeychain says "Saved passwords and keys stay protected by this computer's system keychain: on another computer they cannot be unlock…"
+// StorageSecretsKeychain says "Saved passwords and keys stay protected by your master password, so they open on any computer that has this data folder."
 // in the language of msgs.
 func (msgs Messages) StorageSecretsKeychain() string {
 	return Catalog.Format(msgs.locale, "storageSecretsKeychain", nil)
-}
-
-// StorageSecretsPassword says "Saved passwords and keys stay protected by your master password, which unlocks them on any computer."
-// in the language the app shows.
-func StorageSecretsPassword() string { return In(i18n.Locale()).StorageSecretsPassword() }
-
-// StorageSecretsPassword says "Saved passwords and keys stay protected by your master password, which unlocks them on any computer."
-// in the language of msgs.
-func (msgs Messages) StorageSecretsPassword() string {
-	return Catalog.Format(msgs.locale, "storageSecretsPassword", nil)
 }
 
 // StorageMoveRestart says "Move and Restart"
@@ -7677,11 +7667,11 @@ func (msgs Messages) AboutSecrets() string {
 	return Catalog.Format(msgs.locale, "aboutSecrets", nil)
 }
 
-// SecretsKeychain says "Encrypted local store; master key in system keychain"
+// SecretsKeychain says "Encrypted local store; the master key is remembered on this computer"
 // in the language the app shows.
 func SecretsKeychain() string { return In(i18n.Locale()).SecretsKeychain() }
 
-// SecretsKeychain says "Encrypted local store; master key in system keychain"
+// SecretsKeychain says "Encrypted local store; the master key is remembered on this computer"
 // in the language of msgs.
 func (msgs Messages) SecretsKeychain() string {
 	return Catalog.Format(msgs.locale, "secretsKeychain", nil)
@@ -11025,16 +11015,6 @@ func (msgs Messages) RestoreBackupNote() string {
 	return Catalog.Format(msgs.locale, "restoreBackupNote", nil)
 }
 
-// BackupPassword says "Backup password"
-// in the language the app shows.
-func BackupPassword() string { return In(i18n.Locale()).BackupPassword() }
-
-// BackupPassword says "Backup password"
-// in the language of msgs.
-func (msgs Messages) BackupPassword() string {
-	return Catalog.Format(msgs.locale, "backupPassword", nil)
-}
-
 // ConfirmPassword says "Confirm password"
 // in the language the app shows.
 func ConfirmPassword() string { return In(i18n.Locale()).ConfirmPassword() }
@@ -11065,11 +11045,11 @@ func (msgs Messages) BackupIncludeSecretsNote() string {
 	return Catalog.Format(msgs.locale, "backupIncludeSecretsNote", nil)
 }
 
-// BackupExportWarning says "Anyone with this file and its password can read everything in it. The password can’t be recovered: without it, the …"
+// BackupExportWarning says "Anyone with this file and your master password can read everything in it. The password can’t be recovered: without …"
 // in the language the app shows.
 func BackupExportWarning() string { return In(i18n.Locale()).BackupExportWarning() }
 
-// BackupExportWarning says "Anyone with this file and its password can read everything in it. The password can’t be recovered: without it, the …"
+// BackupExportWarning says "Anyone with this file and your master password can read everything in it. The password can’t be recovered: without …"
 // in the language of msgs.
 func (msgs Messages) BackupExportWarning() string {
 	return Catalog.Format(msgs.locale, "backupExportWarning", nil)
@@ -11095,108 +11075,6 @@ func (msgs Messages) BackupMadeOn(date string) string {
 	return Catalog.Format(msgs.locale, "backupMadeOn", map[string]any{"date": date})
 }
 
-// BackupPasswordShort says "The password needs at least {count} characters."
-// in the language the app shows.
-func BackupPasswordShort(count string) string { return In(i18n.Locale()).BackupPasswordShort(count) }
-
-// BackupPasswordShort says "The password needs at least {count} characters."
-// in the language of msgs.
-func (msgs Messages) BackupPasswordShort(count string) string {
-	return Catalog.Format(msgs.locale, "backupPasswordShort", map[string]any{"count": count})
-}
-
-// BackupPasswordMismatch says "The passwords don’t match."
-// in the language the app shows.
-func BackupPasswordMismatch() string { return In(i18n.Locale()).BackupPasswordMismatch() }
-
-// BackupPasswordMismatch says "The passwords don’t match."
-// in the language of msgs.
-func (msgs Messages) BackupPasswordMismatch() string {
-	return Catalog.Format(msgs.locale, "backupPasswordMismatch", nil)
-}
-
-// DefaultBackupPassword says "Default backup password"
-// in the language the app shows.
-func DefaultBackupPassword() string { return In(i18n.Locale()).DefaultBackupPassword() }
-
-// DefaultBackupPassword says "Default backup password"
-// in the language of msgs.
-func (msgs Messages) DefaultBackupPassword() string {
-	return Catalog.Format(msgs.locale, "defaultBackupPassword", nil)
-}
-
-// DefaultBackupPasswordNote says "Set it once, and exports and backup locations can use it without asking for a password each time. Only a key derived …"
-// in the language the app shows.
-func DefaultBackupPasswordNote() string { return In(i18n.Locale()).DefaultBackupPasswordNote() }
-
-// DefaultBackupPasswordNote says "Set it once, and exports and backup locations can use it without asking for a password each time. Only a key derived …"
-// in the language of msgs.
-func (msgs Messages) DefaultBackupPasswordNote() string {
-	return Catalog.Format(msgs.locale, "defaultBackupPasswordNote", nil)
-}
-
-// DefaultBackupPasswordSetNote says "Set. Restoring a backup sealed with it asks for it. A new password applies to later backups only."
-// in the language the app shows.
-func DefaultBackupPasswordSetNote() string { return In(i18n.Locale()).DefaultBackupPasswordSetNote() }
-
-// DefaultBackupPasswordSetNote says "Set. Restoring a backup sealed with it asks for it. A new password applies to later backups only."
-// in the language of msgs.
-func (msgs Messages) DefaultBackupPasswordSetNote() string {
-	return Catalog.Format(msgs.locale, "defaultBackupPasswordSetNote", nil)
-}
-
-// DefaultBackupPasswordSheetNote says "Only a key derived from it is kept in the encrypted local credential store. The password can’t be recovered: withou…"
-// in the language the app shows.
-func DefaultBackupPasswordSheetNote() string {
-	return In(i18n.Locale()).DefaultBackupPasswordSheetNote()
-}
-
-// DefaultBackupPasswordSheetNote says "Only a key derived from it is kept in the encrypted local credential store. The password can’t be recovered: withou…"
-// in the language of msgs.
-func (msgs Messages) DefaultBackupPasswordSheetNote() string {
-	return Catalog.Format(msgs.locale, "defaultBackupPasswordSheetNote", nil)
-}
-
-// DefaultBackupPasswordUsed says "Sealed with the default backup password; restoring asks for it."
-// in the language the app shows.
-func DefaultBackupPasswordUsed() string { return In(i18n.Locale()).DefaultBackupPasswordUsed() }
-
-// DefaultBackupPasswordUsed says "Sealed with the default backup password; restoring asks for it."
-// in the language of msgs.
-func (msgs Messages) DefaultBackupPasswordUsed() string {
-	return Catalog.Format(msgs.locale, "defaultBackupPasswordUsed", nil)
-}
-
-// BackupPasswordSource says "Encrypt with"
-// in the language the app shows.
-func BackupPasswordSource() string { return In(i18n.Locale()).BackupPasswordSource() }
-
-// BackupPasswordSource says "Encrypt with"
-// in the language of msgs.
-func (msgs Messages) BackupPasswordSource() string {
-	return Catalog.Format(msgs.locale, "backupPasswordSource", nil)
-}
-
-// CustomPassword says "Custom password"
-// in the language the app shows.
-func CustomPassword() string { return In(i18n.Locale()).CustomPassword() }
-
-// CustomPassword says "Custom password"
-// in the language of msgs.
-func (msgs Messages) CustomPassword() string {
-	return Catalog.Format(msgs.locale, "customPassword", nil)
-}
-
-// SetPasswordEllipsis says "Set…"
-// in the language the app shows.
-func SetPasswordEllipsis() string { return In(i18n.Locale()).SetPasswordEllipsis() }
-
-// SetPasswordEllipsis says "Set…"
-// in the language of msgs.
-func (msgs Messages) SetPasswordEllipsis() string {
-	return Catalog.Format(msgs.locale, "setPasswordEllipsis", nil)
-}
-
 // ChangePasswordEllipsis says "Change…"
 // in the language the app shows.
 func ChangePasswordEllipsis() string { return In(i18n.Locale()).ChangePasswordEllipsis() }
@@ -11215,26 +11093,6 @@ func Remove() string { return In(i18n.Locale()).Remove() }
 // in the language of msgs.
 func (msgs Messages) Remove() string {
 	return Catalog.Format(msgs.locale, "remove", nil)
-}
-
-// ErrDefaultBackupKeyMissing says "The default backup password isn’t set. Set it at the top of the Backup page, or use a custom password."
-// in the language the app shows.
-func ErrDefaultBackupKeyMissing() string { return In(i18n.Locale()).ErrDefaultBackupKeyMissing() }
-
-// ErrDefaultBackupKeyMissing says "The default backup password isn’t set. Set it at the top of the Backup page, or use a custom password."
-// in the language of msgs.
-func (msgs Messages) ErrDefaultBackupKeyMissing() string {
-	return Catalog.Format(msgs.locale, "errDefaultBackupKeyMissing", nil)
-}
-
-// ErrDefaultBackupPasswordInUse says "Backup locations use the default backup password. Switch them to a custom password first."
-// in the language the app shows.
-func ErrDefaultBackupPasswordInUse() string { return In(i18n.Locale()).ErrDefaultBackupPasswordInUse() }
-
-// ErrDefaultBackupPasswordInUse says "Backup locations use the default backup password. Switch them to a custom password first."
-// in the language of msgs.
-func (msgs Messages) ErrDefaultBackupPasswordInUse() string {
-	return Catalog.Format(msgs.locale, "errDefaultBackupPasswordInUse", nil)
 }
 
 // BackupExporting says "Exporting…"
@@ -11371,13 +11229,13 @@ func (msgs Messages) CostlyTitle() string {
 	return Catalog.Format(msgs.locale, "costlyTitle", nil)
 }
 
-// CostlyBackup says "This backup’s password is protected with stronger settings than usual: opening it can use up to {memory} of memory …"
+// CostlyBackup says "This backup’s key is protected with stronger settings than usual: opening it can use up to {memory} of memory over …"
 // in the language the app shows.
 func CostlyBackup(memory string, passes string) string {
 	return In(i18n.Locale()).CostlyBackup(memory, passes)
 }
 
-// CostlyBackup says "This backup’s password is protected with stronger settings than usual: opening it can use up to {memory} of memory …"
+// CostlyBackup says "This backup’s key is protected with stronger settings than usual: opening it can use up to {memory} of memory over …"
 // in the language of msgs.
 func (msgs Messages) CostlyBackup(memory string, passes string) string {
 	return Catalog.Format(msgs.locale, "costlyBackup", map[string]any{"memory": memory, "passes": passes})
@@ -11827,16 +11685,6 @@ func (msgs Messages) BackupKeepNote() string {
 	return Catalog.Format(msgs.locale, "backupKeepNote", nil)
 }
 
-// BackupPasswordNote says "Backups here are sealed with this password, and restoring one asks for it. The key derived from it is kept in the enc…"
-// in the language the app shows.
-func BackupPasswordNote() string { return In(i18n.Locale()).BackupPasswordNote() }
-
-// BackupPasswordNote says "Backups here are sealed with this password, and restoring one asks for it. The key derived from it is kept in the enc…"
-// in the language of msgs.
-func (msgs Messages) BackupPasswordNote() string {
-	return Catalog.Format(msgs.locale, "backupPasswordNote", nil)
-}
-
 // AutoBackup says "Automatic backup"
 // in the language the app shows.
 func AutoBackup() string { return In(i18n.Locale()).AutoBackup() }
@@ -11955,16 +11803,6 @@ func ErrCloudTooLarge() string { return In(i18n.Locale()).ErrCloudTooLarge() }
 // in the language of msgs.
 func (msgs Messages) ErrCloudTooLarge() string {
 	return Catalog.Format(msgs.locale, "errCloudTooLarge", nil)
-}
-
-// ErrBackupKeyMissing says "This location’s backup key is missing. Set its backup password again."
-// in the language the app shows.
-func ErrBackupKeyMissing() string { return In(i18n.Locale()).ErrBackupKeyMissing() }
-
-// ErrBackupKeyMissing says "This location’s backup key is missing. Set its backup password again."
-// in the language of msgs.
-func (msgs Messages) ErrBackupKeyMissing() string {
-	return Catalog.Format(msgs.locale, "errBackupKeyMissing", nil)
 }
 
 // ErrBackupProxyMissing says "The proxy this location goes through was deleted. Choose another in its settings."
@@ -12925,11 +12763,11 @@ func (msgs Messages) SecretsLockedTitle() string {
 	return Catalog.Format(msgs.locale, "secretsLockedTitle", nil)
 }
 
-// SecretsLockedBody says "Saved secrets stay encrypted until you choose an action that needs them. Hosts, settings and local terminals remain a…"
+// SecretsLockedBody says "Saved secrets stay encrypted until you enter the master password."
 // in the language the app shows.
 func SecretsLockedBody() string { return In(i18n.Locale()).SecretsLockedBody() }
 
-// SecretsLockedBody says "Saved secrets stay encrypted until you choose an action that needs them. Hosts, settings and local terminals remain a…"
+// SecretsLockedBody says "Saved secrets stay encrypted until you enter the master password."
 // in the language of msgs.
 func (msgs Messages) SecretsLockedBody() string {
 	return Catalog.Format(msgs.locale, "secretsLockedBody", nil)
@@ -12975,11 +12813,11 @@ func (msgs Messages) SecretsUnlockSafety() string {
 	return Catalog.Format(msgs.locale, "secretsUnlockSafety", nil)
 }
 
-// SecretsReasonSystem says "The operation could not be completed; check system authorization and local storage permissions."
+// SecretsReasonSystem says "The operation could not be completed; check local storage permissions."
 // in the language the app shows.
 func SecretsReasonSystem() string { return In(i18n.Locale()).SecretsReasonSystem() }
 
-// SecretsReasonSystem says "The operation could not be completed; check system authorization and local storage permissions."
+// SecretsReasonSystem says "The operation could not be completed; check local storage permissions."
 // in the language of msgs.
 func (msgs Messages) SecretsReasonSystem() string {
 	return Catalog.Format(msgs.locale, "secretsReasonSystem", nil)
@@ -12995,11 +12833,11 @@ func (msgs Messages) SecretsReasonBusy() string {
 	return Catalog.Format(msgs.locale, "secretsReasonBusy", nil)
 }
 
-// SecretsReasonMasterMissing says "The system master key is missing while encrypted credentials exist; restore the original key to avoid data loss."
+// SecretsReasonMasterMissing says "The master key is missing while encrypted secrets exist; only this computer's remembered key could open them."
 // in the language the app shows.
 func SecretsReasonMasterMissing() string { return In(i18n.Locale()).SecretsReasonMasterMissing() }
 
-// SecretsReasonMasterMissing says "The system master key is missing while encrypted credentials exist; restore the original key to avoid data loss."
+// SecretsReasonMasterMissing says "The master key is missing while encrypted secrets exist; only this computer's remembered key could open them."
 // in the language of msgs.
 func (msgs Messages) SecretsReasonMasterMissing() string {
 	return Catalog.Format(msgs.locale, "secretsReasonMasterMissing", nil)
@@ -13035,165 +12873,63 @@ func (msgs Messages) SecretsReasonVersion() string {
 	return Catalog.Format(msgs.locale, "secretsReasonVersion", nil)
 }
 
-// SecretsReasonUnavailable says "The system credential service is unavailable; enable it and authorize again."
+// SecretsReasonUnavailable says "The credential store is unavailable for this operation."
 // in the language the app shows.
 func SecretsReasonUnavailable() string { return In(i18n.Locale()).SecretsReasonUnavailable() }
 
-// SecretsReasonUnavailable says "The system credential service is unavailable; enable it and authorize again."
+// SecretsReasonUnavailable says "The credential store is unavailable for this operation."
 // in the language of msgs.
 func (msgs Messages) SecretsReasonUnavailable() string {
 	return Catalog.Format(msgs.locale, "secretsReasonUnavailable", nil)
 }
 
-// SecretsReasonLinuxUnknown says "The Linux credential operation failed; check your desktop session and system keyring."
-// in the language the app shows.
-func SecretsReasonLinuxUnknown() string { return In(i18n.Locale()).SecretsReasonLinuxUnknown() }
-
-// SecretsReasonLinuxUnknown says "The Linux credential operation failed; check your desktop session and system keyring."
-// in the language of msgs.
-func (msgs Messages) SecretsReasonLinuxUnknown() string {
-	return Catalog.Format(msgs.locale, "secretsReasonLinuxUnknown", nil)
-}
-
-// SecretsReasonLinuxDependency says "Install or update libsecret to 0.19 or later and enable a Secret Service provider."
-// in the language the app shows.
-func SecretsReasonLinuxDependency() string { return In(i18n.Locale()).SecretsReasonLinuxDependency() }
-
-// SecretsReasonLinuxDependency says "Install or update libsecret to 0.19 or later and enable a Secret Service provider."
-// in the language of msgs.
-func (msgs Messages) SecretsReasonLinuxDependency() string {
-	return Catalog.Format(msgs.locale, "secretsReasonLinuxDependency", nil)
-}
-
-// SecretsReasonLinuxSessionBus says "Start SSHYard in the same normal-user desktop session and check the session D-Bus."
-// in the language the app shows.
-func SecretsReasonLinuxSessionBus() string { return In(i18n.Locale()).SecretsReasonLinuxSessionBus() }
-
-// SecretsReasonLinuxSessionBus says "Start SSHYard in the same normal-user desktop session and check the session D-Bus."
-// in the language of msgs.
-func (msgs Messages) SecretsReasonLinuxSessionBus() string {
-	return Catalog.Format(msgs.locale, "secretsReasonLinuxSessionBus", nil)
-}
-
-// SecretsReasonLinuxAccessDenied says "The current user or access policy denied credential access; ask your administrator to check the policy."
-// in the language the app shows.
-func SecretsReasonLinuxAccessDenied() string {
-	return In(i18n.Locale()).SecretsReasonLinuxAccessDenied()
-}
-
-// SecretsReasonLinuxAccessDenied says "The current user or access policy denied credential access; ask your administrator to check the policy."
-// in the language of msgs.
-func (msgs Messages) SecretsReasonLinuxAccessDenied() string {
-	return Catalog.Format(msgs.locale, "secretsReasonLinuxAccessDenied", nil)
-}
-
-// SecretsReasonLinuxStartFailed says "The credential service could not start in your user session; check the service."
-// in the language the app shows.
-func SecretsReasonLinuxStartFailed() string { return In(i18n.Locale()).SecretsReasonLinuxStartFailed() }
-
-// SecretsReasonLinuxStartFailed says "The credential service could not start in your user session; check the service."
-// in the language of msgs.
-func (msgs Messages) SecretsReasonLinuxStartFailed() string {
-	return Catalog.Format(msgs.locale, "secretsReasonLinuxStartFailed", nil)
-}
-
-// SecretsReasonLinuxLocked says "Unlock the current user’s system keyring and try again."
-// in the language the app shows.
-func SecretsReasonLinuxLocked() string { return In(i18n.Locale()).SecretsReasonLinuxLocked() }
-
-// SecretsReasonLinuxLocked says "Unlock the current user’s system keyring and try again."
-// in the language of msgs.
-func (msgs Messages) SecretsReasonLinuxLocked() string {
-	return Catalog.Format(msgs.locale, "secretsReasonLinuxLocked", nil)
-}
-
-// SecretsReasonLinuxMissing says "No Secret Service credential service is available in this session."
-// in the language the app shows.
-func SecretsReasonLinuxMissing() string { return In(i18n.Locale()).SecretsReasonLinuxMissing() }
-
-// SecretsReasonLinuxMissing says "No Secret Service credential service is available in this session."
-// in the language of msgs.
-func (msgs Messages) SecretsReasonLinuxMissing() string {
-	return Catalog.Format(msgs.locale, "secretsReasonLinuxMissing", nil)
-}
-
-// SecretsReasonLinuxTimeout says "The credential service did not respond; try again later."
-// in the language the app shows.
-func SecretsReasonLinuxTimeout() string { return In(i18n.Locale()).SecretsReasonLinuxTimeout() }
-
-// SecretsReasonLinuxTimeout says "The credential service did not respond; try again later."
-// in the language of msgs.
-func (msgs Messages) SecretsReasonLinuxTimeout() string {
-	return Catalog.Format(msgs.locale, "secretsReasonLinuxTimeout", nil)
-}
-
-// SecretsReasonPasswordRequired says "The local master password is required."
-// in the language the app shows.
-func SecretsReasonPasswordRequired() string { return In(i18n.Locale()).SecretsReasonPasswordRequired() }
-
-// SecretsReasonPasswordRequired says "The local master password is required."
-// in the language of msgs.
-func (msgs Messages) SecretsReasonPasswordRequired() string {
-	return Catalog.Format(msgs.locale, "secretsReasonPasswordRequired", nil)
-}
-
-// SecretsReasonPasswordSetup says "Encrypted secrets already exist, so a local master password cannot be set up; restore access to the system keychain f…"
+// SecretsReasonPasswordSetup says "A master password cannot be set here: this store already has one, or holds secrets."
 // in the language the app shows.
 func SecretsReasonPasswordSetup() string { return In(i18n.Locale()).SecretsReasonPasswordSetup() }
 
-// SecretsReasonPasswordSetup says "Encrypted secrets already exist, so a local master password cannot be set up; restore access to the system keychain f…"
+// SecretsReasonPasswordSetup says "A master password cannot be set here: this store already has one, or holds secrets."
 // in the language of msgs.
 func (msgs Messages) SecretsReasonPasswordSetup() string {
 	return Catalog.Format(msgs.locale, "secretsReasonPasswordSetup", nil)
 }
 
-// SecretsStageMasterPassword says "Reading the local master key"
+// SecretsStageMasterPassword says "Opening the master key"
 // in the language the app shows.
 func SecretsStageMasterPassword() string { return In(i18n.Locale()).SecretsStageMasterPassword() }
 
-// SecretsStageMasterPassword says "Reading the local master key"
+// SecretsStageMasterPassword says "Opening the master key"
 // in the language of msgs.
 func (msgs Messages) SecretsStageMasterPassword() string {
 	return Catalog.Format(msgs.locale, "secretsStageMasterPassword", nil)
 }
 
-// SecretsStageWriteMasterPassword says "Saving the local master key"
+// SecretsStageWriteMasterPassword says "Saving the master key"
 // in the language the app shows.
 func SecretsStageWriteMasterPassword() string {
 	return In(i18n.Locale()).SecretsStageWriteMasterPassword()
 }
 
-// SecretsStageWriteMasterPassword says "Saving the local master key"
+// SecretsStageWriteMasterPassword says "Saving the master key"
 // in the language of msgs.
 func (msgs Messages) SecretsStageWriteMasterPassword() string {
 	return Catalog.Format(msgs.locale, "secretsStageWriteMasterPassword", nil)
 }
 
-// SecretsMasterPassword says "Encrypted local store; master key protected by a local master password"
-// in the language the app shows.
-func SecretsMasterPassword() string { return In(i18n.Locale()).SecretsMasterPassword() }
-
-// SecretsMasterPassword says "Encrypted local store; master key protected by a local master password"
-// in the language of msgs.
-func (msgs Messages) SecretsMasterPassword() string {
-	return Catalog.Format(msgs.locale, "secretsMasterPassword", nil)
-}
-
-// CopyDiagnostics says "Copy diagnostics"
+// CopyDiagnostics says "Copy Diagnostics"
 // in the language the app shows.
 func CopyDiagnostics() string { return In(i18n.Locale()).CopyDiagnostics() }
 
-// CopyDiagnostics says "Copy diagnostics"
+// CopyDiagnostics says "Copy Diagnostics"
 // in the language of msgs.
 func (msgs Messages) CopyDiagnostics() string {
 	return Catalog.Format(msgs.locale, "copyDiagnostics", nil)
 }
 
-// MasterPassword says "Local master password"
+// MasterPassword says "Master password"
 // in the language the app shows.
 func MasterPassword() string { return In(i18n.Locale()).MasterPassword() }
 
-// MasterPassword says "Local master password"
+// MasterPassword says "Master password"
 // in the language of msgs.
 func (msgs Messages) MasterPassword() string {
 	return Catalog.Format(msgs.locale, "masterPassword", nil)
@@ -13229,146 +12965,14 @@ func (msgs Messages) MasterPasswordWrong() string {
 	return Catalog.Format(msgs.locale, "masterPasswordWrong", nil)
 }
 
-// MasterPasswordUnlock says "Unlock"
-// in the language the app shows.
-func MasterPasswordUnlock() string { return In(i18n.Locale()).MasterPasswordUnlock() }
-
-// MasterPasswordUnlock says "Unlock"
-// in the language of msgs.
-func (msgs Messages) MasterPasswordUnlock() string {
-	return Catalog.Format(msgs.locale, "masterPasswordUnlock", nil)
-}
-
-// MasterPasswordUnlockTitle says "Enter local master password"
-// in the language the app shows.
-func MasterPasswordUnlockTitle() string { return In(i18n.Locale()).MasterPasswordUnlockTitle() }
-
-// MasterPasswordUnlockTitle says "Enter local master password"
-// in the language of msgs.
-func (msgs Messages) MasterPasswordUnlockTitle() string {
-	return Catalog.Format(msgs.locale, "masterPasswordUnlockTitle", nil)
-}
-
-// MasterPasswordUnlockNote says "A local master password protects your saved secrets. Enter it to unlock them."
-// in the language the app shows.
-func MasterPasswordUnlockNote() string { return In(i18n.Locale()).MasterPasswordUnlockNote() }
-
-// MasterPasswordUnlockNote says "A local master password protects your saved secrets. Enter it to unlock them."
-// in the language of msgs.
-func (msgs Messages) MasterPasswordUnlockNote() string {
-	return Catalog.Format(msgs.locale, "masterPasswordUnlockNote", nil)
-}
-
-// UseMasterPasswordEllipsis says "Use local master password…"
-// in the language the app shows.
-func UseMasterPasswordEllipsis() string { return In(i18n.Locale()).UseMasterPasswordEllipsis() }
-
-// UseMasterPasswordEllipsis says "Use local master password…"
-// in the language of msgs.
-func (msgs Messages) UseMasterPasswordEllipsis() string {
-	return Catalog.Format(msgs.locale, "useMasterPasswordEllipsis", nil)
-}
-
-// MasterPasswordSetupTitle says "Use a local master password"
-// in the language the app shows.
-func MasterPasswordSetupTitle() string { return In(i18n.Locale()).MasterPasswordSetupTitle() }
-
-// MasterPasswordSetupTitle says "Use a local master password"
-// in the language of msgs.
-func (msgs Messages) MasterPasswordSetupTitle() string {
-	return Catalog.Format(msgs.locale, "masterPasswordSetupTitle", nil)
-}
-
-// MasterPasswordSetupNote says "When the system keychain is unavailable, a local master password can protect the master key instead, with no administ…"
-// in the language the app shows.
-func MasterPasswordSetupNote() string { return In(i18n.Locale()).MasterPasswordSetupNote() }
-
-// MasterPasswordSetupNote says "When the system keychain is unavailable, a local master password can protect the master key instead, with no administ…"
-// in the language of msgs.
-func (msgs Messages) MasterPasswordSetupNote() string {
-	return Catalog.Format(msgs.locale, "masterPasswordSetupNote", nil)
-}
-
-// MasterPasswordChangeTitle says "Change local master password"
+// MasterPasswordChangeTitle says "Change master password"
 // in the language the app shows.
 func MasterPasswordChangeTitle() string { return In(i18n.Locale()).MasterPasswordChangeTitle() }
 
-// MasterPasswordChangeTitle says "Change local master password"
+// MasterPasswordChangeTitle says "Change master password"
 // in the language of msgs.
 func (msgs Messages) MasterPasswordChangeTitle() string {
 	return Catalog.Format(msgs.locale, "masterPasswordChangeTitle", nil)
-}
-
-// UseSystemKeychainEllipsis says "Use system keychain…"
-// in the language the app shows.
-func UseSystemKeychainEllipsis() string { return In(i18n.Locale()).UseSystemKeychainEllipsis() }
-
-// UseSystemKeychainEllipsis says "Use system keychain…"
-// in the language of msgs.
-func (msgs Messages) UseSystemKeychainEllipsis() string {
-	return Catalog.Format(msgs.locale, "useSystemKeychainEllipsis", nil)
-}
-
-// MasterPasswordSystemTitle says "Use the system keychain"
-// in the language the app shows.
-func MasterPasswordSystemTitle() string { return In(i18n.Locale()).MasterPasswordSystemTitle() }
-
-// MasterPasswordSystemTitle says "Use the system keychain"
-// in the language of msgs.
-func (msgs Messages) MasterPasswordSystemTitle() string {
-	return Catalog.Format(msgs.locale, "masterPasswordSystemTitle", nil)
-}
-
-// MasterPasswordSystemNote says "Enter the current master password to move the master key to the system keychain. You will no longer need the local ma…"
-// in the language the app shows.
-func MasterPasswordSystemNote() string { return In(i18n.Locale()).MasterPasswordSystemNote() }
-
-// MasterPasswordSystemNote says "Enter the current master password to move the master key to the system keychain. You will no longer need the local ma…"
-// in the language of msgs.
-func (msgs Messages) MasterPasswordSystemNote() string {
-	return Catalog.Format(msgs.locale, "masterPasswordSystemNote", nil)
-}
-
-// SecretsReasonCancelled says "System authorization was cancelled."
-// in the language the app shows.
-func SecretsReasonCancelled() string { return In(i18n.Locale()).SecretsReasonCancelled() }
-
-// SecretsReasonCancelled says "System authorization was cancelled."
-// in the language of msgs.
-func (msgs Messages) SecretsReasonCancelled() string {
-	return Catalog.Format(msgs.locale, "secretsReasonCancelled", nil)
-}
-
-// SecretsReasonAuthentication says "System authentication failed; check your keychain access permissions."
-// in the language the app shows.
-func SecretsReasonAuthentication() string { return In(i18n.Locale()).SecretsReasonAuthentication() }
-
-// SecretsReasonAuthentication says "System authentication failed; check your keychain access permissions."
-// in the language of msgs.
-func (msgs Messages) SecretsReasonAuthentication() string {
-	return Catalog.Format(msgs.locale, "secretsReasonAuthentication", nil)
-}
-
-// SecretsReasonInteraction says "The system does not allow authorization interaction in the current session."
-// in the language the app shows.
-func SecretsReasonInteraction() string { return In(i18n.Locale()).SecretsReasonInteraction() }
-
-// SecretsReasonInteraction says "The system does not allow authorization interaction in the current session."
-// in the language of msgs.
-func (msgs Messages) SecretsReasonInteraction() string {
-	return Catalog.Format(msgs.locale, "secretsReasonInteraction", nil)
-}
-
-// SecretsSystemCode says "{reason} (OSStatus {code})"
-// in the language the app shows.
-func SecretsSystemCode(reason string, code string) string {
-	return In(i18n.Locale()).SecretsSystemCode(reason, code)
-}
-
-// SecretsSystemCode says "{reason} (OSStatus {code})"
-// in the language of msgs.
-func (msgs Messages) SecretsSystemCode(reason string, code string) string {
-	return Catalog.Format(msgs.locale, "secretsSystemCode", map[string]any{"reason": reason, "code": code})
 }
 
 // SecretsStageOpen says "Opening encrypted credentials"
@@ -13389,36 +12993,6 @@ func SecretsStageLock() string { return In(i18n.Locale()).SecretsStageLock() }
 // in the language of msgs.
 func (msgs Messages) SecretsStageLock() string {
 	return Catalog.Format(msgs.locale, "secretsStageLock", nil)
-}
-
-// SecretsStageReadMaster says "Reading the system master key"
-// in the language the app shows.
-func SecretsStageReadMaster() string { return In(i18n.Locale()).SecretsStageReadMaster() }
-
-// SecretsStageReadMaster says "Reading the system master key"
-// in the language of msgs.
-func (msgs Messages) SecretsStageReadMaster() string {
-	return Catalog.Format(msgs.locale, "secretsStageReadMaster", nil)
-}
-
-// SecretsStageWriteMaster says "Saving the new system master key"
-// in the language the app shows.
-func SecretsStageWriteMaster() string { return In(i18n.Locale()).SecretsStageWriteMaster() }
-
-// SecretsStageWriteMaster says "Saving the new system master key"
-// in the language of msgs.
-func (msgs Messages) SecretsStageWriteMaster() string {
-	return Catalog.Format(msgs.locale, "secretsStageWriteMaster", nil)
-}
-
-// SecretsStageVerifyMaster says "Verifying the saved system master key"
-// in the language the app shows.
-func SecretsStageVerifyMaster() string { return In(i18n.Locale()).SecretsStageVerifyMaster() }
-
-// SecretsStageVerifyMaster says "Verifying the saved system master key"
-// in the language of msgs.
-func (msgs Messages) SecretsStageVerifyMaster() string {
-	return Catalog.Format(msgs.locale, "secretsStageVerifyMaster", nil)
 }
 
 // SecretsStageReadFile says "Reading local application data"
@@ -20091,111 +19665,21 @@ func (msgs Messages) AppLockSection() string {
 	return Catalog.Format(msgs.locale, "appLockSection", nil)
 }
 
-// AppLockMethod says "Unlock with"
-// in the language the app shows.
-func AppLockMethod() string { return In(i18n.Locale()).AppLockMethod() }
-
-// AppLockMethod says "Unlock with"
-// in the language of msgs.
-func (msgs Messages) AppLockMethod() string {
-	return Catalog.Format(msgs.locale, "appLockMethod", nil)
-}
-
-// AppLockOff says "Off"
-// in the language the app shows.
-func AppLockOff() string { return In(i18n.Locale()).AppLockOff() }
-
-// AppLockOff says "Off"
-// in the language of msgs.
-func (msgs Messages) AppLockOff() string {
-	return Catalog.Format(msgs.locale, "appLockOff", nil)
-}
-
-// AppLockPassword says "Password"
-// in the language the app shows.
-func AppLockPassword() string { return In(i18n.Locale()).AppLockPassword() }
-
-// AppLockPassword says "Password"
-// in the language of msgs.
-func (msgs Messages) AppLockPassword() string {
-	return Catalog.Format(msgs.locale, "appLockPassword", nil)
-}
-
-// AppLockTotp says "One-time code"
-// in the language the app shows.
-func AppLockTotp() string { return In(i18n.Locale()).AppLockTotp() }
-
-// AppLockTotp says "One-time code"
-// in the language of msgs.
-func (msgs Messages) AppLockTotp() string {
-	return Catalog.Format(msgs.locale, "appLockTotp", nil)
-}
-
-// AppLockBoth says "Password and code"
-// in the language the app shows.
-func AppLockBoth() string { return In(i18n.Locale()).AppLockBoth() }
-
-// AppLockBoth says "Password and code"
-// in the language of msgs.
-func (msgs Messages) AppLockBoth() string {
-	return Catalog.Format(msgs.locale, "appLockBoth", nil)
-}
-
-// AppLockEnableEllipsis says "Turn On…"
-// in the language the app shows.
-func AppLockEnableEllipsis() string { return In(i18n.Locale()).AppLockEnableEllipsis() }
-
-// AppLockEnableEllipsis says "Turn On…"
-// in the language of msgs.
-func (msgs Messages) AppLockEnableEllipsis() string {
-	return Catalog.Format(msgs.locale, "appLockEnableEllipsis", nil)
-}
-
-// AppLockChangeEllipsis says "Change…"
-// in the language the app shows.
-func AppLockChangeEllipsis() string { return In(i18n.Locale()).AppLockChangeEllipsis() }
-
-// AppLockChangeEllipsis says "Change…"
-// in the language of msgs.
-func (msgs Messages) AppLockChangeEllipsis() string {
-	return Catalog.Format(msgs.locale, "appLockChangeEllipsis", nil)
-}
-
-// AppLockDisableEllipsis says "Turn Off…"
-// in the language the app shows.
-func AppLockDisableEllipsis() string { return In(i18n.Locale()).AppLockDisableEllipsis() }
-
-// AppLockDisableEllipsis says "Turn Off…"
-// in the language of msgs.
-func (msgs Messages) AppLockDisableEllipsis() string {
-	return Catalog.Format(msgs.locale, "appLockDisableEllipsis", nil)
-}
-
-// AppLockTurnOff says "Turn Off"
-// in the language the app shows.
-func AppLockTurnOff() string { return In(i18n.Locale()).AppLockTurnOff() }
-
-// AppLockTurnOff says "Turn Off"
-// in the language of msgs.
-func (msgs Messages) AppLockTurnOff() string {
-	return Catalog.Format(msgs.locale, "appLockTurnOff", nil)
-}
-
-// AppLockIdle says "Lock automatically"
+// AppLockIdle says "Hide when idle"
 // in the language the app shows.
 func AppLockIdle() string { return In(i18n.Locale()).AppLockIdle() }
 
-// AppLockIdle says "Lock automatically"
+// AppLockIdle says "Hide when idle"
 // in the language of msgs.
 func (msgs Messages) AppLockIdle() string {
 	return Catalog.Format(msgs.locale, "appLockIdle", nil)
 }
 
-// AppLockIdleNote says "Locks once SSHYard has had no keyboard or mouse input for this long."
+// AppLockIdleNote says "Hides the windows once SSHYard has had no keyboard or mouse input for this long; it never asks for the master password."
 // in the language the app shows.
 func AppLockIdleNote() string { return In(i18n.Locale()).AppLockIdleNote() }
 
-// AppLockIdleNote says "Locks once SSHYard has had no keyboard or mouse input for this long."
+// AppLockIdleNote says "Hides the windows once SSHYard has had no keyboard or mouse input for this long; it never asks for the master password."
 // in the language of msgs.
 func (msgs Messages) AppLockIdleNote() string {
 	return Catalog.Format(msgs.locale, "appLockIdleNote", nil)
@@ -20221,11 +19705,11 @@ func (msgs Messages) AppLockNever() string {
 	return Catalog.Format(msgs.locale, "appLockNever", nil)
 }
 
-// AppLockOnSleep says "Lock when the screen locks or the computer sleeps"
+// AppLockOnSleep says "Hide when the screen locks or the computer sleeps"
 // in the language the app shows.
 func AppLockOnSleep() string { return In(i18n.Locale()).AppLockOnSleep() }
 
-// AppLockOnSleep says "Lock when the screen locks or the computer sleeps"
+// AppLockOnSleep says "Hide when the screen locks or the computer sleeps"
 // in the language of msgs.
 func (msgs Messages) AppLockOnSleep() string {
 	return Catalog.Format(msgs.locale, "appLockOnSleep", nil)
@@ -20251,11 +19735,11 @@ func (msgs Messages) AppLockAction() string {
 	return Catalog.Format(msgs.locale, "appLockAction", nil)
 }
 
-// AppLockScopeNote says "The app lock keeps your hosts and sessions from anyone else using this computer; while it is locked, sessions, forwar…"
+// AppLockScopeNote says "Locking by hand asks for the master password and hides every window until it is entered; this computer remembers it a…"
 // in the language the app shows.
 func AppLockScopeNote() string { return In(i18n.Locale()).AppLockScopeNote() }
 
-// AppLockScopeNote says "The app lock keeps your hosts and sessions from anyone else using this computer; while it is locked, sessions, forwar…"
+// AppLockScopeNote says "Locking by hand asks for the master password and hides every window until it is entered; this computer remembers it a…"
 // in the language of msgs.
 func (msgs Messages) AppLockScopeNote() string {
 	return Catalog.Format(msgs.locale, "appLockScopeNote", nil)
@@ -20271,36 +19755,6 @@ func (msgs Messages) AppLockedTitle() string {
 	return Catalog.Format(msgs.locale, "appLockedTitle", nil)
 }
 
-// AppLockedPasswordPrompt says "Enter your password to unlock."
-// in the language the app shows.
-func AppLockedPasswordPrompt() string { return In(i18n.Locale()).AppLockedPasswordPrompt() }
-
-// AppLockedPasswordPrompt says "Enter your password to unlock."
-// in the language of msgs.
-func (msgs Messages) AppLockedPasswordPrompt() string {
-	return Catalog.Format(msgs.locale, "appLockedPasswordPrompt", nil)
-}
-
-// AppLockedCodePrompt says "Enter the code from your authenticator app to unlock."
-// in the language the app shows.
-func AppLockedCodePrompt() string { return In(i18n.Locale()).AppLockedCodePrompt() }
-
-// AppLockedCodePrompt says "Enter the code from your authenticator app to unlock."
-// in the language of msgs.
-func (msgs Messages) AppLockedCodePrompt() string {
-	return Catalog.Format(msgs.locale, "appLockedCodePrompt", nil)
-}
-
-// AppLockedBothPrompt says "Enter your password and the code from your authenticator app to unlock."
-// in the language the app shows.
-func AppLockedBothPrompt() string { return In(i18n.Locale()).AppLockedBothPrompt() }
-
-// AppLockedBothPrompt says "Enter your password and the code from your authenticator app to unlock."
-// in the language of msgs.
-func (msgs Messages) AppLockedBothPrompt() string {
-	return Catalog.Format(msgs.locale, "appLockedBothPrompt", nil)
-}
-
 // AppLockUnlock says "Unlock"
 // in the language the app shows.
 func AppLockUnlock() string { return In(i18n.Locale()).AppLockUnlock() }
@@ -20309,26 +19763,6 @@ func AppLockUnlock() string { return In(i18n.Locale()).AppLockUnlock() }
 // in the language of msgs.
 func (msgs Messages) AppLockUnlock() string {
 	return Catalog.Format(msgs.locale, "appLockUnlock", nil)
-}
-
-// AppLockCode says "Code"
-// in the language the app shows.
-func AppLockCode() string { return In(i18n.Locale()).AppLockCode() }
-
-// AppLockCode says "Code"
-// in the language of msgs.
-func (msgs Messages) AppLockCode() string {
-	return Catalog.Format(msgs.locale, "appLockCode", nil)
-}
-
-// AppLockWrong says "The password or code is incorrect."
-// in the language the app shows.
-func AppLockWrong() string { return In(i18n.Locale()).AppLockWrong() }
-
-// AppLockWrong says "The password or code is incorrect."
-// in the language of msgs.
-func (msgs Messages) AppLockWrong() string {
-	return Catalog.Format(msgs.locale, "appLockWrong", nil)
 }
 
 // AppLockWait says "Too many attempts. Try again in {seconds} s."
@@ -20341,26 +19775,6 @@ func (msgs Messages) AppLockWait(seconds string) string {
 	return Catalog.Format(msgs.locale, "appLockWait", map[string]any{"seconds": seconds})
 }
 
-// AppLockSecretMissing says "The one-time code secret is missing from the credential store. Reset the app lock to remove it."
-// in the language the app shows.
-func AppLockSecretMissing() string { return In(i18n.Locale()).AppLockSecretMissing() }
-
-// AppLockSecretMissing says "The one-time code secret is missing from the credential store. Reset the app lock to remove it."
-// in the language of msgs.
-func (msgs Messages) AppLockSecretMissing() string {
-	return Catalog.Format(msgs.locale, "appLockSecretMissing", nil)
-}
-
-// AppLockBroken says "The app lock settings can't be read. Unlock saved secrets to restore them, or reset the app lock."
-// in the language the app shows.
-func AppLockBroken() string { return In(i18n.Locale()).AppLockBroken() }
-
-// AppLockBroken says "The app lock settings can't be read. Unlock saved secrets to restore them, or reset the app lock."
-// in the language of msgs.
-func (msgs Messages) AppLockBroken() string {
-	return Catalog.Format(msgs.locale, "appLockBroken", nil)
-}
-
 // AppLockShowMain says "Unlock in the Main Window"
 // in the language the app shows.
 func AppLockShowMain() string { return In(i18n.Locale()).AppLockShowMain() }
@@ -20371,121 +19785,11 @@ func (msgs Messages) AppLockShowMain() string {
 	return Catalog.Format(msgs.locale, "appLockShowMain", nil)
 }
 
-// AppLockEnableTitle says "Turn On App Lock"
-// in the language the app shows.
-func AppLockEnableTitle() string { return In(i18n.Locale()).AppLockEnableTitle() }
-
-// AppLockEnableTitle says "Turn On App Lock"
-// in the language of msgs.
-func (msgs Messages) AppLockEnableTitle() string {
-	return Catalog.Format(msgs.locale, "appLockEnableTitle", nil)
-}
-
-// AppLockChangeTitle says "Change App Lock"
-// in the language the app shows.
-func AppLockChangeTitle() string { return In(i18n.Locale()).AppLockChangeTitle() }
-
-// AppLockChangeTitle says "Change App Lock"
-// in the language of msgs.
-func (msgs Messages) AppLockChangeTitle() string {
-	return Catalog.Format(msgs.locale, "appLockChangeTitle", nil)
-}
-
-// AppLockDisableTitle says "Turn Off App Lock"
-// in the language the app shows.
-func AppLockDisableTitle() string { return In(i18n.Locale()).AppLockDisableTitle() }
-
-// AppLockDisableTitle says "Turn Off App Lock"
-// in the language of msgs.
-func (msgs Messages) AppLockDisableTitle() string {
-	return Catalog.Format(msgs.locale, "appLockDisableTitle", nil)
-}
-
-// AppLockCurrentPassword says "Current password"
-// in the language the app shows.
-func AppLockCurrentPassword() string { return In(i18n.Locale()).AppLockCurrentPassword() }
-
-// AppLockCurrentPassword says "Current password"
-// in the language of msgs.
-func (msgs Messages) AppLockCurrentPassword() string {
-	return Catalog.Format(msgs.locale, "appLockCurrentPassword", nil)
-}
-
-// AppLockCurrentCode says "Current code"
-// in the language the app shows.
-func AppLockCurrentCode() string { return In(i18n.Locale()).AppLockCurrentCode() }
-
-// AppLockCurrentCode says "Current code"
-// in the language of msgs.
-func (msgs Messages) AppLockCurrentCode() string {
-	return Catalog.Format(msgs.locale, "appLockCurrentCode", nil)
-}
-
-// AppLockScan says "Scan the QR code with an authenticator app, such as Google Authenticator, Microsoft Authenticator or 1Password, or ty…"
-// in the language the app shows.
-func AppLockScan() string { return In(i18n.Locale()).AppLockScan() }
-
-// AppLockScan says "Scan the QR code with an authenticator app, such as Google Authenticator, Microsoft Authenticator or 1Password, or ty…"
-// in the language of msgs.
-func (msgs Messages) AppLockScan() string {
-	return Catalog.Format(msgs.locale, "appLockScan", nil)
-}
-
-// AppLockSetupKey says "Setup key"
-// in the language the app shows.
-func AppLockSetupKey() string { return In(i18n.Locale()).AppLockSetupKey() }
-
-// AppLockSetupKey says "Setup key"
-// in the language of msgs.
-func (msgs Messages) AppLockSetupKey() string {
-	return Catalog.Format(msgs.locale, "appLockSetupKey", nil)
-}
-
-// AppLockCopyKey says "Copy Setup Key"
-// in the language the app shows.
-func AppLockCopyKey() string { return In(i18n.Locale()).AppLockCopyKey() }
-
-// AppLockCopyKey says "Copy Setup Key"
-// in the language of msgs.
-func (msgs Messages) AppLockCopyKey() string {
-	return Catalog.Format(msgs.locale, "appLockCopyKey", nil)
-}
-
-// AppLockQrAlt says "QR code for the authenticator app"
-// in the language the app shows.
-func AppLockQrAlt() string { return In(i18n.Locale()).AppLockQrAlt() }
-
-// AppLockQrAlt says "QR code for the authenticator app"
-// in the language of msgs.
-func (msgs Messages) AppLockQrAlt() string {
-	return Catalog.Format(msgs.locale, "appLockQrAlt", nil)
-}
-
-// AppLockKeepAuthenticator says "The authenticator app already set up keeps giving the codes."
-// in the language the app shows.
-func AppLockKeepAuthenticator() string { return In(i18n.Locale()).AppLockKeepAuthenticator() }
-
-// AppLockKeepAuthenticator says "The authenticator app already set up keeps giving the codes."
-// in the language of msgs.
-func (msgs Messages) AppLockKeepAuthenticator() string {
-	return Catalog.Format(msgs.locale, "appLockKeepAuthenticator", nil)
-}
-
-// AppLockCodeWrong says "The code doesn't match. Check that the time on your phone and computer is right, then enter the current code."
-// in the language the app shows.
-func AppLockCodeWrong() string { return In(i18n.Locale()).AppLockCodeWrong() }
-
-// AppLockCodeWrong says "The code doesn't match. Check that the time on your phone and computer is right, then enter the current code."
-// in the language of msgs.
-func (msgs Messages) AppLockCodeWrong() string {
-	return Catalog.Format(msgs.locale, "appLockCodeWrong", nil)
-}
-
-// AppLockResetEllipsis says "Reset App Lock…"
+// AppLockResetEllipsis says "Reset Saved Secrets…"
 // in the language the app shows.
 func AppLockResetEllipsis() string { return In(i18n.Locale()).AppLockResetEllipsis() }
 
-// AppLockResetEllipsis says "Reset App Lock…"
+// AppLockResetEllipsis says "Reset Saved Secrets…"
 // in the language of msgs.
 func (msgs Messages) AppLockResetEllipsis() string {
 	return Catalog.Format(msgs.locale, "appLockResetEllipsis", nil)
@@ -20551,12 +19855,112 @@ func (msgs Messages) AppLockResetRestart() string {
 	return Catalog.Format(msgs.locale, "appLockResetRestart", nil)
 }
 
-// AppLockRestored says "The app lock was changed outside SSHYard and has been restored."
+// AppLockedPrompt says "Enter your master password to unlock."
 // in the language the app shows.
-func AppLockRestored() string { return In(i18n.Locale()).AppLockRestored() }
+func AppLockedPrompt() string { return In(i18n.Locale()).AppLockedPrompt() }
 
-// AppLockRestored says "The app lock was changed outside SSHYard and has been restored."
+// AppLockedPrompt says "Enter your master password to unlock."
 // in the language of msgs.
-func (msgs Messages) AppLockRestored() string {
-	return Catalog.Format(msgs.locale, "appLockRestored", nil)
+func (msgs Messages) AppLockedPrompt() string {
+	return Catalog.Format(msgs.locale, "appLockedPrompt", nil)
+}
+
+// MasterPasswordFirstTitle says "Set your master password"
+// in the language the app shows.
+func MasterPasswordFirstTitle() string { return In(i18n.Locale()).MasterPasswordFirstTitle() }
+
+// MasterPasswordFirstTitle says "Set your master password"
+// in the language of msgs.
+func (msgs Messages) MasterPasswordFirstTitle() string {
+	return Catalog.Format(msgs.locale, "masterPasswordFirstTitle", nil)
+}
+
+// MasterPasswordFirstNote says "One password protects everything SSHYard saves on this computer and the backups it makes: passwords, private keys, pa…"
+// in the language the app shows.
+func MasterPasswordFirstNote() string { return In(i18n.Locale()).MasterPasswordFirstNote() }
+
+// MasterPasswordFirstNote says "One password protects everything SSHYard saves on this computer and the backups it makes: passwords, private keys, pa…"
+// in the language of msgs.
+func (msgs Messages) MasterPasswordFirstNote() string {
+	return Catalog.Format(msgs.locale, "masterPasswordFirstNote", nil)
+}
+
+// MasterPasswordSet says "Set Master Password"
+// in the language the app shows.
+func MasterPasswordSet() string { return In(i18n.Locale()).MasterPasswordSet() }
+
+// MasterPasswordSet says "Set Master Password"
+// in the language of msgs.
+func (msgs Messages) MasterPasswordSet() string {
+	return Catalog.Format(msgs.locale, "masterPasswordSet", nil)
+}
+
+// MasterPasswordShort says "The master password needs at least {count} characters."
+// in the language the app shows.
+func MasterPasswordShort(count string) string { return In(i18n.Locale()).MasterPasswordShort(count) }
+
+// MasterPasswordShort says "The master password needs at least {count} characters."
+// in the language of msgs.
+func (msgs Messages) MasterPasswordShort(count string) string {
+	return Catalog.Format(msgs.locale, "masterPasswordShort", map[string]any{"count": count})
+}
+
+// ConfirmPasswordMismatch says "The passwords don’t match."
+// in the language the app shows.
+func ConfirmPasswordMismatch() string { return In(i18n.Locale()).ConfirmPasswordMismatch() }
+
+// ConfirmPasswordMismatch says "The passwords don’t match."
+// in the language of msgs.
+func (msgs Messages) ConfirmPasswordMismatch() string {
+	return Catalog.Format(msgs.locale, "confirmPasswordMismatch", nil)
+}
+
+// MasterPasswordChangeNote says "Only the master key is resealed: saved secrets stay as they are, and backups already made keep opening with the passw…"
+// in the language the app shows.
+func MasterPasswordChangeNote() string { return In(i18n.Locale()).MasterPasswordChangeNote() }
+
+// MasterPasswordChangeNote says "Only the master key is resealed: saved secrets stay as they are, and backups already made keep opening with the passw…"
+// in the language of msgs.
+func (msgs Messages) MasterPasswordChangeNote() string {
+	return Catalog.Format(msgs.locale, "masterPasswordChangeNote", nil)
+}
+
+// BackupTargetPasswordNote says "Its backups are sealed under your master password, so restoring one asks for it."
+// in the language the app shows.
+func BackupTargetPasswordNote() string { return In(i18n.Locale()).BackupTargetPasswordNote() }
+
+// BackupTargetPasswordNote says "Its backups are sealed under your master password, so restoring one asks for it."
+// in the language of msgs.
+func (msgs Messages) BackupTargetPasswordNote() string {
+	return Catalog.Format(msgs.locale, "backupTargetPasswordNote", nil)
+}
+
+// SecretsStageMasterCache says "Reading this computer's keychain"
+// in the language the app shows.
+func SecretsStageMasterCache() string { return In(i18n.Locale()).SecretsStageMasterCache() }
+
+// SecretsStageMasterCache says "Reading this computer's keychain"
+// in the language of msgs.
+func (msgs Messages) SecretsStageMasterCache() string {
+	return Catalog.Format(msgs.locale, "secretsStageMasterCache", nil)
+}
+
+// ForgetSystemEllipsis says "Forget on This Computer"
+// in the language the app shows.
+func ForgetSystemEllipsis() string { return In(i18n.Locale()).ForgetSystemEllipsis() }
+
+// ForgetSystemEllipsis says "Forget on This Computer"
+// in the language of msgs.
+func (msgs Messages) ForgetSystemEllipsis() string {
+	return Catalog.Format(msgs.locale, "forgetSystemEllipsis", nil)
+}
+
+// ForgetSystemNote says "Drops the remembered master key, so the next launch asks for it again. The data folder is not touched."
+// in the language the app shows.
+func ForgetSystemNote() string { return In(i18n.Locale()).ForgetSystemNote() }
+
+// ForgetSystemNote says "Drops the remembered master key, so the next launch asks for it again. The data folder is not touched."
+// in the language of msgs.
+func (msgs Messages) ForgetSystemNote() string {
+	return Catalog.Format(msgs.locale, "forgetSystemNote", nil)
 }

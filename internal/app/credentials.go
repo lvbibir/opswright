@@ -213,11 +213,6 @@ func (a *App) SaveCredForm(m locales.Messages) bool {
 		return false
 	}
 	if !a.unlocked() {
-		a.withSecrets(func() {
-			if a.credForm == f {
-				a.SaveCredForm(m)
-			}
-		})
 		return false
 	}
 	f.err = ""

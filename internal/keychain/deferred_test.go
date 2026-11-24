@@ -2,51 +2,21 @@ package keychain
 
 import (
 	"bytes"
+	"crypto/sha256"
 	"errors"
 	"os"
 	"sync"
 	"testing"
 )
 
-type trackedSystem struct {
-	*Memory
-	reads, writes, deletes int
-}
-
-func (s *trackedSystem) Get(key string) ([]byte, error) {
-	s.reads++
-	return s.Memory.Get(key)
-}
-func (s *trackedSystem) Set(key string, value []byte) error {
-	s.writes++
-	return s.Memory.Set(key, value)
-}
-func (s *trackedSystem) Delete(key string) error {
-	s.deletes++
-	return s.Memory.Delete(key)
-}
-
-func openLockedTest(t *testing.T, o OpenOptions) *Keychain {
-	t.Helper()
-	k, err := OpenLocked(o)
-	if err != nil {
-		t.Fatal(err)
-	}
-	t.Cleanup(func() {
-		if err := k.Close(); err != nil {
-			t.Error(err)
-		}
-	})
-	return k
-}
-
-func TestOpenLockedEmptyNeverAccessesSystem(t *testing.T) {
+func TestOpenLockedEmptyStaysLocked(t *testing.T) {
 	o := options(t)
-	s := &trackedSystem{Memory: NewMemory()}
-	o.System = s
 	k := openLockedTest(t, o)
 	if k.Unlocked() {
 		t.Fatal("new store unlocked")
+	}
+	if k.PasswordProtected() {
+		t.Fatal("new store protected")
 	}
 	mustGetMissing(t, k, "missing")
 	if exists, err := k.Exists("missing"); exists || err != nil {
@@ -73,11 +43,11 @@ func TestOpenLockedEmptyNeverAccessesSystem(t *testing.T) {
 	if _, err := k.Unseal("test", nil, nil); !errors.Is(err, ErrLocked) {
 		t.Fatalf("locked unseal: %v", err)
 	}
-	if s.reads != 0 || s.writes != 0 || s.deletes != 0 {
-		t.Fatalf("system accessed: %+v", s)
-	}
 	if _, err := os.Stat(o.Path); !errors.Is(err, os.ErrNotExist) {
 		t.Fatalf("encrypted file created: %v", err)
+	}
+	if _, err := os.Stat(masterPath(o)); !errors.Is(err, os.ErrNotExist) {
+		t.Fatalf("master file created: %v", err)
 	}
 	if second, err := OpenLocked(o); second != nil || !errors.Is(err, ErrBusy) {
 		t.Fatalf("locked store lost lifetime lock: %v", err)
@@ -86,17 +56,13 @@ func TestOpenLockedEmptyNeverAccessesSystem(t *testing.T) {
 
 func TestExplicitUnlockSaveAndReopen(t *testing.T) {
 	o := options(t)
-	s := &trackedSystem{Memory: NewMemory()}
-	o.System = s
+	setupPassword(t, o, testPassword)
 	k := openLockedTest(t, o)
-	if err := k.Unlock(); err != nil {
+	if err := k.UnlockPassword([]byte(testPassword)); err != nil {
 		t.Fatal(err)
 	}
-	if !k.Unlocked() || s.reads != 2 || s.writes != 1 || s.deletes != 0 {
-		t.Fatalf("first unlock: unlocked=%v reads=%d writes=%d deletes=%d", k.Unlocked(), s.reads, s.writes, s.deletes)
-	}
-	if err := k.Set("secret", []byte("value")); err != nil {
-		t.Fatal(err)
+	if !k.Unlocked() {
+		t.Fatal("unlock left the store locked")
 	}
 	sealed, err := k.Seal("test", []byte("value"), nil)
 	if err != nil {
@@ -105,13 +71,10 @@ func TestExplicitUnlockSaveAndReopen(t *testing.T) {
 	if err := k.Close(); err != nil {
 		t.Fatal(err)
 	}
-	if k.Unlocked() || !errors.Is(k.Unlock(), ErrLocked) {
+	if k.Unlocked() || !errors.Is(k.UnlockPassword([]byte(testPassword)), ErrLocked) {
 		t.Fatal("closed store unlocked")
 	}
 	k = openLockedTest(t, o)
-	if s.reads != 2 || s.writes != 1 {
-		t.Fatal("reopen accessed system")
-	}
 	for _, operation := range []func() error{
 		func() error { _, err := k.Get("secret"); return err },
 		func() error { return k.Set("secret", []byte("new")) },
@@ -122,20 +85,17 @@ func TestExplicitUnlockSaveAndReopen(t *testing.T) {
 			t.Fatalf("existing locked store operation: %v", err)
 		}
 	}
-	if err := k.Unlock(); err != nil {
+	if err := k.UnlockPassword([]byte(testPassword)); err != nil {
 		t.Fatal(err)
 	}
 	mustGet(t, k, "secret", []byte("value"))
 	if plain, err := k.Unseal("test", sealed, nil); err != nil || string(plain) != "value" {
 		t.Fatalf("reopened unseal: %v", err)
 	}
-	if s.reads != 3 || s.writes != 1 {
-		t.Fatal("reopen regenerated master")
-	}
 }
 
 func TestLockedUnlockFailurePreservesCiphertextAndRetries(t *testing.T) {
-	for _, failure := range []string{"denied", "missing", "wrong", "corrupt", "empty"} {
+	for _, failure := range []string{"wrong", "corrupt", "empty"} {
 		t.Run(failure, func(t *testing.T) {
 			o := options(t)
 			k := openTest(t, o)
@@ -147,23 +107,14 @@ func TestLockedUnlockFailurePreservesCiphertextAndRetries(t *testing.T) {
 			if err != nil {
 				t.Fatal(err)
 			}
-			s := o.System.(*Memory)
-			originalKey, err := s.Get(MasterKey)
+			master, err := os.ReadFile(masterPath(o))
 			if err != nil {
 				t.Fatal(err)
 			}
-			defer clear(originalKey)
-			want := ErrCorrupt
+			want := error(ErrWrongPassword)
 			switch failure {
-			case "denied":
-				s.Fail = &SystemError{Code: -128, Err: errors.New("denied")}
-				want = s.Fail
-			case "missing":
-				s.Delete(MasterKey)
-				want = ErrMasterMissing
-			case "wrong":
-				s.Set(MasterKey, bytes.Repeat([]byte{7}, 32))
 			case "corrupt", "empty":
+				want = ErrCorrupt
 				broken := append([]byte(nil), original...)
 				if failure == "empty" {
 					broken = nil
@@ -179,7 +130,11 @@ func TestLockedUnlockFailurePreservesCiphertextAndRetries(t *testing.T) {
 				t.Fatal(err)
 			}
 			k = openLockedTest(t, o)
-			if err := k.Unlock(); !errors.Is(err, want) {
+			password := testPassword
+			if failure == "wrong" {
+				password = "not the password"
+			}
+			if err := k.UnlockPassword([]byte(password)); !errors.Is(err, want) {
 				t.Fatalf("unlock failure: %v", err)
 			}
 			if k.Unlocked() || len(k.b.(*encryptedStore).key) != 0 {
@@ -189,9 +144,8 @@ func TestLockedUnlockFailurePreservesCiphertextAndRetries(t *testing.T) {
 			if err != nil || !bytes.Equal(before, after) {
 				t.Fatalf("failed unlock changed ciphertext: %v", err)
 			}
-			s.Fail = nil
-			if err := s.Set(MasterKey, originalKey); err != nil {
-				t.Fatal(err)
+			if now, _ := os.ReadFile(masterPath(o)); !bytes.Equal(master, now) {
+				t.Fatal("failed unlock changed master.enc")
 			}
 			if failure == "corrupt" || failure == "empty" {
 				// Corruption is fixed externally before reopening, not overwritten.
@@ -201,7 +155,7 @@ func TestLockedUnlockFailurePreservesCiphertextAndRetries(t *testing.T) {
 				}
 				k = openLockedTest(t, o)
 			}
-			if err := k.Unlock(); err != nil {
+			if err := k.UnlockPassword([]byte(testPassword)); err != nil {
 				t.Fatal(err)
 			}
 			mustGet(t, k, "secret", []byte("value"))
@@ -209,16 +163,15 @@ func TestLockedUnlockFailurePreservesCiphertextAndRetries(t *testing.T) {
 	}
 }
 
-func TestConcurrentExplicitUnlockOnlyAcquiresMasterOnce(t *testing.T) {
+func TestConcurrentUnlockSharesOneDerivation(t *testing.T) {
 	o := options(t)
-	s := &trackedSystem{Memory: NewMemory()}
-	o.System = s
+	setupPassword(t, o, testPassword)
 	k := openLockedTest(t, o)
 	var wg sync.WaitGroup
 	for range 32 {
 		wg.Go(func() {
 			k.Unlocked()
-			if err := k.Unlock(); err != nil {
+			if err := k.UnlockPassword([]byte(testPassword)); err != nil {
 				t.Error(err)
 			}
 			if err := k.Set("secret", []byte("value")); err != nil {
@@ -228,58 +181,65 @@ func TestConcurrentExplicitUnlockOnlyAcquiresMasterOnce(t *testing.T) {
 		})
 	}
 	wg.Wait()
-	if !k.Unlocked() || s.reads != 2 || s.writes != 1 {
-		t.Fatalf("concurrent unlock: reads=%d writes=%d", s.reads, s.writes)
+	if !k.Unlocked() {
+		t.Fatal("concurrent unlock left the store locked")
+	}
+	mustGet(t, k, "secret", []byte("value"))
+	// The store must still hold one secret, not one write per goroutine.
+	values, err := k.b.(*encryptedStore).decrypt()
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer wipe(values)
+	if len(values) != 2 || len(values["secret"]) == 0 || len(values[BackupKey]) == 0 {
+		t.Fatalf("entries: %d", len(values))
 	}
 }
 
 func TestInjectedBackendDoesNotRequireUnlock(t *testing.T) {
 	k := New(NewMemory())
-	if !k.Unlocked() || k.Unlock() != nil {
+	if !k.Unlocked() || k.Lock() != nil {
 		t.Fatal("injected store requires unlock")
 	}
 }
 
-func TestFirstExplicitUnlockFailureCanRetry(t *testing.T) {
-	for _, stage := range []string{"read", "set", "verify", "mismatch"} {
-		t.Run(stage, func(t *testing.T) {
-			o := options(t)
-			denied := &SystemError{Code: -128, Err: errors.New("denied")}
-			s := &failSystem{Memory: NewMemory(), readErr: denied}
-			switch stage {
-			case "read":
-				s.failReadAt = 1
-			case "set":
-				s.setErr = denied
-			case "verify":
-				s.failReadAt = 2
-			case "mismatch":
-				s.corruptVerify = true
-			}
-			o.System = s
-			k := openLockedTest(t, o)
-			want := error(denied)
-			if stage == "mismatch" {
-				want = ErrMasterInvalid
-			}
-			if err := k.Unlock(); !errors.Is(err, want) {
-				t.Fatalf("unlock failure lost cause: %v", err)
-			}
-			if k.Unlocked() || len(k.b.(*encryptedStore).key) != 0 {
-				t.Fatal("failed unlock retained candidate key")
-			}
-			if _, err := os.Stat(o.Path); !errors.Is(err, os.ErrNotExist) {
-				t.Fatalf("failed unlock created ciphertext: %v", err)
-			}
-			before, _ := s.Memory.Get(MasterKey)
-			s.failReadAt, s.setErr, s.corruptVerify = 0, nil, false
-			if err := k.Unlock(); err != nil {
-				t.Fatal(err)
-			}
-			after, _ := s.Memory.Get(MasterKey)
-			if len(before) > 0 && !bytes.Equal(before, after) {
-				t.Fatal("retry replaced master")
-			}
-		})
+// A password that is wrong leaves no trace, and the same store can be
+// retried with the right one.
+func TestWrongPasswordLeavesStoreUntouched(t *testing.T) {
+	o := options(t)
+	setupPassword(t, o, testPassword)
+	k := openLockedTest(t, o)
+	if err := k.UnlockPassword([]byte("wrong")); !errors.Is(err, ErrWrongPassword) {
+		t.Fatal(err)
+	}
+	if k.Unlocked() {
+		t.Fatal("wrong password unlocked")
+	}
+	if err := k.Set("secret", []byte("value")); !errors.Is(err, ErrLocked) {
+		t.Fatal(err)
+	}
+	if err := k.UnlockPassword([]byte(testPassword)); err != nil {
+		t.Fatal(err)
+	}
+	mustGet(t, k, "secret", []byte("value"))
+}
+
+// The master password is never stored: master.enc holds only ciphertext,
+// and no derived key is kept outside it.
+func TestPasswordIsNeverPersisted(t *testing.T) {
+	o := options(t)
+	setupPassword(t, o, testPassword)
+	for _, path := range []string{o.Path, masterPath(o)} {
+		b, err := os.ReadFile(path)
+		if err != nil {
+			t.Fatal(err)
+		}
+		if bytes.Contains(b, []byte(testPassword)) {
+			t.Fatalf("password in %s", path)
+		}
+		sum := sha256.Sum256([]byte(testPassword))
+		if bytes.Contains(b, sum[:]) {
+			t.Fatalf("derived password material in %s", path)
+		}
 	}
 }

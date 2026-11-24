@@ -14,23 +14,37 @@ import (
 	"github.com/egoist/mygo/ui"
 )
 
-func TestUnlockReloadsMetadataAfterAnotherInstance(t *testing.T) {
+func TestReloadsMetadataAfterAnotherInstance(t *testing.T) {
 	dir := t.TempDir()
-	system := &authorizationBackend{Memory: keychain.NewMemory()}
-	first, _ := appIn(t, dir, system)
-	calls := system.calls.Load()
-	second, err := New(Platform{DataDir: dir, Secrets: system, HomeDir: dir, CacheDir: filepath.Join(dir, "cache")})
+	platform := func() Platform {
+		return Platform{DataDir: dir, SecretLockPath: filepath.Join(dir, "secrets.lock"), SecretScope: "sshyard", HomeDir: dir, CacheDir: filepath.Join(dir, "cache"), KDF: cheapKDF, System: keychain.NewMemory()}
+	}
+	first, err := New(platform())
+	if err != nil {
+		t.Fatal(err)
+	}
+	t.Cleanup(first.Close)
+	first.Start()
+	tt := ui.NewTester(first.View, 1200, 760)
+	tt.SetLocale("en")
+	tt.Frame()
+	setMasterPassword(t, first, tt, "correct horse")
+	second, err := New(platform())
 	if !errors.Is(err, keychain.ErrBusy) {
 		t.Fatalf("second open: %v", err)
 	}
 	defer second.Close()
 	if second.Store() != nil {
-		t.Fatal("metadata opened before acquiring lifetime lock")
+		t.Fatal("metadata opened before acquiring the lifetime lock")
 	}
 	second.Start()
-	tt := ui.NewTester(second.View, 1200, 760)
-	waitFor(t, tt, "second instance blocked", func() bool { return second.unlock.modal })
-	if !errors.Is(second.unlock.err, keychain.ErrBusy) {
+	stt := ui.NewTester(second.View, 1200, 760)
+	stt.SetLocale("en")
+	stt.Frame()
+	if second.ready() || !stt.HasText(en.SecretsUnlockFailed()) {
+		t.Fatal("the second instance did not say why it could not read the data")
+	}
+	if !errors.Is(second.unlock.err, keychain.ErrBusy) || stt.HasText("private") {
 		t.Fatalf("second launch: %v", second.unlock.err)
 	}
 	saved, err := first.Store().Add(assets.Host{Name: "added by first", Address: "host.example", User: "demo"})
@@ -38,23 +52,16 @@ func TestUnlockReloadsMetadataAfterAnotherInstance(t *testing.T) {
 		t.Fatal(err)
 	}
 	first.Close()
-	second.retryUnlock()
-	waitFor(t, tt, "second metadata ready", second.ready)
-	if system.calls.Load() != calls || second.unlocked() {
-		t.Fatal("storage retry requested authorization")
+	second.retryPrepare()
+	waitFor(t, stt, "second metadata ready", second.ready)
+	if second.unlocked() {
+		t.Fatal("the second instance unlocked itself")
 	}
 	if _, ok := second.Store().Get(saved.ID); !ok {
 		t.Fatal("successful retry reused stale metadata")
 	}
 	if _, err := second.Store().Add(assets.Host{Name: "added by second", Address: "another.example", User: "demo"}); err != nil {
 		t.Fatal(err)
-	}
-	st, err := assets.Open(filepath.Join(dir, "hosts.json"))
-	if err != nil {
-		t.Fatal(err)
-	}
-	if st.Len() != 2 {
-		t.Fatalf("metadata overwritten: %d hosts", st.Len())
 	}
 }
 
@@ -78,18 +85,16 @@ func TestUnlockFileErrorsAreSafeAndSpecific(t *testing.T) {
 	}
 }
 
-func TestUnlockKeepsWindowControls(t *testing.T) {
-	b := &authorizationBackend{Memory: keychain.NewMemory()}
-	b.fail.Store(true)
-	a, tt := lockedTestApp(t, b)
+func TestLockScreenKeepsWindowControls(t *testing.T) {
+	a, tt, _ := newLockedTestApp(t)
 	closed := false
-	a.withSecrets(nil)
 	a.SetWindow(WindowControls{Minimize: func() {}, Maximize: func() {}, Unmaximize: func() {}, Close: func() { closed = true }})
-	waitFor(t, tt, "modal", func() bool { return a.unlock.modal })
-	mustClick(t, tt, locales.In("en").Cancel())
 	tt.Frame()
-	mustClick(t, tt, locales.In("en").WindowClose())
+	if !tt.HasText(en.MasterPasswordFirstTitle()) {
+		t.Fatal("the lock screen did not show")
+	}
+	mustClick(t, tt, en.WindowClose())
 	if !closed {
-		t.Fatal("locked page did not retain window close action")
+		t.Fatal("the lock screen did not retain the window close action")
 	}
 }

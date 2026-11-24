@@ -14,7 +14,6 @@ import (
 	"github.com/Licoy/sshyard/internal/app"
 	"github.com/Licoy/sshyard/internal/awake"
 	"github.com/Licoy/sshyard/internal/gtkfix"
-	"github.com/Licoy/sshyard/internal/keychain"
 	"github.com/Licoy/sshyard/internal/macfix"
 	"github.com/Licoy/sshyard/internal/netwatch"
 	"github.com/Licoy/sshyard/internal/portable"
@@ -44,7 +43,6 @@ func platform() app.Platform {
 		Version:        mygo.App.Version(),
 		Storage:        storage,
 		CacheDir:       cacheDir,
-		Secrets:        keychain.System{},
 		Updates:        updater.MygoBackend{},
 		SetTheme:       func(m theme.Mode) { mygo.Theme.SetSource(themeSource(m)) },
 		SetLocale:      mygo.App.SetLocale,
@@ -217,6 +215,12 @@ func main() {
 		p.ActivateMainWindow = func() {
 			d.show()
 			d.window.Focus()
+		}
+		// The idle and sleep choices hide the windows, never lock them.
+		p.HideWindows = func() {
+			if d != nil && d.trayErr == nil {
+				d.hide()
+			}
 		}
 		a, _ := app.New(p)
 		installWindowStates(a)

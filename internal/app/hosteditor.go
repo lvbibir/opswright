@@ -144,7 +144,6 @@ func (a *App) authLabel(m locales.Messages, h assets.Host) string {
 
 func (a *App) openEditor(h *assets.Host) {
 	if h != nil && (h.Auth == assets.AuthKey || h.SSH() && h.Startup) && !a.unlocked() {
-		a.withSecrets(func() { a.openEditor(h) })
 		return
 	}
 
@@ -216,7 +215,6 @@ func (a *App) openEditor(h *assets.Host) {
 // secrets, as a start for a similar one.
 func (a *App) openClone(h assets.Host) {
 	if (h.Auth == assets.AuthPassword || h.Auth == assets.AuthKey || h.SSH() && h.Startup) && !a.unlocked() {
-		a.withSecrets(func() { a.openClone(h) })
 		return
 	}
 	a.openEditor(&h)
@@ -369,12 +367,6 @@ func (a *App) SaveForm(m locales.Messages) bool {
 		return false
 	}
 	if !a.unlocked() && hostFormNeedsSecrets(f, h) {
-		draft := a.form
-		a.withSecrets(func() {
-			if a.form == draft {
-				a.SaveForm(m)
-			}
-		})
 		return false
 	}
 	h, err = a.saveHostForm(m, f, h)
@@ -745,11 +737,6 @@ func (a *App) startupField(c *ui.Context, m locales.Messages, tok theme.Tokens, 
 // startup commands, a copy that later edits of the snippet leave alone.
 func (a *App) addStartupSnippet(m locales.Messages, f *hostForm, id string) {
 	if !a.unlocked() {
-		a.withSecrets(func() {
-			if a.form == f {
-				a.addStartupSnippet(m, f, id)
-			}
-		})
 		return
 	}
 	text, err := a.snippetContent(id)

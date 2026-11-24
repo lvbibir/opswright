@@ -80,7 +80,6 @@ func (t *secretTx) rollback() error {
 func (a *App) runSecretAction(action func() error, failed func(error)) {
 	err := action()
 	if errors.Is(err, keychain.ErrLocked) && !a.unlocked() {
-		a.withSecrets(func() { a.runSecretAction(action, failed) })
 		return
 	}
 	if err != nil {

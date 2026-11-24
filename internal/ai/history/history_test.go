@@ -13,13 +13,17 @@ import (
 	"github.com/Licoy/sshyard/internal/ai/agent"
 	"github.com/Licoy/sshyard/internal/ai/llm"
 	"github.com/Licoy/sshyard/internal/keychain"
+	"github.com/Licoy/sshyard/internal/vault"
 )
 
 func store(t *testing.T) (*Store, string) {
 	t.Helper()
 	dir := t.TempDir()
-	k, err := keychain.Open(keychain.OpenOptions{Path: filepath.Join(dir, "secrets.enc"), LockPath: filepath.Join(dir, "secrets.lock"), Scope: "test.sshyard", System: keychain.NewMemory()})
+	k, err := keychain.OpenLocked(keychain.OpenOptions{Path: filepath.Join(dir, "secrets.enc"), LockPath: filepath.Join(dir, "secrets.lock"), Scope: "test.sshyard", KDF: vault.Params{Time: 1, Memory: 8, Threads: 1}})
 	if err != nil {
+		t.Fatal(err)
+	}
+	if err := k.SetupPassword([]byte("test master password")); err != nil {
 		t.Fatal(err)
 	}
 	t.Cleanup(func() { _ = k.Close() })

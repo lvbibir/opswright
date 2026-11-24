@@ -3,30 +3,13 @@ package keychain
 import (
 	"errors"
 	"os"
-	"path/filepath"
+	"sync/atomic"
 	"testing"
-
-	"github.com/Licoy/sshyard/internal/vault"
 )
-
-var cheapKDF = vault.Params{Time: 1, Memory: 8, Threads: 1}
-
-func passwordOptions(t *testing.T) OpenOptions {
-	t.Helper()
-	o := options(t)
-	o.KDF = cheapKDF
-	return o
-}
-
-func masterPath(o OpenOptions) string { return filepath.Join(filepath.Dir(o.Path), masterFile) }
 
 func setupPassword(t *testing.T, o OpenOptions, password string) {
 	t.Helper()
-	k, err := OpenLocked(o)
-	if err != nil {
-		t.Fatal(err)
-	}
-	defer k.Close()
+	k := openLockedTest(t, o)
 	if !k.CanUsePassword() {
 		t.Fatal("empty store cannot use a password")
 	}
@@ -39,39 +22,29 @@ func setupPassword(t *testing.T, o OpenOptions, password string) {
 	if err := k.Set("secret", []byte("value")); err != nil {
 		t.Fatal(err)
 	}
+	if err := k.Close(); err != nil {
+		t.Fatal(err)
+	}
 }
 
 func TestPasswordSetupAndUnlock(t *testing.T) {
-	o := passwordOptions(t)
-	setupPassword(t, o, "correct horse")
-	mem := o.System.(*Memory)
-	if mem.Len() != 0 {
-		t.Fatal("system keychain written", mem.Keys())
-	}
+	o := options(t)
+	setupPassword(t, o, testPassword)
 	k := openLockedTest(t, o)
 	if !k.PasswordProtected() || k.CanUsePassword() {
 		t.Fatal("protection not detected")
 	}
-	if err := k.TryUnlock(); !errors.Is(err, ErrInteractionRequired) {
-		t.Fatal("silent unlock", err)
-	}
-	if err := k.Unlock(); !errors.Is(err, ErrPasswordRequired) {
-		t.Fatal("system unlock", err)
-	}
 	if err := k.UnlockPassword([]byte("wrong")); !errors.Is(err, ErrWrongPassword) || k.Unlocked() {
 		t.Fatal("wrong password", err)
 	}
-	if err := k.UnlockPassword([]byte("correct horse")); err != nil {
+	if err := k.UnlockPassword([]byte(testPassword)); err != nil {
 		t.Fatal(err)
 	}
 	mustGet(t, k, "secret", []byte("value"))
-	if mem.Len() != 0 {
-		t.Fatal("system keychain written", mem.Keys())
-	}
 }
 
 func TestPasswordSetupNeedsEmptyStore(t *testing.T) {
-	o := passwordOptions(t)
+	o := options(t)
 	k := openTest(t, o)
 	if err := k.Set("secret", []byte("value")); err != nil {
 		t.Fatal(err)
@@ -84,29 +57,51 @@ func TestPasswordSetupNeedsEmptyStore(t *testing.T) {
 	if err := k.SetupPassword([]byte("password")); !errors.Is(err, ErrPasswordSetup) {
 		t.Fatal(err)
 	}
-	if _, err := os.Stat(masterPath(o)); !errors.Is(err, os.ErrNotExist) {
-		t.Fatal("master file written", err)
+	if err := k.UnlockPassword([]byte(testPassword)); err != nil {
+		t.Fatal(err)
 	}
-	if err := k.Unlock(); err != nil {
+	mustGet(t, k, "secret", []byte("value"))
+}
+
+// TestOrphanedStoreNeedsTheCachedKey: a secrets.enc whose master.enc is
+// gone may only be opened by this computer's cached key; setting a new
+// password over it would leave those secrets unopenable for good.
+func TestOrphanedStoreNeedsTheCachedKey(t *testing.T) {
+	o := options(t)
+	setupPassword(t, o, testPassword)
+	if err := os.Remove(masterPath(o)); err != nil {
+		t.Fatal(err)
+	}
+	k := openLockedTest(t, o)
+	if err := k.UnlockPassword([]byte(testPassword)); !errors.Is(err, ErrMasterMissing) {
+		t.Fatal(err)
+	}
+	if k.CanUsePassword() {
+		t.Fatal("orphaned store offers a password")
+	}
+	if err := k.SetupPassword([]byte("new password")); !errors.Is(err, ErrPasswordSetup) {
+		t.Fatal("orphaned store accepted a new password")
+	}
+	if err := k.TryUnlock(); err != nil {
 		t.Fatal(err)
 	}
 	mustGet(t, k, "secret", []byte("value"))
 }
 
 func TestPasswordDamagedMaster(t *testing.T) {
-	o := passwordOptions(t)
-	setupPassword(t, o, "password")
+	o := options(t)
+	setupPassword(t, o, testPassword)
 	if err := os.WriteFile(masterPath(o), []byte("damaged"), 0o600); err != nil {
 		t.Fatal(err)
 	}
 	k := openLockedTest(t, o)
-	if err := k.UnlockPassword([]byte("password")); !errors.Is(err, ErrMasterInvalid) || k.Unlocked() {
+	if err := k.UnlockPassword([]byte(testPassword)); !errors.Is(err, ErrMasterInvalid) || k.Unlocked() {
 		t.Fatal(err)
 	}
 }
 
 func TestPasswordChange(t *testing.T) {
-	o := passwordOptions(t)
+	o := options(t)
 	setupPassword(t, o, "old password")
 	k := openLockedTest(t, o)
 	if err := k.ChangePassword([]byte("old password"), []byte("new password")); err == nil {
@@ -132,37 +127,143 @@ func TestPasswordChange(t *testing.T) {
 	mustGet(t, k, "secret", []byte("value"))
 }
 
-func TestPasswordUseSystem(t *testing.T) {
-	o := passwordOptions(t)
-	setupPassword(t, o, "password")
-	mem := o.System.(*Memory)
+// Locking drops the master key, so every secret needs the password again.
+func TestLockDropsTheMasterKey(t *testing.T) {
+	o := options(t)
+	setupPassword(t, o, testPassword)
+	k := unlockTest(t, o, testPassword)
+	if err := k.Lock(); err != nil {
+		t.Fatal(err)
+	}
+	if k.Unlocked() {
+		t.Fatal("locked store still unlocked")
+	}
+	if _, err := k.Get("secret"); !errors.Is(err, ErrLocked) {
+		t.Fatal(err)
+	}
+	if _, err := k.Seal("test", []byte("value"), nil); !errors.Is(err, ErrLocked) {
+		t.Fatal(err)
+	}
+	if err := k.UnlockPassword([]byte("wrong")); !errors.Is(err, ErrWrongPassword) {
+		t.Fatal(err)
+	}
+	if err := k.UnlockPassword([]byte(testPassword)); err != nil {
+		t.Fatal(err)
+	}
+	mustGet(t, k, "secret", []byte("value"))
+}
+
+// blockedSystem counts what the computer's keychain was asked, and can
+// be made to fail, as a locked keyring does.
+type blockedSystem struct {
+	*Memory
+	reads atomic.Int32
+	fail  error
+}
+
+func (b *blockedSystem) Get(key string) ([]byte, error) {
+	b.reads.Add(1)
+	if b.fail != nil {
+		return nil, b.fail
+	}
+	return b.Memory.Get(key)
+}
+func (b *blockedSystem) Set(key string, value []byte) error {
+	if b.fail != nil {
+		return b.fail
+	}
+	return b.Memory.Set(key, value)
+}
+
+// TestSystemCacheAndSilentUnlock: setting the master password caches the
+// master key in this computer's keychain, which then opens the store
+// without it; forgetting the cache makes the password necessary again.
+func TestSystemCacheAndSilentUnlock(t *testing.T) {
+	o := options(t)
+	system := &blockedSystem{Memory: NewMemory()}
+	o.System = system
+	setupPassword(t, o, testPassword)
+	key, err := system.Get(MasterKey)
+	if err != nil || len(key) != 32 {
+		t.Fatalf("cached key: %d bytes, %v", len(key), err)
+	}
+	clear(key)
+
 	k := openLockedTest(t, o)
-	if err := k.UnlockPassword([]byte("password")); err != nil {
+	if k.Unlocked() {
+		t.Fatal("a reopened store started unlocked")
+	}
+	if err := k.TryUnlock(); err != nil {
 		t.Fatal(err)
 	}
-	if err := k.UseSystem([]byte("wrong")); !errors.Is(err, ErrWrongPassword) || mem.Len() != 0 {
-		t.Fatal("wrong password moved the key", err)
+	mustGet(t, k, "secret", []byte("value"))
+	if system.reads.Load() == 0 {
+		t.Fatal("the silent unlock read no keychain")
 	}
-	mem.Fail = errors.New("no secret service")
-	if err := k.UseSystem([]byte("password")); !errors.Is(err, mem.Fail) || !k.PasswordProtected() {
-		t.Fatal("failed move dropped the password", err)
-	}
-	if _, err := os.Stat(masterPath(o)); err != nil {
-		t.Fatal("master file removed", err)
-	}
-	mem.Fail = nil
-	if err := k.UseSystem([]byte("password")); err != nil || k.PasswordProtected() {
+
+	// Locking drops the in-memory key; the cache is untouched.
+	if err := k.Lock(); err != nil {
 		t.Fatal(err)
 	}
-	if _, err := os.Stat(masterPath(o)); !errors.Is(err, os.ErrNotExist) {
-		t.Fatal("master file kept", err)
+	if err := k.TryUnlock(); err != nil {
+		t.Fatal(err)
+	}
+}
+
+// TestTryUnlockWithoutCachedKey: a computer that never had the password
+// typed on it, or whose keychain cannot be read, stays locked without an
+// error the caller shows.
+func TestTryUnlockWithoutCachedKey(t *testing.T) {
+	o := options(t)
+	system := &blockedSystem{Memory: NewMemory()}
+	o.System = system
+	setupPassword(t, o, testPassword)
+	if err := system.Memory.Delete(MasterKey); err != nil {
+		t.Fatal(err)
+	}
+	k := openLockedTest(t, o)
+	if err := k.TryUnlock(); !errors.Is(err, ErrNotFound) || k.Unlocked() {
+		t.Fatalf("missing cache: %v", err)
+	}
+	if err := k.UnlockPassword([]byte(testPassword)); err != nil {
+		t.Fatal(err)
+	}
+	// Opening it with the password caches the key here, so the next
+	// launch needs nothing.
+	if _, err := system.Memory.Get(MasterKey); err != nil {
+		t.Fatalf("password unlock cached nothing: %v", err)
 	}
 	k.Close()
+
+	system.fail = errors.New("keyring locked")
 	k = openLockedTest(t, o)
-	if k.PasswordProtected() {
-		t.Fatal("still protected")
+	if err := k.TryUnlock(); err == nil || k.Unlocked() {
+		t.Fatalf("unreadable keychain: %v", err)
 	}
-	if err := k.Unlock(); err != nil {
+	system.fail = nil
+}
+
+// TestForgetSystem: forgetting drops only the cached key, so the store
+// keeps working while it is open and asks again after a restart.
+func TestForgetSystem(t *testing.T) {
+	o := options(t)
+	system := &blockedSystem{Memory: NewMemory()}
+	o.System = system
+	setupPassword(t, o, testPassword)
+	k := unlockTest(t, o, testPassword)
+	if err := k.ForgetSystem(); err != nil {
+		t.Fatal(err)
+	}
+	if _, err := system.Memory.Get(MasterKey); !errors.Is(err, ErrNotFound) {
+		t.Fatal("the cached key stayed")
+	}
+	mustGet(t, k, "secret", []byte("value"))
+	k.Close()
+	k = openLockedTest(t, o)
+	if err := k.TryUnlock(); !errors.Is(err, ErrNotFound) {
+		t.Fatal(err)
+	}
+	if err := k.UnlockPassword([]byte(testPassword)); err != nil {
 		t.Fatal(err)
 	}
 	mustGet(t, k, "secret", []byte("value"))

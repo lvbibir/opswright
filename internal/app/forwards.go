@@ -509,12 +509,6 @@ func (a *App) SaveFwdForm(m locales.Messages) bool {
 		return false
 	}
 	if !a.unlocked() && (f.password != "" || (!f.isNew && f.orig.Kind == assets.ForwardDynamic && f.orig.User != "" && !auth)) {
-		draft := a.fwdForm
-		a.withSecrets(func() {
-			if a.fwdForm == draft {
-				a.SaveFwdForm(m)
-			}
-		})
 		return false
 	}
 	key := keychain.ForwardPassword(out.ID)

@@ -85,25 +85,9 @@ func TestTrayConnectionDeferredAndOpensMainFirst(t *testing.T) {
 }
 
 func TestTrayConnectionPreservesProtocolAndSecretGate(t *testing.T) {
-	b := &authorizationBackend{Memory: keychain.NewMemory()}
-	a, _ := lockedTestApp(t, b)
-	t.Cleanup(func() {
-		// This test marks an unlock busy without starting its cleanup worker.
-		a.unlock.mu.Lock()
-		a.unlock.busy = false
-		a.unlock.mu.Unlock()
-		a.Close()
-		kc, err := a.openSecrets()
-		if err != nil {
-			t.Fatalf("credential store lock was not released: %v", err)
-		}
-		if err := kc.Close(); err != nil {
-			t.Fatalf("close reopened credential store: %v", err)
-		}
-	})
+	a, _, _ := newLockedTestApp(t)
 	a.unlock.stored = true
-	// A pending explicit unlock must hold all sessions without bypassing it.
-	a.unlock.busy = true
+	// The lock screen must hold the sessions of the store it stands over.
 	for _, proto := range []assets.Protocol{assets.ProtoSSH, assets.ProtoTelnet, assets.ProtoSerial} {
 		h := assets.Host{Name: "saved", Address: "localhost", User: "test", Auth: assets.AuthPassword, Protocol: proto}
 		if proto == assets.ProtoSerial {
@@ -116,19 +100,17 @@ func TestTrayConnectionPreservesProtocolAndSecretGate(t *testing.T) {
 		if err := a.ConnectFromTray(saved.ID); err != nil {
 			t.Fatal(err)
 		}
-		cn := a.focused()
-		if cn == nil || cn.host.ID != saved.ID || cn.host.Protocol != proto || !cn.waitingSecrets {
-			t.Fatalf("protocol %q bypassed normal session/unlock path: %+v", proto, cn)
+		if cn := a.focused(); cn != nil {
+			t.Fatalf("protocol %q opened a session while the store was locked: %+v", proto, cn)
 		}
 	}
-	if b.calls.Load() != 0 || a.unlocked() {
-		t.Fatal("tray metadata/held connection accessed saved secrets")
+	if a.unlocked() {
+		t.Fatal("a held connection opened the store")
 	}
 }
 
 func TestTrayPanelStateAndActionsAreIndependent(t *testing.T) {
-	b := &authorizationBackend{Memory: keychain.NewMemory()}
-	a, _ := lockedTestApp(t, b)
+	a, _ := lockedTestApp(t, keychain.NewMemory())
 	first, second := a.NewTrayPanel(func(TrayAction) {}), a.NewTrayPanel(func(TrayAction) {})
 	first.search = "query"
 	*first.section("g:test") = false
@@ -151,7 +133,7 @@ func TestTrayPanelStateAndActionsAreIndependent(t *testing.T) {
 	if !a.editing {
 		t.Fatal("new host action not handled")
 	}
-	if a.unlocked() || b.calls.Load() != 0 {
-		t.Fatal("metadata actions authorized secrets")
+	if !a.unlocked() {
+		t.Fatal("an injected test store asked for a master password")
 	}
 }

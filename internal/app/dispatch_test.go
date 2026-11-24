@@ -1,7 +1,6 @@
 package app
 
 import (
-	"path/filepath"
 	"slices"
 	"testing"
 	"time"
@@ -63,55 +62,6 @@ func TestPostCloseDropsPendingAndLateCallbacks(t *testing.T) {
 	a.post(func() { ran = true })
 	if ran || len(p.work) != 0 {
 		t.Fatalf("closed app ran work or scheduled more: %v, %d", ran, len(p.work))
-	}
-}
-
-func TestSilentUnlockDispatchesWithoutFrames(t *testing.T) {
-	for _, closeBeforeAccept := range []bool{false, true} {
-		t.Run(map[bool]string{false: "hidden", true: "closed"}[closeBeforeAccept], func(t *testing.T) {
-			dir := t.TempDir()
-			b := &silentBackend{authorizationBackend: authorizationBackend{Memory: keychain.NewMemory()}}
-			b.allowed.Store(true)
-			kc, err := keychain.Open(keychain.OpenOptions{Path: filepath.Join(dir, "secrets.enc"), LockPath: filepath.Join(dir, "secrets.lock"), Scope: "sshyard", System: b.Memory})
-			if err != nil {
-				t.Fatal(err)
-			}
-			if err := kc.Set("secret", []byte("value")); err != nil {
-				t.Fatal(err)
-			}
-			if err := kc.Close(); err != nil {
-				t.Fatal(err)
-			}
-			p := newDispatchPump()
-			a, err := New(Platform{Post: p.post, DataDir: dir, Secrets: b, HomeDir: dir, CacheDir: filepath.Join(dir, "cache")})
-			if err != nil {
-				t.Fatal(err)
-			}
-			t.Cleanup(a.Close)
-			a.settings.MCPEnabled, a.settings.MCPPort = true, 0
-			// Start's silent probe must complete even while the window is hidden.
-			a.probeUnlock()
-			var completion func()
-			select {
-			case completion = <-p.work:
-			case <-time.After(5 * time.Second):
-				t.Fatal("silent unlock completion was not scheduled")
-			}
-			if closeBeforeAccept {
-				a.Close()
-			}
-			completion()
-			if closeBeforeAccept {
-				if a.mcp.srv != nil || a.unlocked() || a.unlock.servicesStarted {
-					t.Fatal("late unlock revived closed services")
-				}
-			} else if !a.unlocked() || a.mcp.srv == nil || !a.unlock.servicesStarted {
-				t.Fatalf("hidden startup: unlocked=%v MCP=%v err=%v", a.unlocked(), a.mcp.srv != nil, a.mcp.err)
-			}
-			if b.calls.Load() != 0 || b.silent.Load() != 1 {
-				t.Fatalf("startup authorization=%d silent=%d", b.calls.Load(), b.silent.Load())
-			}
-		})
 	}
 }
 

@@ -157,7 +157,7 @@ func TestRestoreMovedAIProviderUsesBackupKey(t *testing.T) {
 
 func TestRestoreMovedAIProviderMetadataFailureKeepsKey(t *testing.T) {
 	a, _, _ := backupApp(t)
-	opts, _ := installBackupStore(t, a)
+	opts := installBackupStore(t, a, testBackupPassword)
 	path := filepath.Join(t.TempDir(), "hosts.json")
 	var err error
 	if a.store, err = assets.Open(path); err != nil {
@@ -177,9 +177,7 @@ func TestRestoreMovedAIProviderMetadataFailureKeepsKey(t *testing.T) {
 	if err := a.kc.Close(); err != nil {
 		t.Fatal(err)
 	}
-	if a.kc, err = keychain.Open(opts); err != nil {
-		t.Fatal(err)
-	}
+	a.kc = reopenBackupStore(t, opts, testBackupPassword)
 	if got, err := a.kc.Get(keychain.AIKey("prov1")); err != nil || string(got) != localAIKey {
 		t.Fatal("failed restore did not put the dropped AI key back")
 	}

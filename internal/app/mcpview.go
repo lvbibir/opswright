@@ -235,7 +235,7 @@ func (a *App) homePath(p string) string {
 // counting down, so it cannot be clicked through unread.
 func (a *App) mcpSheet(c *ui.Context, m locales.Messages, tok theme.Tokens) {
 	ask := a.mcpAsk
-	if ask == nil || a.unlock.modal {
+	if ask == nil {
 		return
 	}
 	now := c.Now()

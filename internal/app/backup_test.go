@@ -18,11 +18,10 @@ import (
 	"golang.org/x/crypto/ssh/knownhosts"
 )
 
-// backupApp is a test app whose backups derive cheaply and save to dir.
+// backupApp is a test app whose exports save to dir.
 func backupApp(t *testing.T) (*App, *ui.Tester, string) {
 	t.Helper()
 	a, tt := newTestApp(t)
-	a.kdf = vault.Params{Time: 1, Memory: 64, Threads: 1}
 	dir := t.TempDir()
 	a.p.SaveFile = func(title, path string) (string, error) { return filepath.Join(dir, filepath.Base(path)), nil }
 	return a, tt, dir
@@ -58,11 +57,13 @@ func fillStore(t *testing.T, a *App) (assets.Credential, assets.Credential, asse
 	return pw, key, px
 }
 
-// export runs the export sheet with password, as typed in both fields.
-func export(t *testing.T, a *App, tt *ui.Tester, dir, password string, secrets bool) string {
+// export runs the export sheet with the secrets switch as given: the
+// file is sealed under the store's backup key, which the master password
+// derives to.
+func export(t *testing.T, a *App, tt *ui.Tester, dir string, secrets bool) string {
 	t.Helper()
 	a.openExport()
-	a.backup.password, a.backup.confirm, a.backup.secrets = password, password, secrets
+	a.backup.secrets = secrets
 	f := a.backup
 	if !a.ExportBackup(en) {
 		t.Fatalf("export refused: %q", f.err)
@@ -78,7 +79,7 @@ func export(t *testing.T, a *App, tt *ui.Tester, dir, password string, secrets b
 func TestBackupRoundTrip(t *testing.T) {
 	src, stt, sdir := backupApp(t)
 	pw, key, px := fillStore(t, src)
-	path := export(t, src, stt, sdir, "correct horse", true)
+	path := export(t, src, stt, sdir, true)
 	b, _ := os.ReadFile(path)
 	for _, secret := range []string{"hunter2", "open sesame", "proxy-pw", "sk-test", "deploy", "10.0.0.5"} {
 		if bytes.Contains(b, []byte(secret)) {
@@ -98,7 +99,7 @@ func TestBackupRoundTrip(t *testing.T) {
 	if !tt.HasText("Restore from Backup") || !tt.HasText(filepath.Base(path)) {
 		t.Fatalf("restore sheet texts %q", tt.Texts())
 	}
-	dst.backup.password = "correct horse"
+	dst.backup.password = testBackupPassword
 	if !dst.RestoreBackup(en) {
 		t.Fatalf("restore refused: %q", dst.backup.err)
 	}
@@ -140,9 +141,9 @@ func TestBackupRoundTrip(t *testing.T) {
 func TestBackupWithoutSecrets(t *testing.T) {
 	a, tt, dir := backupApp(t)
 	pw, _, _ := fillStore(t, a)
-	path := export(t, a, tt, dir, "correct horse", false)
+	path := export(t, a, tt, dir, false)
 	b, _ := os.ReadFile(path)
-	plain, err := vault.Open(b, []byte("correct horse"))
+	plain, err := vault.Open(b, []byte(testBackupPassword))
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -162,40 +163,10 @@ func TestBackupWithoutSecrets(t *testing.T) {
 	}
 }
 
-func TestBackupPasswordChecks(t *testing.T) {
-	a, tt, dir := backupApp(t)
-	a.openSettings(prefBackup)
-	tt.Frame()
-	mustClick(t, tt, en.ExportEllipsis())
-	tt.Frame()
-	if a.backup == nil || !a.backup.secrets {
-		t.Fatal("export sheet did not open with secrets on")
-	}
-	// The first field takes typing at once.
-	for range 3 {
-		tt.Frame()
-	}
-	tt.Type("short")
-	tt.Frame()
-	if a.backup.password != "short" {
-		t.Fatalf("typed into the password field, it holds %q", a.backup.password)
-	}
-	if a.ExportBackup(en) || a.backup.err != en.BackupPasswordShort("8") {
-		t.Fatalf("short password: %q", a.backup.err)
-	}
-	a.backup.password, a.backup.confirm = "long enough", "long enougj"
-	if a.ExportBackup(en) || a.backup.err != en.BackupPasswordMismatch() {
-		t.Fatalf("mismatch: %q", a.backup.err)
-	}
-	if ms, _ := filepath.Glob(filepath.Join(dir, "*")); len(ms) != 0 {
-		t.Fatalf("saved %v", ms)
-	}
-}
-
 func TestRestoreWrongPassword(t *testing.T) {
 	a, stt, sdir := backupApp(t)
 	fillStore(t, a)
-	path := export(t, a, stt, sdir, "correct horse", true)
+	path := export(t, a, stt, sdir, true)
 	b, _ := os.ReadFile(path)
 
 	dst, tt, _ := backupApp(t)
@@ -369,36 +340,52 @@ func TestRestoreKeepsLocalACP(t *testing.T) {
 	}
 }
 
-// installBackupStore uses real ciphertext with an independent simulated device keychain.
-func installBackupStore(t *testing.T, a *App) (keychain.OpenOptions, *keychain.Memory) {
+// installBackupStore gives a a real ciphertext store with a master
+// password of its own, as an independent simulated device.
+func installBackupStore(t *testing.T, a *App, password string) keychain.OpenOptions {
 	t.Helper()
 	if err := a.kc.Close(); err != nil {
 		t.Fatal(err)
 	}
 	dir := t.TempDir()
-	system := keychain.NewMemory()
-	opts := keychain.OpenOptions{Path: filepath.Join(dir, "secrets.enc"), LockPath: filepath.Join(dir, "lock"), Scope: dir, System: system}
-	var err error
-	a.kc, err = keychain.Open(opts)
+	opts := keychain.OpenOptions{Path: filepath.Join(dir, "secrets.enc"), LockPath: filepath.Join(dir, "lock"), Scope: dir, KDF: cheapKDF}
+	kc, err := keychain.OpenLocked(opts)
 	if err != nil {
 		t.Fatal(err)
 	}
-	return opts, system
+	if err := kc.SetupPassword([]byte(password)); err != nil {
+		t.Fatal(err)
+	}
+	a.kc = kc
+	return opts
+}
+
+// reopenBackupStore opens opts again with its master password.
+func reopenBackupStore(t *testing.T, opts keychain.OpenOptions, password string) *keychain.Keychain {
+	t.Helper()
+	kc, err := keychain.OpenLocked(opts)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if err := kc.UnlockPassword([]byte(password)); err != nil {
+		t.Fatal(err)
+	}
+	return kc
 }
 
 func TestBackupIndependentDeviceMasters(t *testing.T) {
 	src, stt, dir := backupApp(t)
-	_, srcSystem := installBackupStore(t, src)
+	srcOpts := installBackupStore(t, src, testBackupPassword)
 	pw, _, _ := fillStore(t, src)
 	if err := src.kc.Set(keychain.MCPToken, []byte("source-device-token")); err != nil {
 		t.Fatal(err)
 	}
-	path := export(t, src, stt, dir, "correct horse", true)
+	path := export(t, src, stt, dir, true)
 	sealed, err := os.ReadFile(path)
 	if err != nil {
 		t.Fatal(err)
 	}
-	plain, err := vault.Open(sealed, []byte("correct horse"))
+	plain, err := vault.Open(sealed, []byte(testBackupPassword))
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -415,22 +402,22 @@ func TestBackupIndependentDeviceMasters(t *testing.T) {
 		t.Fatal("backup contains device MCP token")
 	}
 	dst, _, _ := backupApp(t)
-	opts, dstSystem := installBackupStore(t, dst)
-	srcMaster, err := srcSystem.Get(keychain.MasterKey)
+	opts := installBackupStore(t, dst, "destination password")
+	// The two devices' master keys are their own, sealed in their own
+	// master.enc; the source's secrets.enc is not the destination's.
+	srcCiphertext, err := os.ReadFile(srcOpts.Path)
 	if err != nil {
 		t.Fatal(err)
 	}
-	defer clear(srcMaster)
-	dstMaster, err := dstSystem.Get(keychain.MasterKey)
+	dstCiphertext, err := os.ReadFile(opts.Path)
 	if err != nil {
 		t.Fatal(err)
 	}
-	defer clear(dstMaster)
-	if bytes.Equal(srcMaster, dstMaster) || len(srcSystem.Keys()) != 1 || len(dstSystem.Keys()) != 1 {
-		t.Fatal("devices do not have independent master-only system keychains")
+	if bytes.Equal(srcCiphertext, dstCiphertext) {
+		t.Fatal("devices share one ciphertext")
 	}
 	// Even injected vault entries cannot replace device-local secrets.
-	payload.Secrets[keychain.MasterKey] = srcMaster
+	payload.Secrets[keychain.MasterKey] = []byte("foreign master")
 	payload.Secrets[keychain.MCPToken] = []byte("foreign-token")
 	if err := dst.kc.Set(keychain.MCPToken, []byte("destination-device-token")); err != nil {
 		t.Fatal(err)
@@ -441,10 +428,7 @@ func TestBackupIndependentDeviceMasters(t *testing.T) {
 	if err := dst.kc.Close(); err != nil {
 		t.Fatal(err)
 	}
-	dst.kc, err = keychain.Open(opts)
-	if err != nil {
-		t.Fatal("destination cannot reopen restored ciphertext:", err)
-	}
+	dst.kc = reopenBackupStore(t, opts, "destination password")
 	if value, err := dst.kc.Get(keychain.Cred(pw.ID, keychain.Password)); err != nil || string(value) != "hunter2" {
 		t.Fatal("restored credential did not survive encrypted-store reopen")
 	}
@@ -489,7 +473,7 @@ func TestRestoreBatchFailureKeepsPreviousSecrets(t *testing.T) {
 
 func TestRestoreMetadataFailureRollsBackEncryptedBatch(t *testing.T) {
 	a, _, _ := backupApp(t)
-	opts, _ := installBackupStore(t, a)
+	opts := installBackupStore(t, a, testBackupPassword)
 	path := filepath.Join(t.TempDir(), "hosts.json")
 	var err error
 	a.store, err = assets.Open(path)
@@ -516,10 +500,7 @@ func TestRestoreMetadataFailureRollsBackEncryptedBatch(t *testing.T) {
 	if err := a.kc.Close(); err != nil {
 		t.Fatal(err)
 	}
-	a.kc, err = keychain.Open(opts)
-	if err != nil {
-		t.Fatal(err)
-	}
+	a.kc = reopenBackupStore(t, opts, testBackupPassword)
 	if value, err := a.kc.Get(keychain.Cred(cr.ID, keychain.Password)); err != nil || string(value) != "old-secret" {
 		t.Fatal("metadata failure did not persist secret rollback")
 	}

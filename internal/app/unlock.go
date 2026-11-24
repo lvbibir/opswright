@@ -5,7 +5,6 @@ import (
 	"log"
 	"os"
 	"path/filepath"
-	"strconv"
 	"sync"
 	"sync/atomic"
 
@@ -14,23 +13,21 @@ import (
 	"github.com/egoist/mygo/ui"
 )
 
-// Authorization runs off the UI thread; completed actions return through post.
+// The store is opened off the UI thread; completed work returns through post.
 type unlockState struct {
-	mu              sync.Mutex
-	closed          bool
-	ready           atomic.Bool
-	secretsReady    atomic.Bool
-	busy            bool
-	probing         bool
-	completed       bool
-	err             error
-	closeErr        error
-	modal           bool
-	hold            focusHold
-	after           func()
+	mu           sync.Mutex
+	closed       bool
+	ready        atomic.Bool
+	secretsReady atomic.Bool
+	busy         bool
+	completed    bool
+	err          error
+	// servicesStarted is set once the work an unlock makes possible ran.
 	servicesStarted bool
 	started         bool
-	stored          bool
+	// stored is whether secrets.enc exists, which tells whether saved
+	// secrets are worth asking for at all.
+	stored bool
 }
 
 type lockedSecrets struct{}
@@ -42,19 +39,13 @@ func (lockedSecrets) Delete(string) error        { return keychain.ErrLocked }
 func (a *App) ready() bool    { return a.unlock.ready.Load() }
 func (a *App) unlocked() bool { return a.ready() && a.unlock.secretsReady.Load() }
 
-// withSecrets is only called by explicit user actions, never while rendering.
+// withSecrets runs an explicit user action that needs saved secrets. While
+// the lock screen stands nothing runs: it, not a dialog, asks for the
+// master password, so the action is dropped rather than queued.
 func (a *App) withSecrets(after func()) {
-	if a.unlocked() {
-		if after != nil {
-			after()
-		}
-		return
+	if a.unlocked() && after != nil {
+		after()
 	}
-	if a.unlock.busy {
-		return
-	}
-	a.unlock.after = after
-	a.retryUnlock()
 }
 
 func (a *App) prepareStorage() error {
@@ -89,12 +80,11 @@ func (a *App) prepareStorage() error {
 	}
 	a.unlock.stored = statErr == nil
 	a.kc = kc
-	a.keychainOK = true
 	a.unlock.ready.Store(true)
 	a.unlock.secretsReady.Store(kc.Unlocked())
-	if kc.Unlocked() {
-		a.adoptLockRecord()
-	}
+	// The app is locked exactly while the store is: no master password,
+	// nothing open.
+	a.lock.locked = !kc.Unlocked()
 	a.syncChoices()
 	a.resolveFonts(false, false, false)
 	a.updateCheck = a.settings.CheckUpdates
@@ -104,75 +94,49 @@ func (a *App) prepareStorage() error {
 	return nil
 }
 
-func (a *App) retryUnlock() {
+// retryPrepare stands behind the window that replaced the app when the
+// data folder could not be read at all.
+func (a *App) retryPrepare() {
 	a.unlock.mu.Lock()
-	if a.unlock.closed || a.unlock.busy || a.unlocked() {
+	if a.unlock.closed || a.unlock.busy || a.ready() {
 		a.unlock.mu.Unlock()
-		return
-	}
-	if a.ready() && a.kc.PasswordProtected() {
-		a.unlock.mu.Unlock()
-		a.openMasterPassword(masterPwUnlock)
 		return
 	}
 	a.unlock.busy = true
-	a.unlock.completed = false
-	a.unlock.err = nil
-	a.unlock.modal = false
 	a.unlock.mu.Unlock()
-	if !a.ready() {
-		if err := a.prepareStorage(); err != nil {
-			a.acceptUnlock(err)
-			return
-		}
+	err := a.prepareStorage()
+	if err == nil {
 		a.applyWindowSettings()
 		a.startIndependent()
-		a.unlock.mu.Lock()
-		after := a.unlock.after
-		a.unlock.after = nil
-		a.unlock.busy = false
-		a.unlock.mu.Unlock()
-		if after != nil {
-			a.withSecrets(after)
-		}
-		return
 	}
-	kc := a.kc
-	go func() {
-		err := kc.Unlock()
-		a.unlock.mu.Lock()
-		if a.unlock.closed {
-			a.closeSecrets(kc)
-			a.unlock.mu.Unlock()
-			return
-		}
-		a.unlock.completed = true
-		a.post(func() { a.acceptUnlock(err) })
-		a.unlock.mu.Unlock()
-	}()
+	a.unlock.mu.Lock()
+	a.unlock.busy, a.unlock.err = false, err
+	a.unlock.mu.Unlock()
+	a.invalidate()
+	if err == nil {
+		a.probeUnlock()
+	}
 }
 
-// probeUnlock unlocks at startup only when the system keychain needs no
-// authorization, as after the user always allowed SSHYard; otherwise the
-// store stays locked for an explicit unlock, and nothing is shown.
-func (a *App) probeUnlock() {
-	if !a.ready() || a.unlocked() || !a.unlock.stored {
-		return
+// afterUnlock starts what the master password makes possible.
+func (a *App) afterUnlock() {
+	a.startRestoredConnections()
+	if !a.unlock.servicesStarted {
+		a.unlock.servicesStarted = true
+		a.autoStartForwards()
+		a.syncMCP()
+		a.startAutoBackup()
 	}
-	kc := a.kc
-	a.unlock.probing = true
-	go func() {
-		err := kc.TryUnlock()
-		a.post(func() {
-			a.unlock.probing = false
-			if err == nil && !a.unlock.busy {
-				a.acceptUnlock(nil)
-			}
-		})
-	}()
 }
 
 func (a *App) openSecrets() (*keychain.Keychain, error) {
+	if a.p.Secrets != nil {
+		return keychain.New(a.p.Secrets), nil
+	}
+	system := a.p.System
+	if system == nil {
+		system = keychain.System{}
+	}
 	lock := a.p.SecretLockPath
 	if lock == "" {
 		lock = filepath.Join(a.p.DataDir, "secrets.lock")
@@ -181,40 +145,7 @@ func (a *App) openSecrets() (*keychain.Keychain, error) {
 	if scope == "" {
 		scope = "sshyard"
 	}
-	return keychain.OpenLocked(keychain.OpenOptions{Path: filepath.Join(a.p.DataDir, "secrets.enc"), LockPath: lock, Scope: scope, System: a.p.Secrets, KDF: a.kdf})
-}
-
-func (a *App) acceptUnlock(err error) {
-	a.unlock.mu.Lock()
-	if a.unlock.closed {
-		a.unlock.mu.Unlock()
-		return
-	}
-	a.unlock.busy = false
-	if err != nil {
-		a.unlock.err, a.unlock.modal = err, true
-		a.unlock.mu.Unlock()
-		return
-	}
-	a.unlock.secretsReady.Store(true)
-	after := a.unlock.after
-	a.unlock.after = nil
-	a.unlock.mu.Unlock()
-	// What asked for the store is dropped when the lock was found
-	// replaced: the store's own record locks the app again first.
-	if a.adoptLockRecord() {
-		after = nil
-	}
-	a.startRestoredConnections()
-	if !a.unlock.servicesStarted {
-		a.unlock.servicesStarted = true
-		a.autoStartForwards()
-		a.syncMCP()
-		a.startAutoBackup()
-	}
-	if after != nil {
-		after()
-	}
+	return keychain.OpenLocked(keychain.OpenOptions{Path: filepath.Join(a.p.DataDir, "secrets.enc"), LockPath: lock, Scope: scope, System: system, KDF: a.kdf})
 }
 
 // StoragePaths keeps the canonical lifetime lock separate from overridden data.
@@ -236,32 +167,10 @@ func (a *App) resolveStorage() error {
 	return nil
 }
 
-// Cleanup errors remain observable without exposing system diagnostic strings.
-// Callers hold unlock.mu, including the worker that receives a late result.
+// closeSecrets releases the lifetime lock of a store being replaced or
+// ended; a failure is logged, since nothing can be done about it then.
 func (a *App) closeSecrets(kc *keychain.Keychain) {
 	if err := kc.Close(); err != nil {
-		a.unlock.closeErr = err
-		code := "unknown"
-		var system *keychain.SystemError
-		if errors.As(err, &system) {
-			code = strconv.Itoa(system.Code)
-		}
-		log.Printf("sshyard: credential store cleanup failed (stage=close, code=%s)", code)
+		log.Printf("sshyard: credential store cleanup failed (stage=close)")
 	}
-}
-
-// A compact status appears only when saved data or pending services need it.
-func (a *App) showSecretsStatus() bool {
-	if a.unlocked() || a.unlock.probing && !a.unlock.busy {
-		return false
-	}
-	if a.unlock.stored || a.unlock.busy || a.unlock.err != nil || a.settings.MCPEnabled {
-		return true
-	}
-	for _, f := range a.store.Forwards() {
-		if f.AutoStart {
-			return true
-		}
-	}
-	return false
 }

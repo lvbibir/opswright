@@ -24,9 +24,11 @@ type OpenOptions struct {
 	Path     string
 	LockPath string
 	Scope    string
-	System   Backend
-	// KDF is what a new local master password derives with, vault's
-	// default when zero.
+	// System caches the master key so this computer opens the store
+	// without asking; nil leaves every open explicit.
+	System Backend
+	// KDF is what the master password derives with, vault's default when
+	// zero.
 	KDF vault.Params
 }
 
@@ -38,29 +40,15 @@ type encryptedStore struct {
 	lock   io.Closer
 	system Backend
 	exists bool
-	// masterPath is the local master key sealed under a password, the
-	// fallback for a system keychain SSHYard cannot use; protected is
-	// that it exists, in place of the system's master key.
+	// masterPath is the master key sealed under the master password;
+	// protected is that it exists, which every open store needs.
 	masterPath string
 	protected  bool
 	kdf        vault.Params
 }
 
-// Open acquires the lifetime lock and immediately unlocks the store.
-// A failure never replaces existing ciphertext or regenerates a missing master.
-func Open(o OpenOptions) (*Keychain, error) {
-	k, err := OpenLocked(o)
-	if err != nil {
-		return nil, err
-	}
-	if err := k.Unlock(); err != nil {
-		return nil, errors.Join(err, k.Close())
-	}
-	return k, nil
-}
-
-// OpenLocked acquires the lifetime lock and reads ciphertext without accessing
-// the system keychain or creating a master key or encrypted file.
+// OpenLocked acquires the lifetime lock and reads ciphertext without
+// asking for the master password or creating anything.
 func OpenLocked(o OpenOptions) (_ *Keychain, err error) {
 	if o.Path == "" || o.LockPath == "" || o.Scope == "" {
 		return nil, &OpError{Op: "lock", Err: errors.New("missing persistent store options")}
@@ -69,7 +57,7 @@ func OpenLocked(o OpenOptions) (_ *Keychain, err error) {
 	if err != nil {
 		return nil, &OpError{Op: "lock", Err: err}
 	}
-	b := &encryptedStore{path: o.Path, lock: lock, system: o.System, aad: append([]byte(fileMagic), fileVersion), masterPath: filepath.Join(filepath.Dir(o.Path), masterFile), kdf: o.KDF}
+	b := &encryptedStore{path: o.Path, lock: lock, aad: append([]byte(fileMagic), fileVersion), masterPath: filepath.Join(filepath.Dir(o.Path), masterFile), system: o.System, kdf: o.KDF}
 	if b.kdf == (vault.Params{}) {
 		b.kdf = vault.DefaultParams
 	}
@@ -97,8 +85,7 @@ func (b *encryptedStore) unlock(key []byte) (err error) {
 	b.key = append([]byte(nil), key...)
 	defer func() {
 		if err != nil {
-			clear(b.key)
-			b.key = nil
+			b.lockKey()
 		}
 	}()
 	if !b.exists {
@@ -110,42 +97,6 @@ func (b *encryptedStore) unlock(key []byte) (err error) {
 		return &OpError{Op: "file-decrypt", Err: err}
 	}
 	return nil
-}
-
-func master(system Backend, exists bool) ([]byte, error) {
-	key, err := system.Get(MasterKey)
-	if err == nil {
-		if len(key) != chacha20poly1305.KeySize {
-			clear(key)
-			return nil, &OpError{Op: "master-read", Err: ErrMasterInvalid}
-		}
-		return key, nil
-	}
-	clear(key)
-	if !errors.Is(err, ErrNotFound) {
-		return nil, &OpError{Op: "master-read", Err: err}
-	}
-	if exists {
-		return nil, &OpError{Op: "master-read", Err: ErrMasterMissing}
-	}
-	key = make([]byte, chacha20poly1305.KeySize)
-	defer clear(key)
-	if _, err := rand.Read(key); err != nil {
-		return nil, &OpError{Op: "master-write", Err: err}
-	}
-	if err := system.Set(MasterKey, key); err != nil {
-		return nil, &OpError{Op: "master-write", Err: err}
-	}
-	check, err := system.Get(MasterKey)
-	if err != nil {
-		clear(check)
-		return nil, &OpError{Op: "master-verify", Err: err}
-	}
-	if !bytes.Equal(key, check) {
-		clear(check)
-		return nil, &OpError{Op: "master-verify", Err: ErrMasterInvalid}
-	}
-	return check, nil
 }
 
 func (b *encryptedStore) decrypt() (map[string][]byte, error) {
@@ -269,9 +220,12 @@ func (b *encryptedStore) wipe() error {
 	b.sealed, b.exists = nil, false
 	return nil
 }
-func (b *encryptedStore) close() error {
+func (b *encryptedStore) lockKey() {
 	clear(b.key)
 	b.key = nil
+}
+func (b *encryptedStore) close() error {
+	b.lockKey()
 	b.sealed = nil
 	if b.lock == nil {
 		return nil

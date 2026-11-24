@@ -23,7 +23,7 @@ func TestWelcomeQuickMigrationStates(t *testing.T) {
 		if a.page != pageSettings || a.prefNow() != prefMigration {
 			t.Fatalf("saved=%v: quick migration did not open migration settings", saved)
 		}
-		if a.importing || a.imp != nil || a.migrationOpen || a.unlock.modal || a.unlock.busy {
+		if a.importing || a.imp != nil || a.migrationOpen || a.unlock.busy {
 			t.Fatal("navigation opened an import or authorization dialog")
 		}
 		mustClick(t, tt, m.Back())
@@ -52,17 +52,14 @@ func TestWelcomeQuickMigrationStates(t *testing.T) {
 }
 
 func TestWelcomeMigrationWhileSecretsLocked(t *testing.T) {
-	backend := &authorizationBackend{Memory: keychain.NewMemory()}
-	backend.fail.Store(true)
-	a, tt := lockedTestApp(t, backend)
+	a, tt := lockedTestApp(t, keychain.NewMemory())
 	if _, err := a.store.Add(assets.Host{Name: "saved", Address: "host.example", User: "root"}); err != nil {
 		t.Fatal(err)
 	}
 	tt.Frame()
-	calls := backend.calls.Load()
 	mustClick(t, tt, "Quick Migration")
 	tt.Frame()
-	if a.page != pageSettings || a.prefNow() != prefMigration || a.importing || a.unlock.busy || a.unlock.modal || a.unlock.after != nil || backend.calls.Load() != calls {
+	if a.page != pageSettings || a.prefNow() != prefMigration || a.importing || a.unlock.busy {
 		t.Fatal("migration navigation requested secret authorization")
 	}
 }

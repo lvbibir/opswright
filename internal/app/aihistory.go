@@ -23,10 +23,10 @@ import (
 // another and as it closes, and can open one again from its history to
 // carry on.
 
-// chatHistory is the store of the conversations, nil while the keychain
-// is locked.
+// chatHistory is the store of the conversations, nil while the secret
+// store is locked.
 func (a *App) chatHistory() *history.Store {
-	if a.p.DataDir == "" || !a.unlocked() || a.kc == nil {
+	if a.p.DataDir == "" || !a.unlocked() {
 		return nil
 	}
 	return history.New(filepath.Join(a.p.DataDir, "ai-history"), a.kc)
@@ -236,7 +236,6 @@ func (a *App) forgetChat(host, id string) error {
 // DeleteChat deletes host's conversation id; a pane showing it starts another.
 func (a *App) DeleteChat(host, id string) {
 	if !a.unlocked() {
-		a.withSecrets(func() { a.DeleteChat(host, id) })
 		return
 	}
 	for _, c := range a.conns {

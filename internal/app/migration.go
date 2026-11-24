@@ -338,11 +338,6 @@ func (a *App) startMigrationSave(m locales.Messages) {
 		return
 	}
 	if f.needsSecrets() && !a.unlocked() {
-		a.withSecrets(func() {
-			if a.migration == f {
-				a.startMigrationSave(m)
-			}
-		})
 		return
 	}
 	f.saving = true

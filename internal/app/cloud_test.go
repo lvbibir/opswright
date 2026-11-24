@@ -83,23 +83,14 @@ func davWrite(t *testing.T, fs xwebdav.FileSystem, name string, b []byte) {
 	f.Close()
 }
 
-// addTarget saves tg with its secret and the key of the backup password
-// "correct horse", as the editor would.
+// addTarget saves tg with its credential, as the editor would; its
+// backups are sealed under the store's own backup key.
 func addTarget(t *testing.T, a *App, tg settings.BackupTarget, secret string) settings.BackupTarget {
 	t.Helper()
 	if tg.ID == "" {
 		tg.ID = assets.NewID()
 	}
-	k, err := vault.Derive([]byte("correct horse"), a.kdf)
-	if err != nil {
-		t.Fatal(err)
-	}
-	defer k.Clear()
-	kb, _ := json.Marshal(k)
 	if err := a.kc.Set(keychain.BackupSecret(tg.ID), []byte(secret)); err != nil {
-		t.Fatal(err)
-	}
-	if err := a.kc.Set(keychain.BackupKey(tg.ID), kb); err != nil {
 		t.Fatal(err)
 	}
 	s := a.settings
@@ -167,23 +158,10 @@ func TestCloudTargetForm(t *testing.T) {
 	if f.tested != en.ConnectionOK() || f.err != "" {
 		t.Fatalf("test: %q, %q", f.tested, f.err)
 	}
-	// The backup password, shared by backups by hand and automatic ones,
-	// is asked for a new place, typed twice.
-	if !tt.HasText(en.BackupPassword()) || tt.HasText(en.AutoBackupInterval()) {
+	// The place seals under the master password, and says so.
+	if !tt.HasText(en.BackupTargetPasswordNote()) || tt.HasText(en.AutoBackupInterval()) {
 		t.Fatalf("texts %q", tt.Texts())
 	}
-	if a.SaveTargetForm(en) || f.err != en.RequiredField(en.BackupPassword()) {
-		t.Fatalf("no password: %q", f.err)
-	}
-	f.password, f.confirm = "short", "short"
-	if a.SaveTargetForm(en) || f.err != en.BackupPasswordShort("8") {
-		t.Fatalf("short password: %q", f.err)
-	}
-	f.password, f.confirm = "correct horse", "correct hors"
-	if a.SaveTargetForm(en) || f.err != en.BackupPasswordMismatch() {
-		t.Fatalf("mismatch: %q", f.err)
-	}
-	f.confirm = "correct horse"
 	if !a.SaveTargetForm(en) {
 		t.Fatalf("save refused: %q", f.err)
 	}
@@ -196,11 +174,6 @@ func TestCloudTargetForm(t *testing.T) {
 	if got, err := a.kc.Get(keychain.BackupSecret(id)); err != nil || string(got) != "dav-secret-1" {
 		t.Fatalf("secret %q, %v", got, err)
 	}
-	k, err := a.targetKey(ts[0])
-	if err != nil {
-		t.Fatal(err)
-	}
-	k.Clear()
 	if dataHas(t, a, "dav-secret-1") || dataHas(t, a, "correct horse") {
 		t.Fatal("a password is readable in the data directory")
 	}
@@ -209,9 +182,7 @@ func TestCloudTargetForm(t *testing.T) {
 		t.Fatalf("no row for the place; texts %q", tt.Texts())
 	}
 
-	// Editing keeps the secret and the key unless one is typed, with
-	// automatic backups turned on too.
-	key, _ := a.kc.Get(keychain.BackupKey(id))
+	// Editing keeps the secret, with automatic backups turned on too.
 	a.openTargetForm(&ts[0])
 	f = a.target
 	f.auto, f.secrets = true, false
@@ -225,9 +196,6 @@ func TestCloudTargetForm(t *testing.T) {
 	if got, _ := a.kc.Get(keychain.BackupSecret(id)); string(got) != "dav-secret-1" {
 		t.Fatalf("secret became %q", got)
 	}
-	if got, _ := a.kc.Get(keychain.BackupKey(id)); !bytes.Equal(got, key) {
-		t.Fatal("the key changed with no password typed")
-	}
 
 	// Another kind's secret is not kept.
 	a.openTargetForm(&tg)
@@ -238,38 +206,19 @@ func TestCloudTargetForm(t *testing.T) {
 	}
 	a.closeTargetForm()
 
-	// Turning automatic backups off keeps the key, for backups by hand.
+	// Turning automatic backups off saves the place.
 	a.openTargetForm(&tg)
 	a.target.auto = false
 	if !a.SaveTargetForm(en) {
 		t.Fatalf("save refused: %q", a.target.err)
 	}
-	if ok, _ := a.kc.Exists(keychain.BackupKey(id)); !ok {
-		t.Fatal("the key went with automatic backups off")
-	}
 
-	// A place without its key asks for the password again.
-	a.kc.Delete(keychain.BackupKey(id))
-	tg, _ = a.settings.BackupTarget(id)
-	a.openTargetForm(&tg)
-	f = a.target
-	if a.SaveTargetForm(en) || f.err != en.RequiredField(en.BackupPassword()) {
-		t.Fatalf("no key, no password: %q", f.err)
-	}
-	f.password, f.confirm = "battery staple", "battery staple"
-	if !a.SaveTargetForm(en) {
-		t.Fatalf("save refused: %q", f.err)
-	}
-	waitForIn(t, tt, slowWait, "derive", func() bool { return a.target == nil })
-
-	// Deleting the place deletes its secret and key.
+	// Deleting the place deletes its secret.
 	if err := a.DeleteBackupTarget(id); err != nil {
 		t.Fatal(err)
 	}
-	for _, k := range []string{keychain.BackupSecret(id), keychain.BackupKey(id)} {
-		if ok, _ := a.kc.Exists(k); ok {
-			t.Fatalf("%s stayed", k)
-		}
+	if ok, _ := a.kc.Exists(keychain.BackupSecret(id)); ok {
+		t.Fatal("the secret stayed")
 	}
 	if len(a.settings.BackupTargets) != 0 {
 		t.Fatal("the place stayed")
@@ -337,7 +286,7 @@ func TestCloudBackupAndRestore(t *testing.T) {
 	if !dst.backup.restore || dst.backup.name != files[0] || dst.remotes != nil {
 		t.Fatalf("restore sheet %+v", dst.backup)
 	}
-	dst.backup.password = "correct horse"
+	dst.backup.password = testBackupPassword
 	if !dst.RestoreBackup(en) {
 		t.Fatalf("restore refused: %q", dst.backup.err)
 	}
@@ -517,13 +466,13 @@ func TestCloudBackupNowKey(t *testing.T) {
 		t.Fatalf("backup holds %+v, %v", p, err)
 	}
 
-	a.kc.Delete(keychain.BackupKey(tg.ID))
+	a.kc.Delete(keychain.BackupKey)
 	a.BackupNow(tg.ID)
-	if !errors.Is(st.err, errBackupKey) || st.busy {
+	if !errors.Is(st.err, keychain.ErrNotFound) || st.busy {
 		t.Fatalf("state %+v", st)
 	}
 	tt.Frame()
-	if !tt.HasText(en.BackupUploadFailed("NAS", en.ErrBackupKeyMissing())) {
+	if !tt.HasText(en.BackupUploadFailed("NAS", en.ErrGeneric(secretStoreErrorText(en, keychain.ErrNotFound)))) {
 		t.Fatalf("texts %q", tt.Texts())
 	}
 }
@@ -567,7 +516,7 @@ func TestRestoreBackupBeforeArchives(t *testing.T) {
 		t.Fatal(err)
 	}
 	a.openRestore(en, "/tmp/SSHYard-2026-01-01"+backupExt, sealed, nil)
-	a.backup.password = "correct horse"
+	a.backup.password = testBackupPassword
 	if !a.RestoreBackup(en) {
 		t.Fatalf("restore refused: %q", a.backup.err)
 	}

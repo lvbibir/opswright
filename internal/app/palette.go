@@ -238,7 +238,6 @@ func inOrder(s, w string) bool {
 // unlocking the secrets first if they are locked.
 func (a *App) paletteSnippet(m locales.Messages, id string, enter bool) {
 	if !a.unlocked() {
-		a.withSecrets(func() { a.paletteSnippet(m, id, enter) })
 		return
 	}
 	if err := a.sendSnippet(id, enter); err != nil {

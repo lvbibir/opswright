@@ -10,7 +10,6 @@
     "github": "Licoy/sshyard"
   },
   "linux": {
-    "depends": ["libsecret-1-0 (>= 0.19)"],
     "formats": ["deb"],
     "webview": false
   },
