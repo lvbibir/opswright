@@ -64,7 +64,7 @@ go run ./cmd/devproxy -addr 127.0.0.1:3128
 
 ## 注意事项
 
-**测试的边界.** 界面逻辑用 `ui.Tester` 无头驱动, 加上进程内假服务器 (`internal/sshtest`), 绝大多数逻辑与交互都能在 WSL 里测. 只有 Windows 专属的运行时行为 (ConPTY 本地终端、托盘、系统通知、WSL 发行版探测等) 必须跑 exe 在 Windows 上实测. 不要拿 Linux 构建验证 Windows 行为; 本机有 WSLg, Linux 版 (`go run .`) 可用于快速冒烟, 但不代表 Windows 上的样子.
+**测试的边界.** 界面逻辑用 `ui.Tester` 无头驱动, 加上进程内假服务器 (`internal/sshtest`), 绝大多数逻辑与交互都能在 WSL 里测. 只有 Windows 专属的运行时行为 (ConPTY 本地终端、托盘、WSL 发行版探测等) 必须跑 exe 在 Windows 上实测. 不要拿 Linux 构建验证 Windows 行为; 本机有 WSLg, Linux 版 (`go run .`) 可用于快速冒烟, 但不代表 Windows 上的样子.
 
 **数据目录隔离.**
 

@@ -246,12 +246,6 @@ type Settings struct {
 	// BackupTargets are the places this device backs up to. They belong
 	// to this device: a backup neither holds nor replaces them.
 	BackupTargets []BackupTarget `json:"backupTargets,omitempty"`
-	// RenewalNotify shows a system notification as the renewal of a
-	// host's subscription comes within its reminder. On by default.
-	RenewalNotify bool `json:"renewalNotify"`
-	// RenewalNotified is, by host ID, the renewal day (assets.DateLayout)
-	// this device last notified of, so that each renewal notifies once.
-	RenewalNotified map[string]string `json:"renewalNotified,omitempty"`
 	// SessionLog is where the logs of terminal sessions go. It belongs to
 	// this device.
 	SessionLog SessionLog `json:"sessionLog"`
@@ -730,7 +724,7 @@ const (
 // Default returns the defaults.
 func Default() Settings {
 	return Settings{Background: DefaultBackground(), Theme: theme.Auto, CloseBehavior: CloseToTray, TrayIcon: TrayIconColor, TrayClick: TrayClickPanel, TrayHeight: DefaultTrayHeight, CheckUpdates: true, UpdateIntervalHours: 1, TerminalFontSize: 13, TerminalLineHeight: 100, TerminalCharWidth: 100, TerminalCursorStyle: CursorBlock, TerminalCursorBlink: true, TerminalScrollOnKey: true, TerminalCompletion: CompletionInline, KeepAliveSeconds: 30, AutoReconnect: true, ReturnToFolder: true, SidebarWidth: 240, MonospacedOnly: true, TransferConcurrency: 3, KeepAwake: true, OpenConfirmMB: 10, FilesSplit: 50, FilesEdge: FilesRight, TerminalRightClick: RightClickMenu, EditorTreeWidth: 240, TerminalTransfers: true, OSC52Write: OSC52Ask, OSC52MaxBytes: OSC52MaxDefault, OSC52Notify: true, MetricsEnabled: true, MetricsInterval: 2,
-		AIDefaultAgent: "builtin", AIDefaultMode: "ask", AIReviewStrictness: AIReviewStandard, AIContextLines: 200, AIAuditRetentionDays: 90, AIRequestTimeout: DefaultAIRequestTimeout, AIRedact: true, MCPPort: MCPPortDefault, LocalKeys: true, Highlight: Highlight{On: true}, RenewalNotify: true}
+		AIDefaultAgent: "builtin", AIDefaultMode: "ask", AIReviewStrictness: AIReviewStandard, AIContextLines: 200, AIAuditRetentionDays: 90, AIRequestTimeout: DefaultAIRequestTimeout, AIRedact: true, MCPPort: MCPPortDefault, LocalKeys: true, Highlight: Highlight{On: true}}
 }
 
 // ResolveOSC52Write is the write policy in effect. A host value of allow,

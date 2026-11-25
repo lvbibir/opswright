@@ -75,13 +75,6 @@ type HostMeta struct {
 	// Protocol says how a terminal target is reached, as "Telnet", "serial
 	// port COM3" or "local shell zsh"; unused for SSH.
 	Protocol string
-	// Provider, Renewal and Note are what the user keeps of the host:
-	// who rents it out, its subscription as a line ("renews every 1
-	// months since 2026-10-01; next renewal 2026-11-01, in 3 days") and
-	// their note, which is sent as untrusted data.
-	Provider string
-	Renewal  string
-	Note     string
 	// TermUser is who an SSH host's linked terminal switched to with su
 	// or sudo -i: a name, else "uid N"; empty while it runs as the login.
 	TermUser string
@@ -94,7 +87,7 @@ func hostMessage(h HostMeta) string {
 	}
 	msg := fmt.Sprintf("Host name: %s\nAddress: %s\nUser: %s\nUname: %s\nDistro: %s\nCwd: %s\n",
 		h.Name, h.Address, h.User, orUnknown(h.Uname), orUnknown(h.Distro), cwd)
-	return msg + kept(h) + "This session is bound to this host only. Reuse the host context provided here. " +
+	return msg + "This session is bound to this host only. Reuse the host context provided here. " +
 		"Do not guess unknown OS or distro; query them only when needed for the user's task."
 }
 
@@ -136,23 +129,7 @@ func hostMessageFor(t Target, h HostMeta) string {
 			msg += f.name + ": " + f.value + "\n"
 		}
 	}
-	return msg + kept(h) + "This session is bound to this terminal only. Reuse the context provided here."
-}
-
-// kept is what the user keeps of the host: its provider, subscription
-// and note, the note as untrusted data.
-func kept(h HostMeta) string {
-	msg := ""
-	if h.Provider != "" {
-		msg += "Provider: " + h.Provider + "\n"
-	}
-	if h.Renewal != "" {
-		msg += "Subscription: " + h.Renewal + "\n"
-	}
-	if h.Note != "" {
-		msg += "The user's note on this host:\n" + WrapUntrusted("host note", h.Note) + "\n"
-	}
-	return msg
+	return msg + "This session is bound to this terminal only. Reuse the context provided here."
 }
 
 func orUnknown(s string) string {

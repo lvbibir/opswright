@@ -330,7 +330,7 @@ func (a *App) themeSwitch(c *ui.Context, m locales.Messages) (theme.Mode, bool) 
 }
 
 // prefGeneral is what applies to all of Opswright rather than to how it
-// looks: the language, the window and the tray, reminders and updates.
+// looks: the language, the window and tray, and updates.
 func (a *App) prefGeneral(c *ui.Context, m locales.Messages, tok theme.Tokens, s *settings.Settings, changed *bool) {
 	a.settingsSection(c, tok, nil, "", func(g *settingsGroup) {
 		g.row(m.Language(), "", func() {
@@ -364,16 +364,6 @@ func (a *App) prefGeneral(c *ui.Context, m locales.Messages, tok theme.Tokens, s
 				if a.toolPanesChoice < len(modes) {
 					s.ToolPanes, *changed = modes[a.toolPanesChoice], true
 				}
-			}
-		})
-		g.row(m.RenewalNotify(), m.RenewalNotifyNote(), func() {
-			if formSwitch(c.Key("renewalnotify"), &s.RenewalNotify).Label(m.RenewalNotify()).Changed() {
-				*changed = true
-			}
-		})
-		g.row(m.NotificationTest(), m.NotificationTestNote(), func() {
-			if pill(c, m.SendTestNotification(), false, false, false) {
-				a.testNotification(m)
 			}
 		})
 	})

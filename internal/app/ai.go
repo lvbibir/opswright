@@ -127,10 +127,9 @@ type aiItem struct {
 }
 
 type aiPend struct {
-	prompt             policy.Prompt
-	ch                 chan policy.Answer
-	ctx                context.Context
-	cancelNotification context.CancelFunc
+	prompt policy.Prompt
+	ch     chan policy.Answer
+	ctx    context.Context
 }
 
 type fullAsk struct {
@@ -981,7 +980,7 @@ func (a *App) aiMeta(c *conn) agent.HostMeta {
 		cwd = t.cwd
 	}
 	return agent.HostMeta{Name: c.host.Label(), Address: c.host.Addr(), User: c.host.User, Cwd: cwd,
-		Protocol: a.aiConnection(c.host), Provider: c.host.Provider, Renewal: aiRenewal(c.host.Renewal, time.Now()), Note: c.host.Note}
+		Protocol: a.aiConnection(c.host)}
 }
 
 func (a *App) aiTerminal(c *conn) string {
@@ -1065,13 +1064,7 @@ func (p aiPrompter) Ask(ctx context.Context, pr policy.Prompt) policy.Answer {
 			request.ch <- policy.Cancelled
 			return
 		}
-		if old := c.ai.pending; old != nil && old.cancelNotification != nil {
-			old.cancelNotification()
-		}
 		c.ai.pending = request
-		if background := p.a.p.MainWindowBackground; background != nil && background() {
-			p.a.notifyApproval(c)
-		}
 	})
 	select {
 	case ans := <-request.ch:
@@ -1093,9 +1086,6 @@ func (a *App) answerAI(c *conn, ans policy.Answer) {
 	}
 	p := c.ai.pending
 	c.ai.pending = nil
-	if p.cancelNotification != nil {
-		p.cancelNotification()
-	}
 	select {
 	case p.ch <- ans:
 	default:

@@ -149,16 +149,10 @@ type Host struct {
 	Term string `json:"term,omitempty"`
 	// SessionLog logs each of the host's terminals from when it
 	// connects.
-	SessionLog bool `json:"sessionLog,omitempty"`
-	// Provider is who the server is rented from, as the user names it.
-	Provider string `json:"provider,omitempty"`
-	// Renewal is the host's subscription; its zero value keeps none.
-	Renewal Renewal `json:"renewal,omitzero"`
-	// Note is the user's own note on the host, as what it is for.
-	Note     string    `json:"note,omitempty"`
-	Created  time.Time `json:"created"`
-	Updated  time.Time `json:"updated"`
-	LastUsed time.Time `json:"lastUsed,omitzero"`
+	SessionLog bool      `json:"sessionLog,omitempty"`
+	Created    time.Time `json:"created"`
+	Updated    time.Time `json:"updated"`
+	LastUsed   time.Time `json:"lastUsed,omitzero"`
 }
 
 // AIPolicy is how an AI pane on this host may act. Paths are remote
@@ -223,13 +217,11 @@ func (h *Host) Normalize() {
 	h.Address = strings.TrimSpace(h.Address)
 	h.User = strings.TrimSpace(h.User)
 	h.Group = CleanGroup(h.Group)
-	h.Provider, h.Note = strings.TrimSpace(h.Provider), strings.TrimSpace(h.Note)
 	h.Tmux = strings.TrimSpace(h.Tmux)
 	if h.Encoding = strings.TrimSpace(h.Encoding); h.Encoding == "UTF-8" {
 		h.Encoding = ""
 	}
 	h.Term = strings.TrimSpace(h.Term)
-	h.Renewal.normalize()
 	h.Icon = IconText(h.Icon)
 	if _, ok := theme.LightTokens().TintNamed(h.Color); !ok {
 		h.Color = ""
@@ -988,13 +980,13 @@ func (s *Store) InGroup(group string) []Host {
 	return out
 }
 
-// Search returns the hosts whose name, address, user, group, provider or
-// note contain every word of q, ignoring case.
+// Search returns the hosts whose name, address, user or group contain
+// every word of q, ignoring case.
 func (s *Store) Search(q string) []Host {
 	words := strings.Fields(strings.ToLower(q))
 	var out []Host
 	for _, h := range s.List() {
-		hay := strings.ToLower(strings.Join([]string{h.Name, h.Address, h.User, h.Group, h.Provider, h.Note}, " "))
+		hay := strings.ToLower(strings.Join([]string{h.Name, h.Address, h.User, h.Group}, " "))
 		ok := true
 		for _, w := range words {
 			if !strings.Contains(hay, w) {

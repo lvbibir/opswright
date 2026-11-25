@@ -102,15 +102,6 @@ func (a *App) hostCard(c *ui.Context, m locales.Messages, tok theme.Tokens, anch
 			if !h.LastUsed.IsZero() {
 				fact(m.LastConnected(), h.LastUsed.Local().Format("2006-01-02 15:04"), none, 1)
 			}
-			if h.Provider != "" {
-				fact(m.FieldProvider(), h.Provider, none, 1)
-			}
-			if line, col, ok := renewalLine(m, tok, h.Renewal, now); ok {
-				fact(m.RenewalNext(), line, col, 2)
-			}
-			if h.Note != "" {
-				fact(m.FieldNote(), a.pv(h.Note), none, 4)
-			}
 		})
 	})
 }

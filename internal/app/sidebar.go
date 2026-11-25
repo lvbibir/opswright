@@ -235,19 +235,13 @@ func (a *App) selectedHost() string {
 // end of its row: two small IconButtons and the gap between them.
 const hostActionsWidth = 2*24 + 2 + 4
 
-// renewalMarkWidth is the room the mark of a renewal soon takes at the
-// end of a sidebar host's row, beside its latency, in place of its
-// actions.
-var renewalMarkWidth = 14 + theme.Space(1)
-
 // hostItem is a host of the sidebar: its tile, then its name, and while
 // the pointer is over it or it is chosen, what to do with it at the end
 // (files, and the rest in its menu, as on a right click; a double click
-// connects). A dot on the tile's corner tells how its sessions are, a
-// mark at the end that its subscription renews soon. Resting the pointer
-// on it shows its card; its latency shows at the end while its actions
-// do not. The item lays its children out reversed, so that
-// the tile it is given (after its label, as a badge) comes first.
+// connects). A dot on the tile's corner tells how its sessions are.
+// Resting the pointer on it shows its card; its latency shows at the end
+// while its actions do not. The item lays its children out reversed, so
+// that the tile it is given (after its label, as a badge) comes first.
 func (a *App) hostItem(c *ui.Context, m locales.Messages, h assets.Host, prefix string) {
 	tok := currentTokens(c)
 	it := ui.SidebarItem(c.Key(prefix+h.ID), prefix+h.ID, nil, a.pv(h.Label())).Reverse().Description(a.pv(a.hostTip(m, h))).Drag(dragHost{h.ID})
@@ -262,12 +256,8 @@ func (a *App) hostItem(c *ui.Context, m locales.Messages, h assets.Host, prefix 
 	}
 	more := "more:" + prefix + h.ID
 	shown := chosen || !a.multi.on && it.Hovered() || a.menu.key == more
-	days, soon := h.Renewal.Reminding(c.Now())
 	lat, measured := a.pingOf(h)
 	var marks float32
-	if soon {
-		marks += renewalMarkWidth
-	}
 	if measured {
 		marks += pingWidth
 	}
@@ -295,11 +285,6 @@ func (a *App) hostItem(c *ui.Context, m locales.Messages, h assets.Host, prefix 
 		}
 		if marks > 0 && !shown {
 			ui.Row(c.Key("marks")).Absolute().Top(0).Bottom(0).Right(theme.Space(2)).Gap(theme.Space(1)).AlignItems(ui.Center).Children(func() {
-				if soon {
-					ui.Box(c.Key("renewal")).Shrink(0).Label(m.RenewalSoon(renewWhen(m, days))).Children(func() {
-						ui.Icon(c, icons.Renewal.SVG).Size(14, 14).TextColor(renewalColor(tok, h.Renewal, c.Now()))
-					})
-				}
 				if measured {
 					pingText(c, m, tok, lat)
 				}

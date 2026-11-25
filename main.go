@@ -3,8 +3,6 @@
 package main
 
 import (
-	"context"
-	"errors"
 	"log"
 	"os"
 	"path/filepath"
@@ -171,11 +169,7 @@ func main() {
 		p := platform()
 		p.SetTrayIcon = func(style string) error { return d.setTrayIcon(style) }
 		p.SetRememberLayout = changeRememberLayout
-		p.Notify = showNotification
 		p.Relaunch = func() { mygo.App.Relaunch() }
-		p.MainWindowBackground = func() bool {
-			return d != nil && (!mygo.App.IsActive() || !d.window.IsFocused() || !d.window.IsVisible() || d.window.IsMinimized())
-		}
 		p.ActivateMainWindow = func() {
 			d.show()
 			d.window.Focus()
@@ -212,12 +206,8 @@ func main() {
 		d = newDesktop(a, w)
 		a.Start()
 		go updater.CleanLeftovers()
-		mygo.App.OnDidResignActive(a.NotifyPendingApprovals)
-		w.OnBlur(a.NotifyPendingApprovals)
-		w.OnHide(a.NotifyPendingApprovals)
 		w.OnMinimize(func() {
 			a.SetMinimized(true)
-			a.NotifyPendingApprovals()
 		})
 		w.OnRestore(func() { a.SetMinimized(false) })
 		// Off the frame that clicked them: closing the window there
@@ -235,22 +225,4 @@ func main() {
 	if err := mygo.App.Run(); err != nil {
 		log.Fatal(err)
 	}
-}
-
-func showNotification(ctx context.Context, note app.Notification) (func(), error) {
-	n := mygo.NewNotification(mygo.NotificationOptions{ID: note.ID, Title: note.Title, Body: note.Body})
-	if note.OnClick != nil {
-		n.OnClick(note.OnClick)
-	}
-	if err := n.ShowContext(ctx); err != nil {
-		// Remove the request from the native authorization queue, too.
-		if ctx.Err() != nil {
-			n.Close()
-		}
-		if errors.Is(err, mygo.ErrNotificationsDenied) {
-			return nil, app.ErrNotificationsDenied
-		}
-		return nil, err
-	}
-	return n.Close, nil
 }
