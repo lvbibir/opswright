@@ -1,8 +1,8 @@
-// Package applock is when SSHYard locks and how long it makes a wrong
+// Package applock is when Opswright locks and how long it makes a wrong
 // master password wait. The lock itself is the secrets store's: it opens
 // with the master password alone (keychain), so this package keeps
 // nothing that could open it, and its file, applock.json, holds only the
-// idle minutes, whether locking the screen or sleeping locks SSHYard,
+// idle minutes, whether locking the screen or sleeping locks Opswright,
 // and the failed attempts' back-off.
 package applock
 
@@ -14,7 +14,7 @@ import (
 	"slices"
 	"time"
 
-	"github.com/lvbibir/sshyard/internal/settings"
+	"github.com/lvbibir/opswright/internal/settings"
 )
 
 // File is the name of the lock's file in the data folder.
@@ -26,7 +26,7 @@ var IdleChoices = []int{1, 5, 15, 30, 60, 0}
 
 // Config is the lock as applock.json keeps it.
 type Config struct {
-	// IdleMinutes of no input in SSHYard lock it; 0 never does.
+	// IdleMinutes of no input in Opswright lock it; 0 never does.
 	IdleMinutes int `json:"idleMinutes"`
 	// LockOnSleep locks as the screen locks or the computer sleeps.
 	LockOnSleep bool `json:"lockOnSleep"`

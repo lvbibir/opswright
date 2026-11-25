@@ -6,9 +6,9 @@ import (
 	"testing"
 
 	"github.com/egoist/mygo/ui"
-	"github.com/lvbibir/sshyard/internal/assets"
-	"github.com/lvbibir/sshyard/internal/theme"
-	"github.com/lvbibir/sshyard/locales"
+	"github.com/lvbibir/opswright/internal/assets"
+	"github.com/lvbibir/opswright/internal/theme"
+	"github.com/lvbibir/opswright/locales"
 )
 
 func hostGroupTestEditor(t *testing.T, edit bool) (*App, *ui.Tester) {

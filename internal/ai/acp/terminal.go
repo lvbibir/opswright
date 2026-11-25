@@ -9,7 +9,7 @@ import (
 	"time"
 
 	sdk "github.com/coder/acp-go-sdk"
-	"github.com/lvbibir/sshyard/internal/ai/policy"
+	"github.com/lvbibir/opswright/internal/ai/policy"
 )
 
 // termProc is one remote command started for the agent.

@@ -17,7 +17,7 @@ func TestFilterEnvStripsSecretsEvenWhenConfigured(t *testing.T) {
 		"TERM=xterm",
 		"SSH_AUTH_SOCK=/tmp/sock",
 		"SSH_AGENT_PID=9",
-		"SSHYARD_X=1",
+		"OPSWRIGHT_X=1",
 		"AWS_SECRET_ACCESS_KEY=secret",
 		"DISPLAY=:0",
 		"FOO=frombase",
@@ -27,11 +27,11 @@ func TestFilterEnvStripsSecretsEvenWhenConfigured(t *testing.T) {
 		"FOO":           "bar",
 		"SSH_AUTH_SOCK": "/tmp/agent.sock",
 		"LANG":          "en_US.UTF-8",
-		"SSHYARD_Y":     "no",
+		"OPSWRIGHT_Y":   "no",
 		"CUSTOM":        "yes",
 	}
 	got := strings.Join(FilterEnv(base, extra), "\n")
-	for _, banned := range []string{"SSH_AUTH_SOCK", "SSH_AGENT_PID", "SSHYARD_", "AWS_SECRET", "DISPLAY", "frombase", "/second"} {
+	for _, banned := range []string{"SSH_AUTH_SOCK", "SSH_AGENT_PID", "OPSWRIGHT_", "AWS_SECRET", "DISPLAY", "frombase", "/second"} {
 		if strings.Contains(got, banned) {
 			t.Fatalf("env contains %q:\n%s", banned, got)
 		}

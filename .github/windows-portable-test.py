@@ -21,7 +21,7 @@ class WindowsPortableTest(unittest.TestCase):
         with tempfile.TemporaryDirectory() as work:
             stage = Path(work)
             files = {
-                "SSHYard.exe": b"executable fixture",
+                "Opswright.exe": b"executable fixture",
                 "runtime.dll": b"runtime fixture",
                 "icon.png": b"icon fixture",
                 "licenses/NOTICE": b"license fixture",
@@ -37,16 +37,16 @@ class WindowsPortableTest(unittest.TestCase):
                 else:
                     path.write_bytes(data)
             for name in (
-                "sshyard-setup-0.0.4-amd64.exe",
-                "sshyard-0.0.4-windows-amd64.tar.gz",
-                "sshyard-0.0.3-to-0.0.4-windows-amd64.delta",
-                "sshyard-0.0.4-windows-amd64-portable.zip",
+                "opswright-setup-0.0.4-amd64.exe",
+                "opswright-0.0.4-windows-amd64.tar.gz",
+                "opswright-0.0.3-to-0.0.4-windows-amd64.delta",
+                "opswright-0.0.4-windows-amd64-portable.zip",
                 "update-windows-amd64.json",
                 "install.ps1",
             ):
                 (stage / name).write_bytes(b"excluded build artifact")
             output = portable.package(stage, "0.0.4", "amd64")
-            self.assertEqual(output.name, "sshyard-0.0.4-windows-amd64-portable.zip")
+            self.assertEqual(output.name, "opswright-0.0.4-windows-amd64-portable.zip")
             with zipfile.ZipFile(output) as archive:
                 self.assertIsNone(archive.testzip())
                 self.assertEqual(
@@ -63,27 +63,27 @@ class WindowsPortableTest(unittest.TestCase):
             stage = Path(work)
             with self.assertRaises(FileNotFoundError):
                 portable.package(stage, "0.0.4", "amd64")
-            (stage / "SSHYard.exe").write_bytes(b"executable fixture")
+            (stage / "Opswright.exe").write_bytes(b"executable fixture")
             output = portable.package(stage, "0.0.4-beta-20261104120000", "amd64")
             self.assertIn("0.0.4-beta-20261104120000", output.name)
             with zipfile.ZipFile(output) as archive:
-                self.assertEqual(archive.namelist(), ["SSHYard.exe"])
+                self.assertEqual(archive.namelist(), ["Opswright.exe"])
 
     def test_arm64_archive_skips_its_own_artifacts(self):
         with tempfile.TemporaryDirectory() as work:
             stage = Path(work)
-            (stage / "SSHYard.exe").write_bytes(b"executable fixture")
+            (stage / "Opswright.exe").write_bytes(b"executable fixture")
             for name in (
-                "sshyard-setup-0.0.4-arm64.exe",
-                "sshyard-0.0.4-windows-arm64.tar.gz",
-                "sshyard-0.0.3-to-0.0.4-windows-arm64.delta",
+                "opswright-setup-0.0.4-arm64.exe",
+                "opswright-0.0.4-windows-arm64.tar.gz",
+                "opswright-0.0.3-to-0.0.4-windows-arm64.delta",
                 "update-windows-arm64.json",
             ):
                 (stage / name).write_bytes(b"excluded build artifact")
             output = portable.package(stage, "0.0.4", "arm64")
-            self.assertEqual(output.name, "sshyard-0.0.4-windows-arm64-portable.zip")
+            self.assertEqual(output.name, "opswright-0.0.4-windows-arm64-portable.zip")
             with zipfile.ZipFile(output) as archive:
-                self.assertEqual(archive.namelist(), ["SSHYard.exe"])
+                self.assertEqual(archive.namelist(), ["Opswright.exe"])
 
     def test_download_link_requires_portable_asset(self):
         # Resolve Git Bash from PATH instead of Windows' System32 WSL launcher.
@@ -92,28 +92,28 @@ class WindowsPortableTest(unittest.TestCase):
         with tempfile.TemporaryDirectory() as work:
             dist = Path(work)
             for name in (
-                "sshyard-setup-0.0.4-amd64.exe", "sshyard-setup-0.0.4-arm64.exe",
-                "sshyard-0.0.4-windows-arm64-portable.zip", "SHA256SUMS",
+                "opswright-setup-0.0.4-amd64.exe", "opswright-setup-0.0.4-arm64.exe",
+                "opswright-0.0.4-windows-arm64-portable.zip", "SHA256SUMS",
             ):
                 (dist / name).touch()
             command = [bash, (HERE / "release-download-notes.sh").as_posix(),
-                       dist.as_posix(), "v0.0.4", "lvbibir/sshyard"]
+                       dist.as_posix(), "v0.0.4", "lvbibir/opswright"]
             result = subprocess.run(command, capture_output=True, encoding="utf-8")
             self.assertNotEqual(result.returncode, 0)
             self.assertIn("expected one asset matching", result.stderr, repr(result))
-            name = "sshyard-0.0.4-windows-amd64-portable.zip"
+            name = "opswright-0.0.4-windows-amd64-portable.zip"
             (dist / name).touch()
             result = subprocess.run(command, capture_output=True, encoding="utf-8", check=True)
             self.assertIn(
-                f"[Portable ZIP](https://github.com/lvbibir/sshyard/releases/download/v0.0.4/{name})",
+                f"[Portable ZIP](https://github.com/lvbibir/opswright/releases/download/v0.0.4/{name})",
                 result.stdout,
             )
             for row in (
-                "| Arm64 | [Installer](https://github.com/lvbibir/sshyard/releases/download/v0.0.4/sshyard-setup-0.0.4-arm64.exe)"
-                " · [Portable ZIP](https://github.com/lvbibir/sshyard/releases/download/v0.0.4/sshyard-0.0.4-windows-arm64-portable.zip) |",
+                "| Arm64 | [Installer](https://github.com/lvbibir/opswright/releases/download/v0.0.4/opswright-setup-0.0.4-arm64.exe)"
+                " · [Portable ZIP](https://github.com/lvbibir/opswright/releases/download/v0.0.4/opswright-0.0.4-windows-arm64-portable.zip) |",
             ):
                 self.assertIn(row, result.stdout)
-            (dist / "sshyard-0.0.5-windows-amd64-portable.zip").touch()
+            (dist / "opswright-0.0.5-windows-amd64-portable.zip").touch()
             result = subprocess.run(command, capture_output=True, encoding="utf-8")
             self.assertNotEqual(result.returncode, 0)
             self.assertIn("found 2", result.stderr)

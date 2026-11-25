@@ -12,9 +12,9 @@ import (
 	"time"
 
 	"github.com/egoist/mygo/ui"
-	"github.com/lvbibir/sshyard/internal/sftpsvc"
-	"github.com/lvbibir/sshyard/internal/sshtest"
-	"github.com/lvbibir/sshyard/locales"
+	"github.com/lvbibir/opswright/internal/sftpsvc"
+	"github.com/lvbibir/opswright/internal/sshtest"
+	"github.com/lvbibir/opswright/locales"
 	"golang.org/x/crypto/ssh"
 )
 

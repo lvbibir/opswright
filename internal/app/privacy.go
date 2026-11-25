@@ -1,6 +1,6 @@
 package app
 
-import "github.com/lvbibir/sshyard/internal/mask"
+import "github.com/lvbibir/opswright/internal/mask"
 
 // pv is s as the app shows it: with its IP addresses masked while privacy
 // mode is on. Every view passes what it shows of a host (its label, which

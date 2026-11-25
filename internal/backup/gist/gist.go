@@ -19,11 +19,11 @@ import (
 	"time"
 	"unicode/utf8"
 
-	"github.com/lvbibir/sshyard/internal/backup"
+	"github.com/lvbibir/opswright/internal/backup"
 )
 
-// Description marks the gist SSHYard keeps its backups in.
-const Description = "SSHYard backup"
+// Description marks the gist Opswright keeps its backups in.
+const Description = "Opswright backup"
 
 // defaultAPI is GitHub's REST API.
 const defaultAPI = "https://api.github.com"
@@ -133,7 +133,7 @@ func (g *Gist) do(ctx context.Context, method, path string, body, out any) error
 	req.Header.Set("Authorization", "Bearer "+g.Token)
 	req.Header.Set("Accept", "application/vnd.github+json")
 	req.Header.Set("X-GitHub-Api-Version", "2022-11-28")
-	req.Header.Set("User-Agent", "SSHYard")
+	req.Header.Set("User-Agent", "Opswright")
 	if body != nil {
 		req.Header.Set("Content-Type", "application/json")
 	}
@@ -319,7 +319,7 @@ func (g *Gist) raw(ctx context.Context, raw string) ([]byte, error) {
 	if err != nil {
 		return nil, err
 	}
-	req.Header.Set("User-Agent", "SSHYard")
+	req.Header.Set("User-Agent", "Opswright")
 	if same {
 		if !g.tokenOK() {
 			return nil, ErrToken

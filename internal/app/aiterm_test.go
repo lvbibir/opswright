@@ -8,12 +8,12 @@ import (
 	"sync"
 	"testing"
 
-	"github.com/lvbibir/sshyard/internal/ai/agent"
-	"github.com/lvbibir/sshyard/internal/ai/console"
-	"github.com/lvbibir/sshyard/internal/ai/policy"
-	"github.com/lvbibir/sshyard/internal/assets"
-	"github.com/lvbibir/sshyard/internal/layout"
-	"github.com/lvbibir/sshyard/internal/session"
+	"github.com/lvbibir/opswright/internal/ai/agent"
+	"github.com/lvbibir/opswright/internal/ai/console"
+	"github.com/lvbibir/opswright/internal/ai/policy"
+	"github.com/lvbibir/opswright/internal/assets"
+	"github.com/lvbibir/opswright/internal/layout"
+	"github.com/lvbibir/opswright/internal/session"
 )
 
 type busyTestWriter func([]byte) (int, error)
@@ -232,7 +232,7 @@ func TestTerminalAssistantHosts(t *testing.T) {
 		t.Fatalf("files on this computer: %v", err)
 	}
 
-	sr, err := a.store.Add(assets.Host{Protocol: assets.ProtoSerial, Serial: &assets.SerialLine{Device: "/dev/sshyard-test-missing"}})
+	sr, err := a.store.Add(assets.Host{Protocol: assets.ProtoSerial, Serial: &assets.SerialLine{Device: "/dev/opswright-test-missing"}})
 	if err != nil {
 		t.Fatal(err)
 	}

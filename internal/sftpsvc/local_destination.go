@@ -94,7 +94,7 @@ func (d localDestination) rename(a, b string) error {
 // MkdirAllLocal creates download-plan directories with the same confinement
 // as the files that will later populate them.
 func MkdirAllLocal(p string) error {
-	d, err := destinationRoot(filepath.Join(p, ".sshyard-directory"))
+	d, err := destinationRoot(filepath.Join(p, ".opswright-directory"))
 	if err != nil {
 		return err
 	}

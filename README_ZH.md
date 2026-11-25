@@ -1,12 +1,12 @@
 <p align="left"><a href="README.md">English</a> · <strong>简体中文</strong></p>
 
 <p align="center">
-  <img src="resources/icon.png" alt="SSHYard 图标" width="128" height="128">
+  <img src="resources/icon.png" alt="Opswright 图标" width="128" height="128">
 </p>
 
-<h1 align="center">SSHYard</h1>
+<h1 align="center">Opswright</h1>
 
-SSHYard 是一款原生 Windows 桌面 SSH / SFTP 客户端，将终端、文件管理与 AI 助手集于一体。
+Opswright 是一款原生 Windows 桌面 SSH / SFTP 客户端，将终端、文件管理与 AI 助手集于一体。
 
 ## 截图
 
@@ -94,11 +94,11 @@ SSHYard 是一款原生 Windows 桌面 SSH / SFTP 客户端，将终端、文件
 
 ## 机密与主密码
 
-请以普通桌面用户运行 SSHYard,无需 root 或 `sudo`。保存和解锁凭据不需要任何额外配置:一个**主密码**把随机主密钥封存在 `master.enc` 中,主密钥再加密 `secrets.enc` 里 SSHYard 保存的一切。
+请以普通桌面用户运行 Opswright,无需 root 或 `sudo`。保存和解锁凭据不需要任何额外配置:一个**主密码**把随机主密钥封存在 `master.enc` 中,主密钥再加密 `secrets.enc` 里 Opswright 保存的一切。
 
-首次使用时 SSHYard 会让你设置主密码。之后这台电脑会把它记在 Windows 凭据管理器里(由操作系统负责),以后打开无需再输入。手动锁定(快捷键、托盘、设置)后,本次运行内需要重新输入主密码;下次启动又会记住。空闲、锁屏与休眠只会隐藏窗口,不会要求密码。
+首次使用时 Opswright 会让你设置主密码。之后这台电脑会把它记在 Windows 凭据管理器里(由操作系统负责),以后打开无需再输入。手动锁定(快捷键、托盘、设置)后,本次运行内需要重新输入主密码;下次启动又会记住。空闲、锁屏与休眠只会隐藏窗口,不会要求密码。
 
-把数据文件夹拷到另一台电脑或另一个系统用户时,`master.enc` 会跟着走,该电脑首次打开需要输入主密码,之后也会记住。SSHYard 不会保存主密码:忘记后已保存的机密只能从备份找回,锁屏上的重置会删除它们。**设置 → 关于 → 机密存储**可以修改主密码,也可以让本机不再记住(下次重新要求输入)。
+把数据文件夹拷到另一台电脑或另一个系统用户时,`master.enc` 会跟着走,该电脑首次打开需要输入主密码,之后也会记住。Opswright 不会保存主密码:忘记后已保存的机密只能从备份找回,锁屏上的重置会删除它们。**设置 → 关于 → 机密存储**可以修改主密码,也可以让本机不再记住(下次重新要求输入)。
 
 ## 开发
 
@@ -112,7 +112,7 @@ go run .
 scripts/run-dev-app.sh
 
 # 把数据放到单独的目录
-SSHYARD_DATA_DIR=/tmp/demo go run .
+OPSWRIGHT_DATA_DIR=/tmp/demo go run .
 
 # 本地测试用 SSH 服务器
 go run ./cmd/devsshd -addr 127.0.0.1:2222 -user demo -password demo -root /tmp/remote
@@ -142,4 +142,4 @@ go tool mygo build -platform windows/amd64 -o dist
 
 ## 开源协议
 
-SSHYard 基于 [GNU Affero General Public License v3.0](LICENSE) 开源。
+Opswright 基于 [GNU Affero General Public License v3.0](LICENSE) 开源。

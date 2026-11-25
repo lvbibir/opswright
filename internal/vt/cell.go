@@ -1,4 +1,4 @@
-// Package vt is SSHYard's terminal emulator: a parser of the escape
+// Package vt is Opswright's terminal emulator: a parser of the escape
 // sequences a VT100/xterm-compatible terminal understands and the grid of
 // cells they draw on, with scrollback, the alternate screen, 256 colors
 // and truecolor. It has no UI; package app draws its cells natively with

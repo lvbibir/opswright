@@ -7,15 +7,15 @@ import (
 
 	"github.com/egoist/mygo/ui"
 	"github.com/egoist/mygo/ui/markdown"
-	"github.com/lvbibir/sshyard/internal/ai/agent"
-	"github.com/lvbibir/sshyard/internal/ai/llm"
-	"github.com/lvbibir/sshyard/internal/ai/policy"
-	"github.com/lvbibir/sshyard/internal/aibrands"
-	"github.com/lvbibir/sshyard/internal/icons"
-	"github.com/lvbibir/sshyard/internal/layout"
-	"github.com/lvbibir/sshyard/internal/settings"
-	"github.com/lvbibir/sshyard/internal/theme"
-	"github.com/lvbibir/sshyard/locales"
+	"github.com/lvbibir/opswright/internal/ai/agent"
+	"github.com/lvbibir/opswright/internal/ai/llm"
+	"github.com/lvbibir/opswright/internal/ai/policy"
+	"github.com/lvbibir/opswright/internal/aibrands"
+	"github.com/lvbibir/opswright/internal/icons"
+	"github.com/lvbibir/opswright/internal/layout"
+	"github.com/lvbibir/opswright/internal/settings"
+	"github.com/lvbibir/opswright/internal/theme"
+	"github.com/lvbibir/opswright/locales"
 )
 
 // aiPane is an AI pane: its header, with the model it asks, the timeline

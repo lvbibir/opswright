@@ -12,7 +12,7 @@ import (
 
 	"golang.org/x/crypto/ssh"
 
-	"github.com/lvbibir/sshyard/internal/scpfs"
+	"github.com/lvbibir/opswright/internal/scpfs"
 	"github.com/pkg/sftp"
 )
 

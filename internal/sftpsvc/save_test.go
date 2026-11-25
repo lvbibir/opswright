@@ -29,7 +29,7 @@ func leftovers(dir string) []string {
 	var out []string
 	es, _ := os.ReadDir(dir)
 	for _, e := range es {
-		if strings.HasPrefix(e.Name(), ".sshyard-") {
+		if strings.HasPrefix(e.Name(), ".opswright-") {
 			out = append(out, e.Name())
 		}
 	}
@@ -324,7 +324,7 @@ func TestCutSwapRecovers(t *testing.T) {
 	})
 	t.Run("discard", func(t *testing.T) {
 		cut()
-		if err := c.Discard(root, Unfinished{"a.conf", ".sshyard-old-000000000000-b.conf"}); err == nil {
+		if err := c.Discard(root, Unfinished{"a.conf", ".opswright-old-000000000000-b.conf"}); err == nil {
 			t.Fatal("discarded another file's backup")
 		}
 		if err := c.Discard(root, listed()[0]); err != nil {
@@ -355,7 +355,7 @@ func TestCutSaveWithCopyReported(t *testing.T) {
 	c, root := connect(t)
 	bk := path.Base(backupName("/x/a.conf"))
 	os.WriteFile(filepath.Join(root, bk), []byte("old"), 0o644)
-	os.WriteFile(filepath.Join(root, ".sshyard-0123456789ab-a.conf"), []byte("new"), 0o600)
+	os.WriteFile(filepath.Join(root, ".opswright-0123456789ab-a.conf"), []byte("new"), 0o600)
 	es, un, err := c.ListUnfinished(root)
 	if err != nil {
 		t.Fatal(err)
@@ -385,29 +385,29 @@ func TestCleanLeftovers(t *testing.T) {
 	}
 	write("a.conf", "a", 0)
 	write("b.conf", "new b", 0)
-	write(".sshyard-0123456789ab-a.conf", "stale copy", 2*time.Hour)      // removed
-	write(".sshyard-0123456789ac-a.conf", "fresh copy", time.Minute)      // another save's: kept
-	write(".sshyard-0123456789ad-gone.txt", "maybe the old", 2*time.Hour) // file missing: kept
-	write(".sshyard-0123-a.conf", "not ours", 2*time.Hour)
+	write(".opswright-0123456789ab-a.conf", "stale copy", 2*time.Hour)      // removed
+	write(".opswright-0123456789ac-a.conf", "fresh copy", time.Minute)      // another save's: kept
+	write(".opswright-0123456789ad-gone.txt", "maybe the old", 2*time.Hour) // file missing: kept
+	write(".opswright-0123-a.conf", "not ours", 2*time.Hour)
 	// Uppercase hex is not ours. The suffix differs too: on a
 	// case-insensitive volume AB-a.conf would be the same file as ab-a.conf;
 	// b.conf is there, so lowercase hex here would be removed.
-	write(".sshyard-0123456789AB-b.conf", "not ours", 2*time.Hour)
-	write(".sshyard-old-0123456789ab-b.conf", "old b", 2*time.Hour)   // file there: removed
-	write(".sshyard-old-0123456789ad-b.conf", "young b", time.Minute) // an hour young: kept
-	write(".sshyard-old-0123456789ab-c.conf", "old c", 48*time.Hour)  // missing: reported
-	write(".sshyard-old-0123456789ac-c.conf", "newer old c", 24*time.Hour)
-	os.Mkdir(filepath.Join(root, ".sshyard-0123456789ae-a.conf"), 0o700) // a folder: kept
+	write(".opswright-0123456789AB-b.conf", "not ours", 2*time.Hour)
+	write(".opswright-old-0123456789ab-b.conf", "old b", 2*time.Hour)   // file there: removed
+	write(".opswright-old-0123456789ad-b.conf", "young b", time.Minute) // an hour young: kept
+	write(".opswright-old-0123456789ab-c.conf", "old c", 48*time.Hour)  // missing: reported
+	write(".opswright-old-0123456789ac-c.conf", "newer old c", 24*time.Hour)
+	os.Mkdir(filepath.Join(root, ".opswright-0123456789ae-a.conf"), 0o700) // a folder: kept
 	_, un, err := c.ListUnfinished(root)
 	if err != nil {
 		t.Fatal(err)
 	}
 	got := strings.Join(leftovers(root), ",")
-	want := ".sshyard-0123-a.conf,.sshyard-0123456789AB-b.conf,.sshyard-0123456789ac-a.conf,.sshyard-0123456789ad-gone.txt,.sshyard-0123456789ae-a.conf,.sshyard-old-0123456789ab-c.conf,.sshyard-old-0123456789ac-c.conf,.sshyard-old-0123456789ad-b.conf"
+	want := ".opswright-0123-a.conf,.opswright-0123456789AB-b.conf,.opswright-0123456789ac-a.conf,.opswright-0123456789ad-gone.txt,.opswright-0123456789ae-a.conf,.opswright-old-0123456789ab-c.conf,.opswright-old-0123456789ac-c.conf,.opswright-old-0123456789ad-b.conf"
 	if got != want {
 		t.Fatalf("left %s\nwant %s", got, want)
 	}
-	if want := []Unfinished{{"c.conf", ".sshyard-old-0123456789ac-c.conf"}}; !reflect.DeepEqual(un, want) {
+	if want := []Unfinished{{"c.conf", ".opswright-old-0123456789ac-c.conf"}}; !reflect.DeepEqual(un, want) {
 		t.Fatalf("unfinished %+v", un)
 	}
 	if _, err := os.Stat(filepath.Join(root, "c.conf")); err == nil || read(t, filepath.Join(root, "b.conf")) != "new b" {
@@ -418,14 +418,14 @@ func TestCleanLeftovers(t *testing.T) {
 	// next listing.
 	noPosixRename = true
 	t.Cleanup(func() { noPosixRename = false })
-	write(".sshyard-0123456789af-a.conf", "stale copy", 2*time.Hour)
-	write(".sshyard-old-0123456789af-d.conf", "old d", 2*time.Hour)
+	write(".opswright-0123456789af-a.conf", "stale copy", 2*time.Hour)
+	write(".opswright-old-0123456789af-d.conf", "old d", 2*time.Hour)
 	write(path.Base(backupName("/x/e.conf")), "old e", 2*time.Hour)
 	e := filepath.Join(root, "e.conf")
 	if _, err := c.WriteFile(e, []byte("e2"), Version{}); err != nil {
 		t.Fatal(err)
 	}
-	want += ",.sshyard-0123456789af-a.conf,.sshyard-old-0123456789af-d.conf"
+	want += ",.opswright-0123456789af-a.conf,.opswright-old-0123456789af-d.conf"
 	l := leftovers(root)
 	sort.Strings(l)
 	w := strings.Split(want, ",")

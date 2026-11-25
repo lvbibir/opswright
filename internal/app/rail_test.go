@@ -5,9 +5,9 @@ import (
 	"slices"
 	"testing"
 
-	"github.com/lvbibir/sshyard/internal/layout"
-	"github.com/lvbibir/sshyard/internal/settings"
-	"github.com/lvbibir/sshyard/locales"
+	"github.com/lvbibir/opswright/internal/layout"
+	"github.com/lvbibir/opswright/internal/settings"
+	"github.com/lvbibir/opswright/locales"
 )
 
 // TestRailRows: the rail shows every item by default; hiding items drops

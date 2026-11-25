@@ -17,9 +17,9 @@ import (
 	"testing"
 	"time"
 
-	"github.com/lvbibir/sshyard/internal/session"
-	"github.com/lvbibir/sshyard/internal/sftpsvc"
-	"github.com/lvbibir/sshyard/internal/sshtest"
+	"github.com/lvbibir/opswright/internal/session"
+	"github.com/lvbibir/opswright/internal/sftpsvc"
+	"github.com/lvbibir/opswright/internal/sshtest"
 	"golang.org/x/crypto/ssh"
 )
 
@@ -141,7 +141,7 @@ func TestRunEchoAndExit(t *testing.T) {
 	if stdout.String() != "it's\n" || stderr.String() != "bad\n" {
 		t.Fatalf("stdout %q stderr %q", stdout.String(), stderr.String())
 	}
-	if strings.Contains(stderr.String(), "SSHYARD_PGID") || strings.Contains(stderr.String(), "SSHYARD_PID") {
+	if strings.Contains(stderr.String(), "OPSWRIGHT_PGID") || strings.Contains(stderr.String(), "OPSWRIGHT_PID") {
 		t.Fatalf("marker leaked: %q", stderr.String())
 	}
 	if count.Bytes() != int64(len("it's\n")) {
@@ -519,9 +519,9 @@ func TestWrapBranchExit(t *testing.T) {
 		cmd    string
 		out    string
 	}{
-		{"setsid", []string{"sh", "setsid", "true"}, "SSHYARD_PGID ", "printf %s hi; exit 3", "hi"},
-		{"perl", []string{"sh", "perl"}, "SSHYARD_PGID ", "printf %s hi; exit 3", "hi"},
-		{"pid", []string{"sh"}, "SSHYARD_PID ", "printf %s hi; exit 3", "hi"},
+		{"setsid", []string{"sh", "setsid", "true"}, "OPSWRIGHT_PGID ", "printf %s hi; exit 3", "hi"},
+		{"perl", []string{"sh", "perl"}, "OPSWRIGHT_PGID ", "printf %s hi; exit 3", "hi"},
+		{"pid", []string{"sh"}, "OPSWRIGHT_PID ", "printf %s hi; exit 3", "hi"},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -546,9 +546,9 @@ func TestWrapBranchExit(t *testing.T) {
 			if !strings.Contains(stderr.String(), tt.marker) {
 				t.Fatalf("stderr %q, want marker %s", stderr.String(), tt.marker)
 			}
-			other := "SSHYARD_PID "
+			other := "OPSWRIGHT_PID "
 			if tt.marker == other {
-				other = "SSHYARD_PGID "
+				other = "OPSWRIGHT_PGID "
 			}
 			if strings.Contains(stderr.String(), other) {
 				t.Fatalf("wrong marker in %q", stderr.String())

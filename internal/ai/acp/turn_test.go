@@ -10,7 +10,7 @@ import (
 	"time"
 
 	sdk "github.com/coder/acp-go-sdk"
-	"github.com/lvbibir/sshyard/internal/sftpsvc"
+	"github.com/lvbibir/opswright/internal/sftpsvc"
 )
 
 type cancellingFiles struct {

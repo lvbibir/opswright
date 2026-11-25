@@ -7,7 +7,7 @@ import (
 	"testing"
 
 	"github.com/egoist/mygo/ui"
-	"github.com/lvbibir/sshyard/internal/theme"
+	"github.com/lvbibir/opswright/internal/theme"
 )
 
 // itermcolors writes sc as iTerm2 does.

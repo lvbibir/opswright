@@ -3,7 +3,7 @@ package app
 import (
 	"errors"
 
-	"github.com/lvbibir/sshyard/internal/keychain"
+	"github.com/lvbibir/opswright/internal/keychain"
 )
 
 // secretTx compensates secret writes when a later metadata save fails.

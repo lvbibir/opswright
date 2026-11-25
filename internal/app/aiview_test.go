@@ -7,11 +7,11 @@ import (
 	"time"
 
 	"github.com/egoist/mygo/ui"
-	"github.com/lvbibir/sshyard/internal/ai/agent"
-	"github.com/lvbibir/sshyard/internal/ai/policy"
-	"github.com/lvbibir/sshyard/internal/layout"
-	"github.com/lvbibir/sshyard/internal/settings"
-	"github.com/lvbibir/sshyard/internal/sshtest"
+	"github.com/lvbibir/opswright/internal/ai/agent"
+	"github.com/lvbibir/opswright/internal/ai/policy"
+	"github.com/lvbibir/opswright/internal/layout"
+	"github.com/lvbibir/opswright/internal/settings"
+	"github.com/lvbibir/opswright/internal/sshtest"
 )
 
 // TestAIPaneLayout checks the pane's controls: the backend in its header,

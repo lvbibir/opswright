@@ -7,7 +7,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/lvbibir/sshyard/internal/sshtest"
+	"github.com/lvbibir/opswright/internal/sshtest"
 )
 
 // A listing cleans up at most maxLeftovers leftovers, as a save did,
@@ -16,7 +16,7 @@ func TestListingCleanupCapped(t *testing.T) {
 	old := time.Now().Add(-2 * staleLeftover)
 	reqs := func(ffs *sshtest.FakeFS) (n int) {
 		for _, r := range ffs.Seen() {
-			if strings.Contains(r, "/.sshyard-") {
+			if strings.Contains(r, "/.opswright-") {
 				n++
 			}
 		}
@@ -27,7 +27,7 @@ func TestListingCleanupCapped(t *testing.T) {
 		c := connectFake(t, ffs)
 		ents := []fs.FileInfo{pagedInfo{name: "f", mode: 0o644, mtime: old}}
 		for i := range 3 * maxLeftovers {
-			ents = append(ents, pagedInfo{name: fmt.Sprintf(".sshyard-%012x-f", i), mode: 0o644, mtime: old})
+			ents = append(ents, pagedInfo{name: fmt.Sprintf(".opswright-%012x-f", i), mode: 0o644, mtime: old})
 		}
 		if changed, _ := c.cleanLeftovers("/d", ents); !changed {
 			t.Fatal("cleaned nothing")
@@ -43,7 +43,7 @@ func TestListingCleanupCapped(t *testing.T) {
 		for i := range 3 * maxLeftovers {
 			n := fmt.Sprintf("f%d", i)
 			ents = append(ents, pagedInfo{name: n, mode: 0o644, mtime: old},
-				pagedInfo{name: fmt.Sprintf(".sshyard-old-%012x-%s", i, n), mode: 0o644, mtime: old})
+				pagedInfo{name: fmt.Sprintf(".opswright-old-%012x-%s", i, n), mode: 0o644, mtime: old})
 		}
 		c.cleanLeftovers("/d", ents)
 		if n := reqs(ffs); n != maxLeftovers {
@@ -57,7 +57,7 @@ func TestListingCleanupCapped(t *testing.T) {
 		c := connectFake(t, ffs)
 		var ents []fs.FileInfo
 		for i := range 3 * maxLeftovers {
-			ents = append(ents, pagedInfo{name: fmt.Sprintf(".sshyard-old-%012x-g%d", i, i), mode: 0o644, mtime: old})
+			ents = append(ents, pagedInfo{name: fmt.Sprintf(".opswright-old-%012x-g%d", i, i), mode: 0o644, mtime: old})
 		}
 		_, un := c.cleanLeftovers("/d", ents)
 		if len(un) != maxLeftovers {

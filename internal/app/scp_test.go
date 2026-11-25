@@ -6,8 +6,8 @@ import (
 	"runtime"
 	"testing"
 
-	"github.com/lvbibir/sshyard/internal/assets"
-	"github.com/lvbibir/sshyard/internal/sshtest"
+	"github.com/lvbibir/opswright/internal/assets"
+	"github.com/lvbibir/opswright/internal/sshtest"
 )
 
 // TestFilesSCPBadge: a server without SFTP shows its files through its

@@ -9,7 +9,7 @@ import (
 	"testing"
 
 	"github.com/egoist/mygo/ui"
-	"github.com/lvbibir/sshyard/internal/sshtest"
+	"github.com/lvbibir/opswright/internal/sshtest"
 )
 
 // hostilePane opens a files pane on a server listing what ffs says, its

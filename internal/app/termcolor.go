@@ -2,8 +2,8 @@ package app
 
 import (
 	"github.com/egoist/mygo/ui"
-	"github.com/lvbibir/sshyard/internal/theme"
-	"github.com/lvbibir/sshyard/internal/vt"
+	"github.com/lvbibir/opswright/internal/theme"
+	"github.com/lvbibir/opswright/internal/vt"
 )
 
 var cubeLevels = [6]uint8{0, 95, 135, 175, 215, 255}

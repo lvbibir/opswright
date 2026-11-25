@@ -6,10 +6,10 @@ import (
 	"testing"
 
 	"github.com/egoist/mygo/ui"
-	"github.com/lvbibir/sshyard/internal/keymap"
-	"github.com/lvbibir/sshyard/internal/layout"
-	"github.com/lvbibir/sshyard/internal/vt"
-	"github.com/lvbibir/sshyard/locales"
+	"github.com/lvbibir/opswright/internal/keymap"
+	"github.com/lvbibir/opswright/internal/layout"
+	"github.com/lvbibir/opswright/internal/vt"
+	"github.com/lvbibir/opswright/locales"
 )
 
 func TestShortcutRule(t *testing.T) {

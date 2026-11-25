@@ -4,12 +4,12 @@ import (
 	"errors"
 
 	"github.com/egoist/mygo/ui"
-	"github.com/lvbibir/sshyard/internal/assets"
-	"github.com/lvbibir/sshyard/internal/keychain"
-	"github.com/lvbibir/sshyard/internal/keys"
-	"github.com/lvbibir/sshyard/internal/session"
-	"github.com/lvbibir/sshyard/internal/theme"
-	"github.com/lvbibir/sshyard/locales"
+	"github.com/lvbibir/opswright/internal/assets"
+	"github.com/lvbibir/opswright/internal/keychain"
+	"github.com/lvbibir/opswright/internal/keys"
+	"github.com/lvbibir/opswright/internal/session"
+	"github.com/lvbibir/opswright/internal/theme"
+	"github.com/lvbibir/opswright/locales"
 )
 
 // Host-only choices stay out of quick connect and credential rebinding.

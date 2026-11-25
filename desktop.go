@@ -5,10 +5,10 @@ import (
 	"log"
 
 	"github.com/egoist/mygo"
-	"github.com/lvbibir/sshyard/icon"
-	"github.com/lvbibir/sshyard/internal/app"
-	"github.com/lvbibir/sshyard/internal/settings"
-	"github.com/lvbibir/sshyard/locales"
+	"github.com/lvbibir/opswright/icon"
+	"github.com/lvbibir/opswright/internal/app"
+	"github.com/lvbibir/opswright/internal/settings"
+	"github.com/lvbibir/opswright/locales"
 )
 
 // postUI never runs fn inline: callers may still hold application locks.
@@ -63,7 +63,7 @@ func newDesktop(a *app.App, w *mygo.Window) *desktop {
 func (d *desktop) createTray() {
 	png, template := icon.TrayPNG(d.app.Settings().TrayIcon, false)
 	d.tray, d.trayErr = mygo.NewTray(mygo.TrayOptions{
-		ID: "sshyard.main", Icon: png, IconIsTemplate: template, ToolTip: "SSHYard",
+		ID: "opswright.main", Icon: png, IconIsTemplate: template, ToolTip: "Opswright",
 	})
 }
 

@@ -70,7 +70,7 @@ const loginTimeout = 5 * time.Second
 
 // marker brackets what the login shell prints, apart from anything its
 // startup files print.
-const marker = "\x1fSSHYARD-ENV\x1f"
+const marker = "\x1fOPSWRIGHT-ENV\x1f"
 
 // loginEnv is the environment of the user's interactive login shell, where
 // version managers, installers and proxies set their variables; nil when

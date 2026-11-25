@@ -5,10 +5,10 @@ import (
 	"strings"
 
 	"github.com/egoist/mygo/ui"
-	"github.com/lvbibir/sshyard/internal/aibrands"
-	"github.com/lvbibir/sshyard/internal/icons"
-	"github.com/lvbibir/sshyard/internal/theme"
-	"github.com/lvbibir/sshyard/locales"
+	"github.com/lvbibir/opswright/internal/aibrands"
+	"github.com/lvbibir/opswright/internal/icons"
+	"github.com/lvbibir/opswright/internal/theme"
+	"github.com/lvbibir/opswright/locales"
 )
 
 // menuEntry is an entry of a menu, the same in the app's drop-down menus

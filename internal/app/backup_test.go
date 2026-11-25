@@ -11,10 +11,10 @@ import (
 	"testing"
 
 	"github.com/egoist/mygo/ui"
-	"github.com/lvbibir/sshyard/internal/assets"
-	"github.com/lvbibir/sshyard/internal/keychain"
-	"github.com/lvbibir/sshyard/internal/settings"
-	"github.com/lvbibir/sshyard/internal/vault"
+	"github.com/lvbibir/opswright/internal/assets"
+	"github.com/lvbibir/opswright/internal/keychain"
+	"github.com/lvbibir/opswright/internal/settings"
+	"github.com/lvbibir/opswright/internal/vault"
 	"golang.org/x/crypto/ssh/knownhosts"
 )
 
@@ -198,7 +198,7 @@ func TestRestoreTakesOnlyItsSecrets(t *testing.T) {
 	p := backupPayload{Settings: a.settings, Assets: assets.Snapshot{Credentials: []assets.Credential{own}}, Secrets: map[string][]byte{
 		keychain.Cred(own.ID, keychain.Password):    []byte("theirs"),
 		keychain.Cred(victim.ID, keychain.Password): []byte("overwritten"),
-		"sshyard/probe": []byte("x"),
+		"opswright/probe":                           []byte("x"),
 	}}
 	if err := a.restoreBackup(en, p); err != nil {
 		t.Fatal(err)
@@ -206,7 +206,7 @@ func TestRestoreTakesOnlyItsSecrets(t *testing.T) {
 	if got, _ := a.kc.Get(keychain.Cred(victim.ID, keychain.Password)); string(got) != "mine" {
 		t.Fatalf("another entry's secret became %q", got)
 	}
-	if ok, _ := a.kc.Exists("sshyard/probe"); ok {
+	if ok, _ := a.kc.Exists("opswright/probe"); ok {
 		t.Fatal("wrote a key of no entry")
 	}
 	bad := backupPayload{Settings: a.settings, Assets: assets.Snapshot{Credentials: []assets.Credential{{ID: victim.ID + "/x", Name: "bad", Kind: assets.CredPassword}}},

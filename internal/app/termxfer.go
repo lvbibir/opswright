@@ -15,14 +15,14 @@ import (
 	"time"
 
 	"github.com/egoist/mygo/ui"
-	"github.com/lvbibir/sshyard/internal/awake"
-	"github.com/lvbibir/sshyard/internal/icons"
-	"github.com/lvbibir/sshyard/internal/sftpsvc"
-	"github.com/lvbibir/sshyard/internal/theme"
-	"github.com/lvbibir/sshyard/internal/trzsz"
-	"github.com/lvbibir/sshyard/internal/xfer"
-	"github.com/lvbibir/sshyard/internal/zmodem"
-	"github.com/lvbibir/sshyard/locales"
+	"github.com/lvbibir/opswright/internal/awake"
+	"github.com/lvbibir/opswright/internal/icons"
+	"github.com/lvbibir/opswright/internal/sftpsvc"
+	"github.com/lvbibir/opswright/internal/theme"
+	"github.com/lvbibir/opswright/internal/trzsz"
+	"github.com/lvbibir/opswright/internal/xfer"
+	"github.com/lvbibir/opswright/internal/zmodem"
+	"github.com/lvbibir/opswright/locales"
 )
 
 // A terminal's shell can start a transfer over its own byte stream:

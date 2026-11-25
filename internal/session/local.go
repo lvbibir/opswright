@@ -15,7 +15,7 @@ type localPTY interface {
 
 // termEnv names the terminal to a local shell, as a terminal app does.
 func termEnv(term string) []string {
-	return []string{"TERM=" + term, "COLORTERM=truecolor", "TERM_PROGRAM=SSHYard"}
+	return []string{"TERM=" + term, "COLORTERM=truecolor", "TERM_PROGRAM=Opswright"}
 }
 
 // mergeEnv keeps the last entry of each name, in the order the names

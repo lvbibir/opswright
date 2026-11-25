@@ -10,13 +10,13 @@ import (
 	"time"
 
 	"github.com/egoist/mygo/ui"
-	"github.com/lvbibir/sshyard/internal/ai/acp"
-	"github.com/lvbibir/sshyard/internal/ai/acp/detect"
-	"github.com/lvbibir/sshyard/internal/aibrands"
-	"github.com/lvbibir/sshyard/internal/icons"
-	"github.com/lvbibir/sshyard/internal/settings"
-	"github.com/lvbibir/sshyard/internal/theme"
-	"github.com/lvbibir/sshyard/locales"
+	"github.com/lvbibir/opswright/internal/ai/acp"
+	"github.com/lvbibir/opswright/internal/ai/acp/detect"
+	"github.com/lvbibir/opswright/internal/aibrands"
+	"github.com/lvbibir/opswright/internal/icons"
+	"github.com/lvbibir/opswright/internal/settings"
+	"github.com/lvbibir/opswright/internal/theme"
+	"github.com/lvbibir/opswright/locales"
 )
 
 // scanACPAgents finds the ACP agents on this computer; tests replace it.

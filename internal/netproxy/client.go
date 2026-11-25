@@ -1,4 +1,4 @@
-// Package netproxy is SSHYard's proxies, both ways: dialing out through
+// Package netproxy is Opswright's proxies, both ways: dialing out through
 // an HTTP CONNECT or SOCKS5 proxy (the first hop to a host), and serving
 // HTTP (CONNECT and plain absolute-URI requests), SOCKS4, SOCKS4a and
 // SOCKS5 on a local port (a dynamic -D forward). It has no UI and no

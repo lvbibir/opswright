@@ -4,11 +4,11 @@ import (
 	"errors"
 	"strings"
 
-	"github.com/lvbibir/sshyard/internal/assets"
-	"github.com/lvbibir/sshyard/internal/icons"
-	"github.com/lvbibir/sshyard/internal/layout"
-	"github.com/lvbibir/sshyard/internal/session"
-	"github.com/lvbibir/sshyard/locales"
+	"github.com/lvbibir/opswright/internal/assets"
+	"github.com/lvbibir/opswright/internal/icons"
+	"github.com/lvbibir/opswright/internal/layout"
+	"github.com/lvbibir/opswright/internal/session"
+	"github.com/lvbibir/opswright/locales"
 )
 
 // localID is the host of local terminal panes: this computer, never

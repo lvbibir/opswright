@@ -11,9 +11,9 @@ import (
 	"sync"
 	"testing"
 
-	"github.com/lvbibir/sshyard/internal/assets"
-	"github.com/lvbibir/sshyard/internal/keychain"
-	"github.com/lvbibir/sshyard/internal/settings"
+	"github.com/lvbibir/opswright/internal/assets"
+	"github.com/lvbibir/opswright/internal/keychain"
+	"github.com/lvbibir/opswright/internal/settings"
 )
 
 // Every key here is fictional and every endpoint a local test server.

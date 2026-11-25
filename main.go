@@ -1,4 +1,4 @@
-// SSHYard is a cross-platform SSH client with a native interface: hosts,
+// Opswright is a cross-platform SSH client with a native interface: hosts,
 // tabs and split panes of terminals drawn by its own VT engine, and SFTP.
 package main
 
@@ -14,13 +14,13 @@ import (
 	"github.com/egoist/mygo"
 	"github.com/egoist/mygo/transfer"
 	"github.com/egoist/mygo/ui"
-	"github.com/lvbibir/sshyard/internal/app"
-	"github.com/lvbibir/sshyard/internal/awake"
-	"github.com/lvbibir/sshyard/internal/netwatch"
-	"github.com/lvbibir/sshyard/internal/portable"
-	"github.com/lvbibir/sshyard/internal/settings"
-	"github.com/lvbibir/sshyard/internal/theme"
-	"github.com/lvbibir/sshyard/internal/updater"
+	"github.com/lvbibir/opswright/internal/app"
+	"github.com/lvbibir/opswright/internal/awake"
+	"github.com/lvbibir/opswright/internal/netwatch"
+	"github.com/lvbibir/opswright/internal/portable"
+	"github.com/lvbibir/opswright/internal/settings"
+	"github.com/lvbibir/opswright/internal/theme"
+	"github.com/lvbibir/opswright/internal/updater"
 )
 
 func themeSource(m theme.Mode) mygo.ThemeSource {
@@ -98,7 +98,7 @@ var (
 // in place of the user's application data, after making the move the
 // last launch asked for (portable.Apply).
 func setupStorage() {
-	if runtime.GOOS != "windows" && runtime.GOOS != "linux" || os.Getenv("SSHYARD_DATA_DIR") != "" {
+	if runtime.GOOS != "windows" && runtime.GOOS != "linux" || os.Getenv("OPSWRIGHT_DATA_DIR") != "" {
 		return
 	}
 	exe, err := os.Executable()
@@ -113,7 +113,7 @@ func setupStorage() {
 	// The copy that asked quits as this one starts: wait for its lock.
 	moveErr := portable.Apply(dir, appData, 15*time.Second)
 	if moveErr != nil {
-		log.Printf("sshyard: data move failed: %v", moveErr)
+		log.Printf("opswright: data move failed: %v", moveErr)
 	}
 	here := portable.Active(runtime.GOOS, dir)
 	if here {
@@ -141,7 +141,7 @@ func storagePaths() (app.StoragePaths, error) {
 	if err != nil {
 		return app.StoragePaths{}, err
 	}
-	dir := os.Getenv("SSHYARD_DATA_DIR")
+	dir := os.Getenv("OPSWRIGHT_DATA_DIR")
 	if dir == "" {
 		dir = canonical
 	}
@@ -191,7 +191,7 @@ func main() {
 		mygo.App.OnQuit(a.Close)
 		prepareWindowState("main")
 		w := mygo.NewWindow(mygo.WindowOptions{
-			Title:     "SSHYard",
+			Title:     "Opswright",
 			Width:     1200,
 			Height:    760,
 			MinWidth:  820,
@@ -205,7 +205,7 @@ func main() {
 			// (app.WindowControls).
 			HideWindowButtons: true,
 			BackgroundColor:   "light-dark(#EDEDF0,#28282A)",
-			// Native UI only: no web view anywhere in SSHYard.
+			// Native UI only: no web view anywhere in Opswright.
 			Content: ui.View(a.View),
 		})
 		rememberWindow(w, "main")

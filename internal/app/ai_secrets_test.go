@@ -7,11 +7,11 @@ import (
 	"testing"
 	"time"
 
-	"github.com/lvbibir/sshyard/internal/ai/history"
-	"github.com/lvbibir/sshyard/internal/assets"
-	"github.com/lvbibir/sshyard/internal/keychain"
-	"github.com/lvbibir/sshyard/internal/settings"
-	"github.com/lvbibir/sshyard/locales"
+	"github.com/lvbibir/opswright/internal/ai/history"
+	"github.com/lvbibir/opswright/internal/assets"
+	"github.com/lvbibir/opswright/internal/keychain"
+	"github.com/lvbibir/opswright/internal/settings"
+	"github.com/lvbibir/opswright/locales"
 )
 
 // TestAIHistorySaveFailureKeepsCurrentConversation: a history that cannot

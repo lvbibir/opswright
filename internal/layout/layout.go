@@ -1,4 +1,4 @@
-// Package layout keeps SSHYard's workspace: tabs, each a tree of split
+// Package layout keeps Opswright's workspace: tabs, each a tree of split
 // panes, each pane showing one item. An item is of a kind: a terminal
 // session, a files (SFTP) browser, an editor of a remote file, an AI
 // assistant, or a tool on the sessions (the broadcast, the session logs,

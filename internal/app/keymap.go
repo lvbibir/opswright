@@ -7,10 +7,10 @@ import (
 	"strings"
 
 	"github.com/egoist/mygo/ui"
-	"github.com/lvbibir/sshyard/internal/icons"
-	"github.com/lvbibir/sshyard/internal/keymap"
-	"github.com/lvbibir/sshyard/internal/layout"
-	"github.com/lvbibir/sshyard/locales"
+	"github.com/lvbibir/opswright/internal/icons"
+	"github.com/lvbibir/opswright/internal/keymap"
+	"github.com/lvbibir/opswright/internal/layout"
+	"github.com/lvbibir/opswright/locales"
 )
 
 // The actions a shortcut runs, by the ID the settings keep their

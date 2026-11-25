@@ -2,9 +2,9 @@ package app
 
 import (
 	"github.com/egoist/mygo/ui"
-	"github.com/lvbibir/sshyard/internal/fonts"
-	"github.com/lvbibir/sshyard/internal/theme"
-	"github.com/lvbibir/sshyard/locales"
+	"github.com/lvbibir/opswright/internal/fonts"
+	"github.com/lvbibir/opswright/internal/theme"
+	"github.com/lvbibir/opswright/locales"
 )
 
 // listFonts lists the installed families; tests replace it.
@@ -157,7 +157,7 @@ func (a *App) termFontPreview(c *ui.Context, tok theme.Tokens) {
 	ui.Column(c.Key("termpreview")).FillWidth().Padding(0, 14, 12, 14).Children(func() {
 		ui.Column(c.Key("box")).FillWidth().Padding(12, 14).Gap(2).Radius(theme.RadiusControl).
 			Background(pal.Background).TextColor(pal.Foreground).Border(1, tok.Line).Children(func() {
-			line(ui.Span{Text: "demo@sshyard", Color: pal.ANSI[10]}, ui.Span{Text: ":"}, ui.Span{Text: "~/projects", Color: pal.ANSI[12]}, ui.Span{Text: "$ ls -la"})
+			line(ui.Span{Text: "demo@opswright", Color: pal.ANSI[10]}, ui.Span{Text: ":"}, ui.Span{Text: "~/projects", Color: pal.ANSI[12]}, ui.Span{Text: "$ ls -la"})
 			line(ui.Span{Text: "drwxr-xr-x  4 demo staff  128 "}, ui.Span{Text: "src/", Color: pal.ANSI[12], Weight: 700})
 			line(ui.Span{Text: "-rw-r--r--  1 demo staff 2.1K 你好世界.md  ", Color: pal.Foreground}, ui.Span{Text: "0O 1lI {}[] => != ✓", Color: pal.ANSI[11]})
 		})

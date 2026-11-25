@@ -10,14 +10,14 @@ import (
 	"time"
 
 	"github.com/egoist/mygo/ui"
-	"github.com/lvbibir/sshyard/internal/assets"
-	"github.com/lvbibir/sshyard/internal/forward"
-	"github.com/lvbibir/sshyard/internal/icons"
-	"github.com/lvbibir/sshyard/internal/keychain"
-	"github.com/lvbibir/sshyard/internal/netproxy"
-	"github.com/lvbibir/sshyard/internal/session"
-	"github.com/lvbibir/sshyard/internal/theme"
-	"github.com/lvbibir/sshyard/locales"
+	"github.com/lvbibir/opswright/internal/assets"
+	"github.com/lvbibir/opswright/internal/forward"
+	"github.com/lvbibir/opswright/internal/icons"
+	"github.com/lvbibir/opswright/internal/keychain"
+	"github.com/lvbibir/opswright/internal/netproxy"
+	"github.com/lvbibir/opswright/internal/session"
+	"github.com/lvbibir/opswright/internal/theme"
+	"github.com/lvbibir/opswright/locales"
 )
 
 // fwdRun is a port forward started this run. Its connection is in

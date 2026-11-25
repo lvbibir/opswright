@@ -1,5 +1,5 @@
 // Command fakeagent is a scripted ACP agent for tests.
-// The script path is argv[1]. SSHYARD_* is not used: the client strips it.
+// The script path is argv[1]. OPSWRIGHT_* is not used: the client strips it.
 package main
 
 import (
@@ -582,7 +582,7 @@ func (a *agent) doBadUpdate(ctx context.Context) error {
 }
 
 func (a *agent) doUnknown(ctx context.Context) error {
-	_, err := sdk.SendRequest[json.RawMessage](rawConn(a.conn), ctx, "sshyard/nope", map[string]any{})
+	_, err := sdk.SendRequest[json.RawMessage](rawConn(a.conn), ctx, "opswright/nope", map[string]any{})
 	var re *sdk.RequestError
 	if errors.As(err, &re) {
 		fmt.Fprintf(os.Stderr, "rpc %d\n", re.Code)
@@ -788,7 +788,7 @@ func main() {
 			select {}
 		}
 	}
-	for _, k := range []string{"SSH_AUTH_SOCK", "SSH_AGENT_PID", "SSHYARD_X", "FOO", "PATH", "AWS_SECRET_ACCESS_KEY", "LANG", "HOME", "DISPLAY", "TERM"} {
+	for _, k := range []string{"SSH_AUTH_SOCK", "SSH_AGENT_PID", "OPSWRIGHT_X", "FOO", "PATH", "AWS_SECRET_ACCESS_KEY", "LANG", "HOME", "DISPLAY", "TERM"} {
 		if v, ok := os.LookupEnv(k); ok {
 			fmt.Fprintf(os.Stderr, "env %s=%s\n", k, v)
 		} else {

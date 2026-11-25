@@ -6,7 +6,7 @@ import (
 	"os"
 	"testing"
 
-	"github.com/lvbibir/sshyard/internal/session"
+	"github.com/lvbibir/opswright/internal/session"
 )
 
 // TestMain keeps the tests off the SSH agent of the machine running them:

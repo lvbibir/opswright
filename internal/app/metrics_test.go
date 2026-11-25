@@ -10,11 +10,11 @@ import (
 	"time"
 
 	"github.com/egoist/mygo/ui"
-	"github.com/lvbibir/sshyard/internal/assets"
-	"github.com/lvbibir/sshyard/internal/layout"
-	"github.com/lvbibir/sshyard/internal/session"
-	"github.com/lvbibir/sshyard/internal/sshtest"
-	"github.com/lvbibir/sshyard/locales"
+	"github.com/lvbibir/opswright/internal/assets"
+	"github.com/lvbibir/opswright/internal/layout"
+	"github.com/lvbibir/opswright/internal/session"
+	"github.com/lvbibir/opswright/internal/sshtest"
+	"github.com/lvbibir/opswright/locales"
 	"golang.org/x/crypto/ssh"
 )
 
@@ -32,7 +32,7 @@ func linuxBody(second bool) string {
 		"vol 2000000 500000 /data\n"
 }
 
-func wrapFrame(body string) string { return "<<<SSHYARD\n" + body + ">>>\n" }
+func wrapFrame(body string) string { return "<<<OPSWRIGHT\n" + body + ">>>\n" }
 
 func linuxFrames(gpu bool) []string {
 	a, b := linuxBody(false), linuxBody(true)
@@ -333,7 +333,7 @@ func TestMetricsUnavailable(t *testing.T) {
 		return tt.HasText("Metrics unavailable") && tt.HasText("The server refused the metrics command.") && hasLatency(tt)
 	})
 	for _, s := range tt.Texts() {
-		if strings.Contains(s, "sh -c") || strings.Contains(s, "sh -s") || strings.Contains(s, "<<<SSHYARD") {
+		if strings.Contains(s, "sh -c") || strings.Contains(s, "sh -s") || strings.Contains(s, "<<<OPSWRIGHT") {
 			t.Fatalf("remote command leaked: %s", s)
 		}
 	}

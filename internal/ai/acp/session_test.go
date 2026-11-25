@@ -17,14 +17,14 @@ import (
 	"time"
 
 	sdk "github.com/coder/acp-go-sdk"
-	"github.com/lvbibir/sshyard/internal/ai/policy"
-	"github.com/lvbibir/sshyard/internal/sftpsvc"
+	"github.com/lvbibir/opswright/internal/ai/policy"
+	"github.com/lvbibir/opswright/internal/sftpsvc"
 )
 
 var fakeBin string
 
 func TestMain(m *testing.M) {
-	dir, err := os.MkdirTemp("", "sshyard-fakeagent-")
+	dir, err := os.MkdirTemp("", "opswright-fakeagent-")
 	if err != nil {
 		os.Exit(1)
 	}
@@ -32,7 +32,7 @@ func TestMain(m *testing.M) {
 	if runtime.GOOS == "windows" {
 		fakeBin += ".exe"
 	}
-	cmd := exec.Command("go", "build", "-mod=mod", "-o", fakeBin, "github.com/lvbibir/sshyard/internal/ai/acp/internal/fakeagent")
+	cmd := exec.Command("go", "build", "-mod=mod", "-o", fakeBin, "github.com/lvbibir/opswright/internal/ai/acp/internal/fakeagent")
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
 	if err := cmd.Run(); err != nil {
@@ -595,7 +595,7 @@ func TestUnknownUpdatesIgnoredAndSessionEvents(t *testing.T) {
 	}
 	// Stderr still runs independently of the notification pump.
 	d := waitDiag(t, s, "{not-json")
-	if !strings.Contains(d, "rpc -32601") || !strings.Contains(d, "{not-json") || !strings.Contains(d, "prompt resource text resource") || !strings.Contains(d, "sshyard://instructions") {
+	if !strings.Contains(d, "rpc -32601") || !strings.Contains(d, "{not-json") || !strings.Contains(d, "prompt resource text resource") || !strings.Contains(d, "opswright://instructions") {
 		t.Fatalf("diag %s", d)
 	}
 }
@@ -679,7 +679,7 @@ func TestEnvStripsSSHAuthSock(t *testing.T) {
 			"TERM=xterm",
 			"SSH_AUTH_SOCK=/tmp/sock",
 			"SSH_AGENT_PID=9",
-			"SSHYARD_X=1",
+			"OPSWRIGHT_X=1",
 			"AWS_SECRET_ACCESS_KEY=secret",
 			"DISPLAY=:0",
 		},
@@ -687,7 +687,7 @@ func TestEnvStripsSSHAuthSock(t *testing.T) {
 	}
 	s := mustStart(t, "", cfg)
 	d := waitDiag(t, s, "sandbox-entries")
-	for _, want := range []string{"env SSH_AUTH_SOCK absent", "env SSH_AGENT_PID absent", "env SSHYARD_X absent", "env AWS_SECRET_ACCESS_KEY absent", "env DISPLAY absent", "env FOO=bar", "env LANG=en_US.UTF-8", "env PATH=/usr/bin", "sandbox-entries 0"} {
+	for _, want := range []string{"env SSH_AUTH_SOCK absent", "env SSH_AGENT_PID absent", "env OPSWRIGHT_X absent", "env AWS_SECRET_ACCESS_KEY absent", "env DISPLAY absent", "env FOO=bar", "env LANG=en_US.UTF-8", "env PATH=/usr/bin", "sandbox-entries 0"} {
 		if !strings.Contains(d, want) {
 			t.Fatalf("missing %q in %s", want, d)
 		}

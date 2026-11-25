@@ -1,7 +1,7 @@
 package agent
 
 import (
-	"github.com/lvbibir/sshyard/internal/ai/llm"
+	"github.com/lvbibir/opswright/internal/ai/llm"
 	"testing"
 )
 

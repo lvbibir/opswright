@@ -5,7 +5,7 @@ import (
 	"runtime"
 )
 
-// Tray artwork is generated from SSHYard's tray-white.svg and logo-ui.png
+// Tray artwork is generated from Opswright's tray-white.svg and logo-ui.png
 // by traygen.go, independently of the application icons.
 //
 //go:embed tray-white.png

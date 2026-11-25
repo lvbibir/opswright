@@ -8,8 +8,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/lvbibir/sshyard/internal/netproxy"
-	"github.com/lvbibir/sshyard/internal/sshtest"
+	"github.com/lvbibir/opswright/internal/netproxy"
+	"github.com/lvbibir/opswright/internal/sshtest"
 )
 
 func knownAll(t *testing.T, ss ...*sshtest.Server) *KnownHosts {

@@ -2,8 +2,8 @@ package app
 
 import (
 	"github.com/egoist/mygo/ui"
-	"github.com/lvbibir/sshyard/internal/settings"
-	"github.com/lvbibir/sshyard/locales"
+	"github.com/lvbibir/opswright/internal/settings"
+	"github.com/lvbibir/opswright/locales"
 )
 
 func (a *App) trayPreferences(c *ui.Context, m locales.Messages, g *settingsGroup, s *settings.Settings, changed *bool) {

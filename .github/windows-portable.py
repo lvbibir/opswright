@@ -9,14 +9,14 @@ import zipfile
 
 
 def package(build_dir, version, arch):
-    if not (build_dir / "SSHYard.exe").is_file():
-        raise FileNotFoundError(f"Missing MyGo executable: {build_dir / 'SSHYard.exe'}")
-    output = build_dir / f"sshyard-{version}-windows-{arch}-portable.zip"
+    if not (build_dir / "Opswright.exe").is_file():
+        raise FileNotFoundError(f"Missing MyGo executable: {build_dir / 'Opswright.exe'}")
+    output = build_dir / f"opswright-{version}-windows-{arch}-portable.zip"
     artifacts = (
-        "sshyard-setup-*.exe",
-        "sshyard-*-windows-*.tar.gz",
-        "sshyard-*-windows-*.delta",
-        "sshyard-*-windows-*-portable.zip",
+        "opswright-setup-*.exe",
+        "opswright-*-windows-*.tar.gz",
+        "opswright-*-windows-*.delta",
+        "opswright-*-windows-*-portable.zip",
         "update-windows-*.json",
         "install.ps1",
     )

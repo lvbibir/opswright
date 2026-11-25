@@ -3,7 +3,7 @@ package app
 import (
 	"testing"
 
-	"github.com/lvbibir/sshyard/internal/ai/policy"
+	"github.com/lvbibir/opswright/internal/ai/policy"
 )
 
 // TestAIApprovalInline checks that an approval in its pane stays when

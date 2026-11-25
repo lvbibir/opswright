@@ -10,7 +10,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/lvbibir/sshyard/internal/vt"
+	"github.com/lvbibir/opswright/internal/vt"
 )
 
 type drainingPTY struct {

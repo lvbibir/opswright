@@ -6,8 +6,8 @@ import (
 	"strconv"
 
 	"github.com/egoist/mygo/ui"
-	"github.com/lvbibir/sshyard/internal/settings"
-	"github.com/lvbibir/sshyard/locales"
+	"github.com/lvbibir/opswright/internal/settings"
+	"github.com/lvbibir/opswright/locales"
 )
 
 // The interface zooms the whole window's content (ui.Context.SetZoom):

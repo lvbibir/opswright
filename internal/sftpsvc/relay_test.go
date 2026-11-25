@@ -13,7 +13,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/lvbibir/sshyard/internal/sshtest"
+	"github.com/lvbibir/opswright/internal/sshtest"
 )
 
 // enqueueRelay makes the plan's folders on the destination and queues
@@ -37,7 +37,7 @@ func enqueueRelay(t *testing.T, from func(context.Context) (*Client, error), to 
 func parts(root string) []string {
 	var out []string
 	filepath.Walk(root, func(p string, _ os.FileInfo, _ error) error {
-		if strings.Contains(filepath.Base(p), ".sshyard-part") {
+		if strings.Contains(filepath.Base(p), ".opswright-part") {
 			out = append(out, p)
 		}
 		return nil

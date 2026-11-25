@@ -9,15 +9,15 @@ import (
 	"testing"
 
 	"github.com/egoist/mygo/ui"
-	"github.com/lvbibir/sshyard/internal/assets"
-	"github.com/lvbibir/sshyard/internal/keychain"
-	"github.com/lvbibir/sshyard/locales"
+	"github.com/lvbibir/opswright/internal/assets"
+	"github.com/lvbibir/opswright/internal/keychain"
+	"github.com/lvbibir/opswright/locales"
 )
 
 func TestReloadsMetadataAfterAnotherInstance(t *testing.T) {
 	dir := t.TempDir()
 	platform := func() Platform {
-		return Platform{DataDir: dir, SecretLockPath: filepath.Join(dir, "secrets.lock"), SecretScope: "sshyard", HomeDir: dir, CacheDir: filepath.Join(dir, "cache"), KDF: cheapKDF, System: keychain.NewMemory()}
+		return Platform{DataDir: dir, SecretLockPath: filepath.Join(dir, "secrets.lock"), SecretScope: "opswright", HomeDir: dir, CacheDir: filepath.Join(dir, "cache"), KDF: cheapKDF, System: keychain.NewMemory()}
 	}
 	first, err := New(platform())
 	if err != nil {

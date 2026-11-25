@@ -3,9 +3,9 @@ package app
 import (
 	"testing"
 
-	"github.com/lvbibir/sshyard/internal/ai/agent"
-	"github.com/lvbibir/sshyard/internal/theme"
-	"github.com/lvbibir/sshyard/locales"
+	"github.com/lvbibir/opswright/internal/ai/agent"
+	"github.com/lvbibir/opswright/internal/theme"
+	"github.com/lvbibir/opswright/locales"
 )
 
 func TestAIToolCardCollapsed(t *testing.T) {

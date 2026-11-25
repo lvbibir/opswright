@@ -7,7 +7,7 @@ import (
 
 	"github.com/egoist/mygo/ui"
 	"github.com/egoist/mygo/ui/shader"
-	"github.com/lvbibir/sshyard/internal/theme"
+	"github.com/lvbibir/opswright/internal/theme"
 )
 
 // The welcome page's backdrop is a lattice of dots adrift on a slow

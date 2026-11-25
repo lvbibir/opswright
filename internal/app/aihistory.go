@@ -9,13 +9,13 @@ import (
 	"time"
 
 	"github.com/egoist/mygo/ui"
-	"github.com/lvbibir/sshyard/internal/ai/history"
-	"github.com/lvbibir/sshyard/internal/aibrands"
-	"github.com/lvbibir/sshyard/internal/icons"
-	"github.com/lvbibir/sshyard/internal/keychain"
-	"github.com/lvbibir/sshyard/internal/settings"
-	"github.com/lvbibir/sshyard/internal/theme"
-	"github.com/lvbibir/sshyard/locales"
+	"github.com/lvbibir/opswright/internal/ai/history"
+	"github.com/lvbibir/opswright/internal/aibrands"
+	"github.com/lvbibir/opswright/internal/icons"
+	"github.com/lvbibir/opswright/internal/keychain"
+	"github.com/lvbibir/opswright/internal/settings"
+	"github.com/lvbibir/opswright/internal/theme"
+	"github.com/lvbibir/opswright/locales"
 )
 
 // A saved host keeps its AI conversations (internal/ai/history), sealed by
@@ -92,7 +92,7 @@ func (a *App) saveChat(c *conn) (err error) {
 	defer func() {
 		if err != nil {
 			if a.closing {
-				log.Print("sshyard: AI conversation save failed during close")
+				log.Print("opswright: AI conversation save failed during close")
 			} else {
 				a.historyFailure(true)
 			}

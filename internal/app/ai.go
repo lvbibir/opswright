@@ -13,17 +13,17 @@ import (
 
 	"github.com/egoist/mygo/ui"
 	"github.com/egoist/mygo/ui/markdown"
-	"github.com/lvbibir/sshyard/internal/ai/acp"
-	"github.com/lvbibir/sshyard/internal/ai/agent"
-	"github.com/lvbibir/sshyard/internal/ai/audit"
-	"github.com/lvbibir/sshyard/internal/ai/console"
-	"github.com/lvbibir/sshyard/internal/ai/llm"
-	"github.com/lvbibir/sshyard/internal/ai/policy"
-	"github.com/lvbibir/sshyard/internal/ai/remote"
-	"github.com/lvbibir/sshyard/internal/keychain"
-	"github.com/lvbibir/sshyard/internal/layout"
-	"github.com/lvbibir/sshyard/internal/settings"
-	"github.com/lvbibir/sshyard/internal/vt"
+	"github.com/lvbibir/opswright/internal/ai/acp"
+	"github.com/lvbibir/opswright/internal/ai/agent"
+	"github.com/lvbibir/opswright/internal/ai/audit"
+	"github.com/lvbibir/opswright/internal/ai/console"
+	"github.com/lvbibir/opswright/internal/ai/llm"
+	"github.com/lvbibir/opswright/internal/ai/policy"
+	"github.com/lvbibir/opswright/internal/ai/remote"
+	"github.com/lvbibir/opswright/internal/keychain"
+	"github.com/lvbibir/opswright/internal/layout"
+	"github.com/lvbibir/opswright/internal/settings"
+	"github.com/lvbibir/opswright/internal/vt"
 )
 
 // aiState is one AI pane's session. The timeline is touched on the UI

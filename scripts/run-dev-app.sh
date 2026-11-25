@@ -1,5 +1,5 @@
 #!/bin/sh
-# Runs SSHYard with `mygo dev`.
+# Runs Opswright with `mygo dev`.
 #
 # `mygo dev` rebuilds and relaunches the app whenever a source file changes.
 # Unless DEV_WATCH=1, it builds a snapshot of the working tree instead, so
@@ -12,7 +12,7 @@ set -eu
 cd "$(dirname "$0")/.."
 
 if [ "${DEV_WATCH:-}" != 1 ]; then
-	snapshot="${TMPDIR:-/tmp}/sshyard-dev"
+	snapshot="${TMPDIR:-/tmp}/opswright-dev"
 	rm -rf "$snapshot"
 	mkdir -p "$snapshot"
 	git ls-files -z -co --exclude-standard | tar -cf - --null -T - | tar -xf - -C "$snapshot"

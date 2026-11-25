@@ -2,8 +2,8 @@ package app
 
 import (
 	"github.com/egoist/mygo/ui"
-	"github.com/lvbibir/sshyard/internal/icons"
-	"github.com/lvbibir/sshyard/internal/theme"
+	"github.com/lvbibir/opswright/internal/icons"
+	"github.com/lvbibir/opswright/internal/theme"
 )
 
 // quietControl shares the quiet pill's fill without fading its text.

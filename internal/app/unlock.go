@@ -9,8 +9,8 @@ import (
 	"sync/atomic"
 
 	"github.com/egoist/mygo/ui"
-	"github.com/lvbibir/sshyard/internal/keychain"
-	"github.com/lvbibir/sshyard/locales"
+	"github.com/lvbibir/opswright/internal/keychain"
+	"github.com/lvbibir/opswright/locales"
 )
 
 // The store is opened off the UI thread; completed work returns through post.
@@ -143,7 +143,7 @@ func (a *App) openSecrets() (*keychain.Keychain, error) {
 	}
 	scope := a.p.SecretScope
 	if scope == "" {
-		scope = "sshyard"
+		scope = "opswright"
 	}
 	return keychain.OpenLocked(keychain.OpenOptions{Path: filepath.Join(a.p.DataDir, "secrets.enc"), LockPath: lock, Scope: scope, System: system, KDF: a.kdf})
 }
@@ -171,6 +171,6 @@ func (a *App) resolveStorage() error {
 // ended; a failure is logged, since nothing can be done about it then.
 func (a *App) closeSecrets(kc *keychain.Keychain) {
 	if err := kc.Close(); err != nil {
-		log.Printf("sshyard: credential store cleanup failed (stage=close)")
+		log.Printf("opswright: credential store cleanup failed (stage=close)")
 	}
 }

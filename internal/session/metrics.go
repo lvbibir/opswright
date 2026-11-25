@@ -200,7 +200,7 @@ func MetricsCommand(interval int, mount string) string {
 	return "sh -s -- " + strconv.Itoa(interval) + " " + shellQuote(mount)
 }
 
-// ParseFrame parses one frame body (without the <<<SSHYARD / >>> markers).
+// ParseFrame parses one frame body (without the <<<OPSWRIGHT / >>> markers).
 func ParseFrame(body string) (Sample, error) {
 	body = strings.ReplaceAll(body, "\r", "")
 	if strings.TrimSpace(body) == "" {
@@ -562,7 +562,7 @@ func (d *Decoder) Write(p []byte) ([]Sample, error) {
 			switch line {
 			case "", ".":
 				continue
-			case "<<<SSHYARD":
+			case "<<<OPSWRIGHT":
 				d.in = true
 				d.body = d.body[:0]
 			default:
@@ -1647,7 +1647,7 @@ emit() {
     ;;
   esac
   read_logins
-  printf "%s\n" "<<<SSHYARD" || exit
+  printf "%s\n" "<<<OPSWRIGHT" || exit
   printf "%s" "$body" || exit
   printf "%s\n" ">>>" || exit
 }

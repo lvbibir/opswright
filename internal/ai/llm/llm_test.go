@@ -42,7 +42,7 @@ data: [DONE]
 	defer srv.Close()
 
 	var chunks []Event
-	c := &Client{BaseURL: srv.URL + "/v1", APIKey: key, Model: "fake-model", Headers: map[string]string{"X-Title": "SSHYard", "Authorization": "Bearer other"}, Temperature: ptr(0.2), MaxTokens: 16}
+	c := &Client{BaseURL: srv.URL + "/v1", APIKey: key, Model: "fake-model", Headers: map[string]string{"X-Title": "Opswright", "Authorization": "Bearer other"}, Temperature: ptr(0.2), MaxTokens: 16}
 	msg, err := c.Stream(context.Background(), Request{Messages: []Message{{Role: "user", Content: "disk?"}}, Tools: []Tool{{Name: "run_command", Description: "run", Parameters: []byte(`{"type":"object"}`)}}}, func(e Event) {
 		chunks = append(chunks, e)
 	})
@@ -52,7 +52,7 @@ data: [DONE]
 	if gotAuth != "Bearer "+key {
 		t.Fatalf("auth %q", gotAuth)
 	}
-	if gotExtra != "SSHYard" {
+	if gotExtra != "Opswright" {
 		t.Fatalf("extra header %q", gotExtra)
 	}
 	if !strings.Contains(body, `"model":"fake-model"`) || !strings.Contains(body, `"stream":true`) || !strings.Contains(body, `"temperature":0.2`) || !strings.Contains(body, `"max_completion_tokens":16`) {

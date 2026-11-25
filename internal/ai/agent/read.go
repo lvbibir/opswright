@@ -5,7 +5,7 @@ import (
 
 	"time"
 
-	"github.com/lvbibir/sshyard/internal/ai/policy"
+	"github.com/lvbibir/opswright/internal/ai/policy"
 )
 
 // Building a write diff discloses the previous content, and needs its own read

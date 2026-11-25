@@ -142,7 +142,7 @@ func (t Transfer) Active() bool {
 // Transfers is a queue of file transfers: a few run at once
 // (Concurrency), the others wait; each can be paused, resumed, retried
 // and canceled. A transfer writes a part file next to its destination
-// (".name.sshyard-part") and renames it when complete, so that a paused
+// (".name.opswright-part") and renames it when complete, so that a paused
 // or failed one resumes from the part's size, and a canceled one leaves
 // nothing behind.
 type Transfers struct {
@@ -384,9 +384,9 @@ var ErrDstIsDir = errors.New("a folder is already there")
 // PartName is the prefix for a transfer's random, exclusively created partial file.
 func PartName(dst string, remote bool) string {
 	if remote {
-		return path.Join(path.Dir(dst), "."+path.Base(dst)+".sshyard-part")
+		return path.Join(path.Dir(dst), "."+path.Base(dst)+".opswright-part")
 	}
-	return filepath.Join(filepath.Dir(dst), "."+filepath.Base(dst)+".sshyard-part")
+	return filepath.Join(filepath.Dir(dst), "."+filepath.Base(dst)+".opswright-part")
 }
 
 func (ts *Transfers) client(ctx context.Context) (*Client, error) {

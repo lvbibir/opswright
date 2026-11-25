@@ -23,7 +23,7 @@ const (
 // Kinds are every kind of a credential's secret.
 var Kinds = []Kind{Password, PrivateKey, Passphrase}
 
-// The keys of the entries SSHYard keeps; there are no others:
+// The keys of the entries Opswright keeps; there are no others:
 // host/<id>/<kind>, host/<id>/startup, cred/<id>/<kind>, proxy/<id>/password, forward/<id>/password,
 // snippet/<id>/content, ai/<profileID>/apikey, ai/<agentID>/env/<NAME>,
 // backup/<id>/secret, localkey/<keyID>/passphrase and mcp/token.
@@ -273,7 +273,7 @@ type Memory struct {
 }
 
 // memoryScope is what an injected store's sealed data is bound to.
-const memoryScope = "sshyard-memory-test"
+const memoryScope = "opswright-memory-test"
 
 // NewMemory returns an empty Memory with a fresh master key.
 func NewMemory() *Memory { return &Memory{m: map[string][]byte{}, key: randomKey()} }

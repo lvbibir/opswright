@@ -11,10 +11,10 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/lvbibir/sshyard/internal/assets"
-	"github.com/lvbibir/sshyard/internal/keychain"
-	"github.com/lvbibir/sshyard/internal/session"
-	"github.com/lvbibir/sshyard/locales"
+	"github.com/lvbibir/opswright/internal/assets"
+	"github.com/lvbibir/opswright/internal/keychain"
+	"github.com/lvbibir/opswright/internal/session"
+	"github.com/lvbibir/opswright/locales"
 )
 
 func savePasswordHost(t *testing.T, a *App, address string) assets.Host {

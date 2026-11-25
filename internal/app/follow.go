@@ -8,11 +8,11 @@ import (
 	"time"
 
 	"github.com/egoist/mygo/ui"
-	"github.com/lvbibir/sshyard/internal/icons"
-	"github.com/lvbibir/sshyard/internal/layout"
-	"github.com/lvbibir/sshyard/internal/session"
-	"github.com/lvbibir/sshyard/internal/theme"
-	"github.com/lvbibir/sshyard/locales"
+	"github.com/lvbibir/opswright/internal/icons"
+	"github.com/lvbibir/opswright/internal/layout"
+	"github.com/lvbibir/opswright/internal/session"
+	"github.com/lvbibir/opswright/internal/theme"
+	"github.com/lvbibir/opswright/locales"
 	"golang.org/x/crypto/ssh"
 )
 
@@ -21,8 +21,8 @@ import (
 const cwdSnippet = `# bash: ~/.bashrc
 PROMPT_COMMAND='printf "\033]7;file://%s%s\033\\" "$HOSTNAME" "$PWD"'"${PROMPT_COMMAND:+;$PROMPT_COMMAND}"
 # zsh: ~/.zshrc
-_sshyard_cwd() { printf '\033]7;file://%s%s\033\\' "$HOST" "$PWD" }
-precmd_functions+=(_sshyard_cwd)`
+_opswright_cwd() { printf '\033]7;file://%s%s\033\\' "$HOST" "$PWD" }
+precmd_functions+=(_opswright_cwd)`
 
 // noReportAfter is how long a terminal is up without saying where it is
 // before a following Files pane offers the snippet.

@@ -91,7 +91,7 @@ func (h *Handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	if !h.authorized(r.Header.Get("Authorization")) {
-		w.Header().Set("WWW-Authenticate", `Bearer realm="sshyard"`)
+		w.Header().Set("WWW-Authenticate", `Bearer realm="opswright"`)
 		http.Error(w, "unauthorized", http.StatusUnauthorized)
 		return
 	}

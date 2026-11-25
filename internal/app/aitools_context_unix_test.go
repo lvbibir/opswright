@@ -11,11 +11,11 @@ import (
 	"testing"
 	"time"
 
-	"github.com/lvbibir/sshyard/internal/ai/agent"
-	"github.com/lvbibir/sshyard/internal/ai/llm"
-	"github.com/lvbibir/sshyard/internal/ai/policy"
-	"github.com/lvbibir/sshyard/internal/ai/remote"
-	"github.com/lvbibir/sshyard/internal/sshtest"
+	"github.com/lvbibir/opswright/internal/ai/agent"
+	"github.com/lvbibir/opswright/internal/ai/llm"
+	"github.com/lvbibir/opswright/internal/ai/policy"
+	"github.com/lvbibir/opswright/internal/ai/remote"
+	"github.com/lvbibir/opswright/internal/sshtest"
 	"golang.org/x/crypto/ssh"
 )
 
@@ -101,7 +101,7 @@ func assertRemoteStopFailure(t *testing.T, limit bool) {
 			io.WriteString(ch, "STILL_ALIVE\n")
 			return 1
 		}
-		io.WriteString(ch.Stderr(), "SSHYARD_PID 1234\n")
+		io.WriteString(ch.Stderr(), "OPSWRIGHT_PID 1234\n")
 		if limit {
 			io.WriteString(ch, strings.Repeat("x", 1<<20))
 		} else {

@@ -24,10 +24,10 @@ Settings → Secrets and variables → Actions → Repository secrets 中按需�
 Windows amd64 在 `windows-latest`、arm64 在 `windows-11-arm` 运行器上原生构建。
 
 Windows 的普通 CI、beta 与正式 Release 都额外按架构提供
-`sshyard-<版本>-windows-<amd64|arm64>-portable.zip`；ZIP 直接归档 MyGo 构建的程序及
+`opswright-<版本>-windows-<amd64|arm64>-portable.zip`；ZIP 直接归档 MyGo 构建的程序及
 完整资源，排除安装器、安装脚本和更新产物；正式 Release 将其纳入 `SHA256SUMS`
-并提供下载链接，解压到可写目录后运行 `SSHYard.exe` 即可，无需安装；应用数据仍保存在
-`%APPDATA%\SSHYard`，已保存凭据仍绑定当前 Windows 用户，不代表数据可随 ZIP 跨设备迁移。
+并提供下载链接，解压到可写目录后运行 `Opswright.exe` 即可，无需安装；应用数据仍保存在
+`%APPDATA%\Opswright`，已保存凭据仍绑定当前 Windows 用户，不代表数据可随 ZIP 跨设备迁移。
 
 本地可运行 `python3 .github/windows-portable-test.py` 验证 ZIP 内容、无签名 beta 产物
 及下载链接，Windows CI 在归档前也会执行这些检查。

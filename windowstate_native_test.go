@@ -15,8 +15,8 @@ import (
 )
 
 func TestLayoutWindowStatesNative(t *testing.T) {
-	if os.Getenv("SSHYARD_NATIVE_TEST") != "1" {
-		t.Skip("set SSHYARD_NATIVE_TEST=1 on a desktop session for real geometry acceptance")
+	if os.Getenv("OPSWRIGHT_NATIVE_TEST") != "1" {
+		t.Skip("set OPSWRIGHT_NATIVE_TEST=1 on a desktop session for real geometry acceptance")
 	}
 	dir := t.TempDir()
 	for _, mode := range []string{"layout-save", "layout-restore", "layout-disable", "layout-off", "layout-enable", "layout-current"} {
@@ -28,7 +28,7 @@ func TestLayoutWindowStatesNative(t *testing.T) {
 				t.Fatal(err)
 			}
 			cmd := exec.CommandContext(ctx, exe, "-test.run=^$")
-			cmd.Env = append(os.Environ(), "SSHYARD_NATIVE_HELPER="+mode, "SSHYARD_NATIVE_DIR="+dir)
+			cmd.Env = append(os.Environ(), "OPSWRIGHT_NATIVE_HELPER="+mode, "OPSWRIGHT_NATIVE_DIR="+dir)
 			output, err := cmd.CombinedOutput()
 			if err != nil || !bytes.Contains(output, []byte("native geometry passed: "+mode)) {
 				t.Fatalf("native geometry subprocess: %v\n%s", err, output)
@@ -41,7 +41,7 @@ func TestLayoutWindowStatesNative(t *testing.T) {
 // Each mode runs in a new process so MyGo's own window-state cache cannot
 // accidentally satisfy a restart assertion, and all data stays in t.TempDir.
 func runNativeLayout(mode, dir string) {
-	mygo.App.SetName("SSHYard Native Geometry Test")
+	mygo.App.SetName("Opswright Native Geometry Test")
 	mygo.App.SetPath(mygo.PathUserData, dir)
 	on := mode != "layout-off" && mode != "layout-enable"
 	s := &layoutWindowStates{path: filepath.Join(dir, "window-state.json"), enabled: on, current: map[*mygo.Window]string{}, reportRead: func(err error) { panic(err) }, reportSave: func(err error) { panic(err) }}

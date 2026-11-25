@@ -1,4 +1,4 @@
-// Package acp is SSHYard's client for one external local agent process
+// Package acp is Opswright's client for one external local agent process
 // speaking the Agent Client Protocol (github.com/coder/acp-go-sdk).
 //
 // The agent process and every byte it sends are untrusted. Paths, sizes,
@@ -15,7 +15,7 @@
 //     clamped to 1 MiB. Zero keeps nothing.
 //   - At most two terminals run per session (the spec's command cap).
 //   - The child environment is a whitelist. DISPLAY and XDG_RUNTIME_DIR
-//     are not passed. SSH_AUTH_SOCK, SSH_AGENT_PID, SSHYARD_* and cloud
+//     are not passed. SSH_AUTH_SOCK, SSH_AGENT_PID, OPSWRIGHT_* and cloud
 //     credential variables are removed even if the agent config sets them.
 //   - A clipped tool reason is forwarded for display. The gate must ignore it.
 //   - A POSIX absolute path outside the sandbox is a remote path. A drive
@@ -36,5 +36,5 @@ package acp
 
 import sdk "github.com/coder/acp-go-sdk"
 
-// ProtocolVersion is the only ACP version SSHYard speaks.
+// ProtocolVersion is the only ACP version Opswright speaks.
 const ProtocolVersion = sdk.ProtocolVersionNumber

@@ -1,4 +1,4 @@
-// Package agent is SSHYard's built-in assistant: one host, one tool loop,
+// Package agent is Opswright's built-in assistant: one host, one tool loop,
 // every call checked by a policy.Gate. A Session is not safe for concurrent
 // Turn and Continue; cancel with the context instead.
 package agent
@@ -11,8 +11,8 @@ import (
 	"strings"
 	"time"
 
-	"github.com/lvbibir/sshyard/internal/ai/llm"
-	"github.com/lvbibir/sshyard/internal/ai/policy"
+	"github.com/lvbibir/opswright/internal/ai/llm"
+	"github.com/lvbibir/opswright/internal/ai/policy"
 )
 
 // MaxToolCalls is how many tool calls one turn runs before it pauses, for a

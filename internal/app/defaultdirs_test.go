@@ -6,8 +6,8 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/lvbibir/sshyard/internal/sshtest"
-	"github.com/lvbibir/sshyard/locales"
+	"github.com/lvbibir/opswright/internal/sshtest"
+	"github.com/lvbibir/opswright/locales"
 )
 
 func TestHostDefaultDirs(t *testing.T) {

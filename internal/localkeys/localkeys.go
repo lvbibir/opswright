@@ -16,9 +16,9 @@ import (
 	"strings"
 	"sync"
 
-	"github.com/lvbibir/sshyard/internal/session"
-	"github.com/lvbibir/sshyard/internal/settings"
-	"github.com/lvbibir/sshyard/internal/sshconfig"
+	"github.com/lvbibir/opswright/internal/session"
+	"github.com/lvbibir/opswright/internal/settings"
+	"github.com/lvbibir/opswright/internal/sshconfig"
 	"golang.org/x/crypto/ssh"
 )
 
@@ -36,7 +36,7 @@ type Found struct {
 	IdentitiesOnly bool
 }
 
-// Find returns the keys for the host at address, named name in SSHYard,
+// Find returns the keys for the host at address, named name in Opswright,
 // from the home directory home of localUser. Files that are missing or
 // unreadable are left out.
 func Find(home, localUser, name, address string) Found {
@@ -65,7 +65,7 @@ func Find(home, localUser, name, address string) Found {
 }
 
 // resolve is the config's entry for the host: the Host block of its name
-// in SSHYard when that block points at address, else address itself.
+// in Opswright when that block points at address, else address itself.
 func resolve(cfg *sshconfig.Config, name, address string) sshconfig.Entry {
 	for _, e := range cfg.Entries {
 		if !e.Pattern && (e.Alias == name || e.Alias == address) && strings.EqualFold(e.HostName, address) {
@@ -146,7 +146,7 @@ type Remembered struct {
 	Fingerprint string `json:"fingerprint"`
 }
 
-// State is what SSHYard keeps about the keys of this computer, in a JSON
+// State is what Opswright keeps about the keys of this computer, in a JSON
 // file. It is safe for concurrent use.
 type State struct {
 	mu   sync.Mutex

@@ -4,13 +4,13 @@ import (
 	"errors"
 	"testing"
 
-	"github.com/lvbibir/sshyard/internal/portable"
-	"github.com/lvbibir/sshyard/locales"
+	"github.com/lvbibir/opswright/internal/portable"
+	"github.com/lvbibir/opswright/locales"
 )
 
 func TestStorageMoveErrorNamesWhereTheMoveWent(t *testing.T) {
 	m := locales.In("en")
-	s := &Storage{PortableDir: `D:\SSHYard\sshyard_data`, AppDataDir: `C:\AppData\SSHYard`, MoveErr: portable.ErrOccupied}
+	s := &Storage{PortableDir: `D:\Opswright\opswright_data`, AppDataDir: `C:\AppData\Opswright`, MoveErr: portable.ErrOccupied}
 	if got, want := storageMoveError(m, s), m.StorageMoveOccupied(s.PortableDir); got != want {
 		t.Fatalf("to portable: %q, want %q", got, want)
 	}

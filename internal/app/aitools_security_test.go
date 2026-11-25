@@ -7,7 +7,7 @@ import (
 	"sync"
 	"testing"
 
-	"github.com/lvbibir/sshyard/internal/ai/remote"
+	"github.com/lvbibir/opswright/internal/ai/remote"
 )
 
 func TestCommandOutputLimitCancelsAndBoundsBothStreams(t *testing.T) {

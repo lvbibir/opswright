@@ -13,7 +13,7 @@ import (
 
 func testHandler() *Handler {
 	return &Handler{
-		Name: "sshyard", Version: "1.0", Token: "secret-token",
+		Name: "opswright", Version: "1.0", Token: "secret-token",
 		Tools: []Tool{
 			{Name: "echo", Description: "echoes", Schema: json.RawMessage(`{"type":"object"}`),
 				Call: func(_ context.Context, args json.RawMessage) (string, error) { return string(args), nil }},
@@ -84,7 +84,7 @@ func TestProtocol(t *testing.T) {
 	h := testHandler()
 	out := decode(t, post(t, h, `{"jsonrpc":"2.0","id":1,"method":"initialize","params":{"protocolVersion":"2025-06-18"}}`, nil))
 	res := out["result"].(map[string]any)
-	if res["protocolVersion"] != "2025-06-18" || res["serverInfo"].(map[string]any)["name"] != "sshyard" {
+	if res["protocolVersion"] != "2025-06-18" || res["serverInfo"].(map[string]any)["name"] != "opswright" {
 		t.Fatalf("initialize %v", out)
 	}
 	out = decode(t, post(t, h, `{"jsonrpc":"2.0","id":2,"method":"initialize","params":{"protocolVersion":"1999-01-01"}}`, nil))

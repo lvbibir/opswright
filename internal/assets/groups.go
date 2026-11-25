@@ -4,7 +4,7 @@ import (
 	"maps"
 	"strings"
 
-	"github.com/lvbibir/sshyard/internal/theme"
+	"github.com/lvbibir/opswright/internal/theme"
 )
 
 // GroupSep parts a subgroup from its group: "Prod/Web", "Prod/Web/Blue".

@@ -11,13 +11,13 @@ import (
 	"time"
 
 	"github.com/egoist/mygo/ui"
-	"github.com/lvbibir/sshyard/internal/icons"
-	"github.com/lvbibir/sshyard/internal/layout"
-	"github.com/lvbibir/sshyard/internal/session"
-	"github.com/lvbibir/sshyard/internal/termlog"
-	"github.com/lvbibir/sshyard/internal/theme"
-	"github.com/lvbibir/sshyard/internal/vt"
-	"github.com/lvbibir/sshyard/locales"
+	"github.com/lvbibir/opswright/internal/icons"
+	"github.com/lvbibir/opswright/internal/layout"
+	"github.com/lvbibir/opswright/internal/session"
+	"github.com/lvbibir/opswright/internal/termlog"
+	"github.com/lvbibir/opswright/internal/theme"
+	"github.com/lvbibir/opswright/internal/vt"
+	"github.com/lvbibir/opswright/locales"
 )
 
 // The session logs pane lists the terminals: it starts and stops each
@@ -90,7 +90,7 @@ func (a *App) logDir() string {
 	if d := a.settings.SessionLog.Dir; d != "" {
 		return d
 	}
-	return filepath.Join(a.localHome(), "SSHYard", "logs")
+	return filepath.Join(a.localHome(), "Opswright", "logs")
 }
 
 // startLog starts the log of terminal pane c, from what it prints next.

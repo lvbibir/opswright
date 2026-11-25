@@ -5,10 +5,10 @@ import (
 	"slices"
 	"testing"
 
-	"github.com/lvbibir/sshyard/internal/session"
-	"github.com/lvbibir/sshyard/internal/settings"
-	"github.com/lvbibir/sshyard/internal/theme"
-	"github.com/lvbibir/sshyard/locales"
+	"github.com/lvbibir/opswright/internal/session"
+	"github.com/lvbibir/opswright/internal/settings"
+	"github.com/lvbibir/opswright/internal/theme"
+	"github.com/lvbibir/opswright/locales"
 )
 
 // withShells stands in shells for this computer's, for apps made after.
@@ -148,7 +148,7 @@ func TestOpenLocalOnStart(t *testing.T) {
 	a.openSettings(prefTerminal)
 	tt.SetSize(1200, 2600)
 	tt.Frame()
-	mustFind(t, tt, "Open a local terminal when SSHYard starts")
+	mustFind(t, tt, "Open a local terminal when Opswright starts")
 
 	dir := t.TempDir()
 	s := settings.Default()

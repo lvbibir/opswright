@@ -1,4 +1,4 @@
-// Package app is SSHYard's interface: the host sidebar, the tabs and split
+// Package app is Opswright's interface: the host sidebar, the tabs and split
 // panes (native terminals and files browsers alike) and the settings, built with
 // MyGo's immediate-mode ui package. Everything platform-specific (the
 // window's theme and language, the keychain, the updater, file dialogs)
@@ -22,27 +22,27 @@ import (
 	"time"
 
 	"github.com/egoist/mygo/ui"
-	appicon "github.com/lvbibir/sshyard/icon"
-	"github.com/lvbibir/sshyard/internal/ai/agent"
-	"github.com/lvbibir/sshyard/internal/ai/audit"
-	"github.com/lvbibir/sshyard/internal/ai/history"
-	"github.com/lvbibir/sshyard/internal/ai/policy"
-	"github.com/lvbibir/sshyard/internal/assets"
-	"github.com/lvbibir/sshyard/internal/awake"
-	"github.com/lvbibir/sshyard/internal/forward"
-	"github.com/lvbibir/sshyard/internal/highlight"
-	"github.com/lvbibir/sshyard/internal/keychain"
-	"github.com/lvbibir/sshyard/internal/layout"
-	"github.com/lvbibir/sshyard/internal/localkeys"
-	"github.com/lvbibir/sshyard/internal/netproxy"
-	"github.com/lvbibir/sshyard/internal/session"
-	"github.com/lvbibir/sshyard/internal/settings"
-	"github.com/lvbibir/sshyard/internal/termlog"
-	"github.com/lvbibir/sshyard/internal/theme"
-	"github.com/lvbibir/sshyard/internal/updater"
-	"github.com/lvbibir/sshyard/internal/vault"
-	"github.com/lvbibir/sshyard/internal/vt"
-	"github.com/lvbibir/sshyard/locales"
+	appicon "github.com/lvbibir/opswright/icon"
+	"github.com/lvbibir/opswright/internal/ai/agent"
+	"github.com/lvbibir/opswright/internal/ai/audit"
+	"github.com/lvbibir/opswright/internal/ai/history"
+	"github.com/lvbibir/opswright/internal/ai/policy"
+	"github.com/lvbibir/opswright/internal/assets"
+	"github.com/lvbibir/opswright/internal/awake"
+	"github.com/lvbibir/opswright/internal/forward"
+	"github.com/lvbibir/opswright/internal/highlight"
+	"github.com/lvbibir/opswright/internal/keychain"
+	"github.com/lvbibir/opswright/internal/layout"
+	"github.com/lvbibir/opswright/internal/localkeys"
+	"github.com/lvbibir/opswright/internal/netproxy"
+	"github.com/lvbibir/opswright/internal/session"
+	"github.com/lvbibir/opswright/internal/settings"
+	"github.com/lvbibir/opswright/internal/termlog"
+	"github.com/lvbibir/opswright/internal/theme"
+	"github.com/lvbibir/opswright/internal/updater"
+	"github.com/lvbibir/opswright/internal/vault"
+	"github.com/lvbibir/opswright/internal/vt"
+	"github.com/lvbibir/opswright/locales"
 )
 
 // Platform is what the app needs from the system, including an explicit

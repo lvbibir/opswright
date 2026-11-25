@@ -8,8 +8,8 @@ import (
 	"time"
 
 	"github.com/egoist/mygo/ui"
-	"github.com/lvbibir/sshyard/internal/vt"
-	"github.com/lvbibir/sshyard/locales"
+	"github.com/lvbibir/opswright/internal/vt"
+	"github.com/lvbibir/opswright/locales"
 )
 
 // readLog waits for the log at path to hold want, and returns it.
@@ -27,7 +27,7 @@ func readLog(t *testing.T, tt *ui.Tester, path, want string) string {
 func TestSessionLogKeepsOutputFromStartToStop(t *testing.T) {
 	srv, sh := startScript(t, "motd\r\n$ ")
 	a, tt := newTestApp(t)
-	if want := filepath.Join(a.localHome(), "SSHYard", "logs"); a.logDir() != want {
+	if want := filepath.Join(a.localHome(), "Opswright", "logs"); a.logDir() != want {
 		t.Fatalf("default folder %q, want %q", a.logDir(), want)
 	}
 	dir := filepath.Join(t.TempDir(), "logs")

@@ -12,7 +12,7 @@ const (
 	optNAWS       = 31 // RFC 1073
 )
 
-// option is what SSHYard does with one Telnet option. Options missing
+// option is what Opswright does with one Telnet option. Options missing
 // from the table are refused both ways.
 type option struct {
 	local  bool // we perform it when the server asks (DO -> WILL)

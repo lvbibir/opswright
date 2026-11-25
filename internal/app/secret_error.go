@@ -3,8 +3,8 @@ package app
 import (
 	"errors"
 
-	"github.com/lvbibir/sshyard/internal/keychain"
-	"github.com/lvbibir/sshyard/locales"
+	"github.com/lvbibir/opswright/internal/keychain"
+	"github.com/lvbibir/opswright/locales"
 )
 
 // secretStoreErrorText classifies local store failures without exposing file

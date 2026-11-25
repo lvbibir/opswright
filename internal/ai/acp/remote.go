@@ -11,15 +11,15 @@ import (
 	"strings"
 	"time"
 
-	"github.com/lvbibir/sshyard/internal/ai/policy"
-	"github.com/lvbibir/sshyard/internal/mcp"
+	"github.com/lvbibir/opswright/internal/ai/policy"
+	"github.com/lvbibir/opswright/internal/mcp"
 )
 
 // RemoteServer is the name of the MCP server that gives the agent the
 // pane's host: its tools run commands and read and write files there,
 // each through the pane's gate. Agents that run their own tools on this
 // computer are pointed at it instead.
-const RemoteServer = "sshyard"
+const RemoteServer = "opswright"
 
 // The remote tools' names. They are distinctive so a tool call shown by
 // the agent can be told apart from the agent's own tools.
@@ -39,11 +39,11 @@ const (
 
 // Instructions tell the agent where it works. They go into its system
 // prompt where it takes one, otherwise before the first request.
-const Instructions = `You are working on a remote server for a user of SSHYard, an SSH client. The host, user and working directory come with each request.
+const Instructions = `You are working on a remote server for a user of Opswright, an SSH client. The host, user and working directory come with each request.
 - Everything the user asks about is on that remote host, never on this computer. Your local working directory is an empty scratch folder that has nothing to do with the task: do not look at it or at any other local file.
 - Run commands on the host only with the ` + RemoteServer + ` MCP server's ` + toolRun + ` tool, or the terminal the client provides. Read and write the host's files only with ` + toolRead + ` and ` + toolWrite + `, or the client's file tools. Paths are paths on the remote host; a relative path is relative to the working directory.
-- Do not run local shell commands, search or list local files, use other MCP servers, or connect to the host yourself with ssh: SSHYard already holds the connection and you have no credentials.
-- SSHYard checks every action and may ask the user first. When one is refused, do not try to reach the same result another way.`
+- Do not run local shell commands, search or list local files, use other MCP servers, or connect to the host yourself with ssh: Opswright already holds the connection and you have no credentials.
+- Opswright checks every action and may ask the user first. When one is refused, do not try to reach the same result another way.`
 
 // remoteTools is the bridge's tool set. Every call belongs to the running
 // turn and is graded by the gate like a client callback.

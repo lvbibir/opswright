@@ -1,4 +1,4 @@
-module github.com/lvbibir/sshyard
+module github.com/lvbibir/opswright
 
 go 1.27.3
 

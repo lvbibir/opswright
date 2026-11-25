@@ -7,10 +7,10 @@ import (
 	"time"
 
 	"github.com/egoist/mygo/ui"
-	"github.com/lvbibir/sshyard/internal/applock"
-	"github.com/lvbibir/sshyard/internal/icons"
-	"github.com/lvbibir/sshyard/internal/theme"
-	"github.com/lvbibir/sshyard/locales"
+	"github.com/lvbibir/opswright/internal/applock"
+	"github.com/lvbibir/opswright/internal/icons"
+	"github.com/lvbibir/opswright/internal/theme"
+	"github.com/lvbibir/opswright/locales"
 )
 
 // idleLabel names a choice of applock.IdleChoices.
@@ -23,7 +23,7 @@ func idleLabel(m locales.Messages, minutes int) string {
 
 // lockView is the main window while the app is locked: the master
 // password opens it, or, before one is set, sets it; the store's master
-// key is sealed under it, and a key a former SSHYard kept in the OS
+// key is sealed under it, and a key a former Opswright kept in the OS
 // keychain moves under it too.
 func (a *App) lockView(c *ui.Context) {
 	base := *c.Theme()

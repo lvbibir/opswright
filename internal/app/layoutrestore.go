@@ -8,10 +8,10 @@ import (
 	"slices"
 
 	"github.com/egoist/mygo/ui"
-	"github.com/lvbibir/sshyard/internal/assets"
-	"github.com/lvbibir/sshyard/internal/layout"
-	"github.com/lvbibir/sshyard/internal/theme"
-	"github.com/lvbibir/sshyard/locales"
+	"github.com/lvbibir/opswright/internal/assets"
+	"github.com/lvbibir/opswright/internal/layout"
+	"github.com/lvbibir/opswright/internal/theme"
+	"github.com/lvbibir/opswright/locales"
 )
 
 func (a *App) loadLayout() {
@@ -35,7 +35,7 @@ func (a *App) loadLayout() {
 	if err != nil || !validLayout(snap) {
 		a.layoutBlocked = true
 		a.layoutNotice(true)
-		log.Printf("sshyard: workspace layout read failed or unsupported version")
+		log.Printf("opswright: workspace layout read failed or unsupported version")
 		return
 	}
 	a.restoring = true
@@ -116,7 +116,7 @@ func (a *App) rememberLayoutBaseline() {
 			a.layoutNotice(false)
 		}
 		a.layoutSaveFailed = true
-		log.Printf("sshyard: workspace layout baseline serialization failed")
+		log.Printf("opswright: workspace layout baseline serialization failed")
 		return
 	}
 	a.layoutObserved = b
@@ -275,7 +275,7 @@ func (a *App) startRestoredConnections() {
 }
 func (a *App) ReportLayoutReadError(err error) {
 	if err != nil {
-		log.Printf("sshyard: native layout read failed")
+		log.Printf("opswright: native layout read failed")
 		a.post(func() { a.layoutNotice(true) })
 	}
 }

@@ -14,18 +14,18 @@ import (
 	"time"
 
 	"github.com/egoist/mygo/ui"
-	"github.com/lvbibir/sshyard/internal/assets"
-	"github.com/lvbibir/sshyard/internal/backup"
-	"github.com/lvbibir/sshyard/internal/backup/gist"
-	"github.com/lvbibir/sshyard/internal/icons"
-	"github.com/lvbibir/sshyard/internal/keychain"
-	"github.com/lvbibir/sshyard/internal/settings"
-	"github.com/lvbibir/sshyard/internal/theme"
-	"github.com/lvbibir/sshyard/internal/vault"
-	"github.com/lvbibir/sshyard/locales"
+	"github.com/lvbibir/opswright/internal/assets"
+	"github.com/lvbibir/opswright/internal/backup"
+	"github.com/lvbibir/opswright/internal/backup/gist"
+	"github.com/lvbibir/opswright/internal/icons"
+	"github.com/lvbibir/opswright/internal/keychain"
+	"github.com/lvbibir/opswright/internal/settings"
+	"github.com/lvbibir/opswright/internal/theme"
+	"github.com/lvbibir/opswright/internal/vault"
+	"github.com/lvbibir/opswright/locales"
 )
 
-// A backup is everything SSHYard keeps (the hosts and what they use, the
+// A backup is everything Opswright keeps (the hosts and what they use, the
 // preferences, the trusted host keys and, unless left out, their secrets
 // from the encrypted local store) in one compressed archive (package
 // backup) sealed under the master password (package vault), to keep, here
@@ -503,7 +503,7 @@ func (a *App) ExportBackup(m locales.Messages) bool {
 		return false
 	}
 	title := m.ExportBackup()
-	def := filepath.Join(a.localHome(), "SSHYard-"+time.Now().Format("2006-01-02")+backupExt)
+	def := filepath.Join(a.localHome(), "Opswright-"+time.Now().Format("2006-01-02")+backupExt)
 	f.busy = true
 	go func() {
 		defer key.Clear()

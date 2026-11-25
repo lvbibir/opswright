@@ -15,8 +15,8 @@ import (
 	"sync/atomic"
 	"time"
 
-	"github.com/lvbibir/sshyard/internal/ai/policy"
-	"github.com/lvbibir/sshyard/internal/session"
+	"github.com/lvbibir/opswright/internal/ai/policy"
+	"github.com/lvbibir/opswright/internal/session"
 	"golang.org/x/crypto/ssh"
 	"mvdan.cc/sh/v3/syntax"
 )
@@ -366,11 +366,11 @@ func mapExit(reason, err error) (int, error) {
 // kind of group on hosts without setsid (macOS). The last branch shares
 // the session group and reports a pid.
 func wrap(cmd, dir string) (string, error) {
-	group, err := commandScript("SSHYARD_PGID", cmd, dir)
+	group, err := commandScript("OPSWRIGHT_PGID", cmd, dir)
 	if err != nil {
 		return "", err
 	}
-	pid, err := commandScript("SSHYARD_PID", cmd, dir)
+	pid, err := commandScript("OPSWRIGHT_PID", cmd, dir)
 	if err != nil {
 		return "", err
 	}
@@ -454,11 +454,11 @@ func parseMarker(line string) (mark, bool) {
 	group := false
 	var rest string
 	switch {
-	case strings.HasPrefix(line, "SSHYARD_PGID "):
+	case strings.HasPrefix(line, "OPSWRIGHT_PGID "):
 		group = true
-		rest = line[len("SSHYARD_PGID "):]
-	case strings.HasPrefix(line, "SSHYARD_PID "):
-		rest = line[len("SSHYARD_PID "):]
+		rest = line[len("OPSWRIGHT_PGID "):]
+	case strings.HasPrefix(line, "OPSWRIGHT_PID "):
+		rest = line[len("OPSWRIGHT_PID "):]
 	default:
 		return mark{}, false
 	}

@@ -3,7 +3,7 @@ package app
 import (
 	"testing"
 
-	"github.com/lvbibir/sshyard/locales"
+	"github.com/lvbibir/opswright/locales"
 )
 
 func TestSidebarResizeAndHide(t *testing.T) {

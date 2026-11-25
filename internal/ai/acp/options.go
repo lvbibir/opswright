@@ -4,13 +4,13 @@ import (
 	"context"
 	"errors"
 
-	"github.com/lvbibir/sshyard/internal/ai/policy"
+	"github.com/lvbibir/opswright/internal/ai/policy"
 
 	sdk "github.com/coder/acp-go-sdk"
 )
 
 // Option categories the pane shows: the model and how much it thinks.
-// The mode is SSHYard's to pin and is never offered.
+// The mode is Opswright's to pin and is never offered.
 const (
 	CategoryModel   = "model"
 	CategoryThought = "thought_level"

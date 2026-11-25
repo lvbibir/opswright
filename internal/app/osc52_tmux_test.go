@@ -18,9 +18,9 @@ import (
 	"github.com/egoist/mygo/ui"
 
 	"github.com/creack/pty"
-	"github.com/lvbibir/sshyard/internal/session"
-	"github.com/lvbibir/sshyard/internal/settings"
-	"github.com/lvbibir/sshyard/internal/sshtest"
+	"github.com/lvbibir/opswright/internal/session"
+	"github.com/lvbibir/opswright/internal/settings"
+	"github.com/lvbibir/opswright/internal/sshtest"
 	"golang.org/x/crypto/ssh"
 )
 

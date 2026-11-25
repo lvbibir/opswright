@@ -12,7 +12,7 @@ import (
 
 // Format and Version name the archive in its manifest.
 const (
-	Format  = "sshyard-backup"
+	Format  = "opswright-backup"
 	Version = 2
 )
 
@@ -33,10 +33,10 @@ const manifestName = "manifest.json"
 const maxFiles = 64
 
 var (
-	// ErrArchive reports an archive that is damaged or not SSHYard's.
+	// ErrArchive reports an archive that is damaged or not Opswright's.
 	ErrArchive = errors.New("backup: damaged archive")
 	// ErrVersion reports an archive of a newer version than this app reads.
-	ErrVersion = errors.New("backup: made by a newer version of SSHYard")
+	ErrVersion = errors.New("backup: made by a newer version of Opswright")
 )
 
 // IsArchive reports whether plain, an opened backup, is an archive. A

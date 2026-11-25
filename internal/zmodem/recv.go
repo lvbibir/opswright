@@ -10,7 +10,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/lvbibir/sshyard/internal/xfer"
+	"github.com/lvbibir/opswright/internal/xfer"
 )
 
 var errCommand = errors.New("zmodem: the other end asked to run a command, which is never done")

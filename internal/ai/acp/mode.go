@@ -14,7 +14,7 @@ var skipTokens = []string{
 }
 
 // SkipApproval reports whether a mode id would let the agent act without
-// SSHYard's approval.
+// Opswright's approval.
 func SkipApproval(id string) bool {
 	s := normalizeMode(id)
 	if s == "" {
@@ -48,7 +48,7 @@ func normalizeMode(id string) string {
 // stop is true when the only modes skip approval: the session must not run.
 //
 // codex always requests read-only: its work happens on the remote host
-// through SSHYard, never on this computer. claude and grok are left as they
+// through Opswright, never on this computer. claude and grok are left as they
 // are. custom prefers read-only, then plan, then default, then the first
 // remaining mode that does not skip approval.
 func PickMode(kind, current string, available []string) (mode string, set, stop bool) {

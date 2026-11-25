@@ -1,6 +1,6 @@
 # AGENTS.md
 
-Global rules for anyone (human or agent) changing SSHYard. Read this before you write code.
+Global rules for anyone (human or agent) changing Opswright. Read this before you write code.
 
 ## Hard constraints
 

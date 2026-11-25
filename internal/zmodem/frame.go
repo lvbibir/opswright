@@ -7,7 +7,7 @@ import (
 	"os"
 	"time"
 
-	"github.com/lvbibir/sshyard/internal/xfer"
+	"github.com/lvbibir/opswright/internal/xfer"
 )
 
 // The bytes that frame ZMODEM.

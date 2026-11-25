@@ -6,10 +6,10 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/lvbibir/sshyard/internal/ai/llm"
-	"github.com/lvbibir/sshyard/internal/netproxy"
-	"github.com/lvbibir/sshyard/internal/sftpsvc"
-	"github.com/lvbibir/sshyard/locales"
+	"github.com/lvbibir/opswright/internal/ai/llm"
+	"github.com/lvbibir/opswright/internal/netproxy"
+	"github.com/lvbibir/opswright/internal/sftpsvc"
+	"github.com/lvbibir/opswright/locales"
 )
 
 func TestSecurityErrorTranslations(t *testing.T) {

@@ -5,7 +5,7 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/lvbibir/sshyard/internal/serial"
+	"github.com/lvbibir/opswright/internal/serial"
 )
 
 func fieldIs(err error, field, reason string) bool {

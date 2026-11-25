@@ -12,13 +12,13 @@ import (
 	"time"
 
 	"github.com/egoist/mygo/ui"
-	"github.com/lvbibir/sshyard/internal/ai/llm"
-	"github.com/lvbibir/sshyard/internal/aibrands"
-	"github.com/lvbibir/sshyard/internal/icons"
-	"github.com/lvbibir/sshyard/internal/keychain"
-	"github.com/lvbibir/sshyard/internal/settings"
-	"github.com/lvbibir/sshyard/internal/theme"
-	"github.com/lvbibir/sshyard/locales"
+	"github.com/lvbibir/opswright/internal/ai/llm"
+	"github.com/lvbibir/opswright/internal/aibrands"
+	"github.com/lvbibir/opswright/internal/icons"
+	"github.com/lvbibir/opswright/internal/keychain"
+	"github.com/lvbibir/opswright/internal/settings"
+	"github.com/lvbibir/opswright/internal/theme"
+	"github.com/lvbibir/opswright/locales"
 )
 
 // providerForm edits one built-in provider. The API key is never written
@@ -456,7 +456,7 @@ func (a *App) providerAdvanced(c *ui.Context, m locales.Messages, tok theme.Toke
 			ui.Text(c, m.AiAnthropicTokensNote(strconv.Itoa(llm.AnthropicMaxTokens))).FontSize(theme.Caption).FillWidth().TextColor(tok.TextMuted)
 		}
 		ui.Field(c, m.AiHeaders(), func() {
-			formTextArea(c.Key("ap:hdr"), &f.headers).Label(m.AiHeaders()).FillWidth().Height(72).Placeholder("X-Title: SSHYard")
+			formTextArea(c.Key("ap:hdr"), &f.headers).Label(m.AiHeaders()).FillWidth().Height(72).Placeholder("X-Title: Opswright")
 		})
 		ui.Text(c, m.AiHeadersNote()).FontSize(theme.Caption).FillWidth().TextColor(tok.TextMuted)
 	})

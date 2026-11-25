@@ -6,9 +6,9 @@ import (
 	"syscall"
 
 	"github.com/egoist/mygo/ui"
-	"github.com/lvbibir/sshyard/internal/keychain"
-	"github.com/lvbibir/sshyard/internal/theme"
-	"github.com/lvbibir/sshyard/locales"
+	"github.com/lvbibir/opswright/internal/keychain"
+	"github.com/lvbibir/opswright/internal/theme"
+	"github.com/lvbibir/opswright/locales"
 )
 
 // unlockView replaces the app when its data folder could not be read at

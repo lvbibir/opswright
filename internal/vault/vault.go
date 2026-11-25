@@ -1,5 +1,5 @@
 // Package vault seals data with a password, for the backups that take
-// SSHYard's data, secrets included, out of the keychain: the data is
+// Opswright's data, secrets included, out of the keychain: the data is
 // encrypted under a random vault key (XChaCha20-Poly1305), and the vault
 // key is wrapped under a key derived from the password (Argon2id). The
 // password itself is never stored.
@@ -23,16 +23,16 @@ import (
 )
 
 // Format names a sealed file in its header.
-const Format = "sshyard-vault"
+const Format = "opswright-vault"
 
 // Version is the version of the format this package writes and reads.
 const Version = 1
 
 var (
 	// ErrFormat reports data that is not a sealed file.
-	ErrFormat = errors.New("vault: not an SSHYard backup")
+	ErrFormat = errors.New("vault: not an Opswright backup")
 	// ErrVersion reports a file of a newer format than this app reads.
-	ErrVersion = errors.New("vault: made by a newer version of SSHYard")
+	ErrVersion = errors.New("vault: made by a newer version of Opswright")
 	// ErrPassword reports a password that does not open the file (or a
 	// file whose wrapped key was damaged; the two can not be told apart).
 	ErrPassword = errors.New("vault: wrong password")
@@ -45,7 +45,7 @@ var (
 	// ErrTooCostly reports a file whose password derivation costs more
 	// than this package ever derives: too many wraps, or passes, memory
 	// or work past the limits. Nothing was derived.
-	ErrTooCostly = errors.New("vault: the file's password derivation costs more than SSHYard allows")
+	ErrTooCostly = errors.New("vault: the file's password derivation costs more than Opswright allows")
 )
 
 // Params are the cost of Argon2id: passes, memory in KiB, and lanes.
@@ -65,12 +65,12 @@ var DefaultParams = Params{Time: 3, Memory: 64 << 10, Threads: 4}
 // and the cost of them all counted, before the first is derived.
 //
 // Work is passes × memory in KiB, summed over the wraps: Argon2 fills its
-// memory once a pass, so its time grows with that product. SSHYard has
+// memory once a pass, so its time grows with that product. Opswright has
 // only ever written one wrap with DefaultParams (3 passes over 64 MiB,
 // 192 MiB of work, unchanged since backups began), and a stored Key the
 // same.
 const (
-	// maxWraps bounds the wraps of a file; SSHYard writes one.
+	// maxWraps bounds the wraps of a file; Opswright writes one.
 	maxWraps = 8
 	// maxTime and maxMemory bound one wrap: 16 passes over 1 GiB.
 	maxTime   = 16

@@ -72,7 +72,7 @@ func prunedUnder(root string) []string {
 
 // findMarker is the line the find command writes first, which says a
 // POSIX shell runs it.
-const findMarker = "sshyard-find"
+const findMarker = "opswright-find"
 
 // findBefore is how many lines may come before findMarker.
 const findBefore = 100

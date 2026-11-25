@@ -10,7 +10,7 @@ import (
 	"context"
 	"regexp"
 
-	"github.com/lvbibir/sshyard/internal/xfer"
+	"github.com/lvbibir/opswright/internal/xfer"
 )
 
 // Mode is what the server asks for.

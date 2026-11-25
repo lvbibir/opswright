@@ -11,7 +11,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/lvbibir/sshyard/internal/backup"
+	"github.com/lvbibir/opswright/internal/backup"
 	"golang.org/x/net/webdav"
 )
 
@@ -35,7 +35,7 @@ func server(t *testing.T) (*httptest.Server, webdav.FileSystem) {
 func TestFolderRoundTrip(t *testing.T) {
 	srv, fs := server(t)
 	ctx := context.Background()
-	f := &Folder{URL: srv.URL + "/", Dir: "SSHYard/backups", User: "me", Password: "pw"}
+	f := &Folder{URL: srv.URL + "/", Dir: "Opswright/backups", User: "me", Password: "pw"}
 	if err := f.Check(ctx); err != nil {
 		t.Fatal("check before the folder exists:", err)
 	}
@@ -50,13 +50,13 @@ func TestFolderRoundTrip(t *testing.T) {
 		}
 	}
 	// Files that are not backups are not listed.
-	if fl, err := fs.OpenFile(ctx, "/SSHYard/backups/notes.txt", os.O_RDWR|os.O_CREATE, 0o600); err == nil {
+	if fl, err := fs.OpenFile(ctx, "/Opswright/backups/notes.txt", os.O_RDWR|os.O_CREATE, 0o600); err == nil {
 		fl.Write([]byte("x"))
 		fl.Close()
 	} else {
 		t.Fatal(err)
 	}
-	fs.Mkdir(ctx, "/SSHYard/backups/"+backup.Name(t0, "dir"), 0o700)
+	fs.Mkdir(ctx, "/Opswright/backups/"+backup.Name(t0, "dir"), 0o700)
 	objs, err := f.List(ctx)
 	if err != nil {
 		t.Fatal(err)

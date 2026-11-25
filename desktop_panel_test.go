@@ -4,7 +4,7 @@ import (
 	"time"
 
 	"github.com/egoist/mygo"
-	"github.com/lvbibir/sshyard/internal/app"
+	"github.com/lvbibir/opswright/internal/app"
 )
 
 // This runs inside the existing opt-in native helper, using its isolated

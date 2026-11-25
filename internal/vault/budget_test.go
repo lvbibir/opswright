@@ -45,7 +45,7 @@ func copyWrap(w map[string]any, salt byte) map[string]any {
 	return c
 }
 
-// TestWrapCount: a file of more wraps than SSHYard ever writes is
+// TestWrapCount: a file of more wraps than Opswright ever writes is
 // refused before any is derived.
 func TestWrapCount(t *testing.T) {
 	n := countDerive(t)

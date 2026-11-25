@@ -4,8 +4,8 @@ import (
 	"errors"
 
 	"github.com/egoist/mygo/ui"
-	"github.com/lvbibir/sshyard/internal/layout"
-	"github.com/lvbibir/sshyard/locales"
+	"github.com/lvbibir/opswright/internal/layout"
+	"github.com/lvbibir/opswright/locales"
 )
 
 // A tab has at most one files pane and one AI pane. Opening either on a

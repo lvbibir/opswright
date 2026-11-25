@@ -1,4 +1,4 @@
-// Package keymap is a keyboard shortcut as SSHYard's settings keep it:
+// Package keymap is a keyboard shortcut as Opswright's settings keep it:
 // its modifiers and key, written "super+shift+p".
 package keymap
 

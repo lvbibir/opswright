@@ -374,7 +374,7 @@ func (s *Server) http(ctx context.Context, c *bufConn) error {
 			}
 		}
 		if !ok {
-			respond(http.StatusProxyAuthRequired, "Proxy-Authenticate: Basic realm=\"SSHYard\"\r\n")
+			respond(http.StatusProxyAuthRequired, "Proxy-Authenticate: Basic realm=\"Opswright\"\r\n")
 			return fmt.Errorf("%w: http proxy credentials missing or wrong", ErrAuth)
 		}
 	}

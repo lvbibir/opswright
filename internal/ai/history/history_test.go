@@ -10,16 +10,16 @@ import (
 	"testing"
 	"time"
 
-	"github.com/lvbibir/sshyard/internal/ai/agent"
-	"github.com/lvbibir/sshyard/internal/ai/llm"
-	"github.com/lvbibir/sshyard/internal/keychain"
-	"github.com/lvbibir/sshyard/internal/vault"
+	"github.com/lvbibir/opswright/internal/ai/agent"
+	"github.com/lvbibir/opswright/internal/ai/llm"
+	"github.com/lvbibir/opswright/internal/keychain"
+	"github.com/lvbibir/opswright/internal/vault"
 )
 
 func store(t *testing.T) (*Store, string) {
 	t.Helper()
 	dir := t.TempDir()
-	k, err := keychain.OpenLocked(keychain.OpenOptions{Path: filepath.Join(dir, "secrets.enc"), LockPath: filepath.Join(dir, "secrets.lock"), Scope: "test.sshyard", KDF: vault.Params{Time: 1, Memory: 8, Threads: 1}})
+	k, err := keychain.OpenLocked(keychain.OpenOptions{Path: filepath.Join(dir, "secrets.enc"), LockPath: filepath.Join(dir, "secrets.lock"), Scope: "test.opswright", KDF: vault.Params{Time: 1, Memory: 8, Threads: 1}})
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -183,7 +183,7 @@ func TestACPSessionKept(t *testing.T) {
 	now := time.Now().Round(0)
 	c := conv("h1", "deploy", now)
 	c.Agent, c.Messages = "acp:x", nil
-	c.ACP = &ACPSession{ID: "sess-1", Agent: "acp:x", Cwd: "/tmp/sshyard-acp-1"}
+	c.ACP = &ACPSession{ID: "sess-1", Agent: "acp:x", Cwd: "/tmp/opswright-acp-1"}
 	if err := st.Save(c); err != nil {
 		t.Fatal(err)
 	}

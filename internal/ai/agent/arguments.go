@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/lvbibir/sshyard/internal/ai/llm"
+	"github.com/lvbibir/opswright/internal/ai/llm"
 )
 
 // toolArguments validates the declared tool contract before path resolution,

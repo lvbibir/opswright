@@ -10,7 +10,7 @@ import (
 )
 
 func TestSkillOwnershipAllOperations(t *testing.T) {
-	for _, content := range []string{"my own", skillHead + "description: My own SSHYard helper\n---\n"} {
+	for _, content := range []string{"my own", skillHead + "description: My own Opswright helper\n---\n"} {
 		t.Run(strings.Split(content, "\n")[0], func(t *testing.T) {
 			a, tt := newTestApp(t)
 			a.mcp.skill = skillText("http://127.0.0.1:4000", "test-token", nil)
@@ -42,7 +42,7 @@ func TestSkillOwnershipAllOperations(t *testing.T) {
 			tt.SetSize(1100, 2600)
 			a.openSettings(prefAgents)
 			tt.Frame()
-			if !tt.HasText(filepath.FromSlash("~/.claude/skills/sshyard · A file with this name is managed by the user and was not changed")) {
+			if !tt.HasText(filepath.FromSlash("~/.claude/skills/opswright · A file with this name is managed by the user and was not changed")) {
 				t.Fatalf("conflict hidden: %q", tt.Texts())
 			}
 		})

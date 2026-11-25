@@ -29,7 +29,7 @@ func (e *UnknownHostError) Error() string {
 }
 
 // HostKeyChangedError reports a host whose key does not match the one in
-// known_hosts: possibly an attack, so SSHYard refuses to connect. Only the
+// known_hosts: possibly an attack, so Opswright refuses to connect. Only the
 // user, having compared the fingerprints, replaces the key (Replace).
 type HostKeyChangedError struct {
 	Host        string
@@ -45,7 +45,7 @@ func (e *HostKeyChangedError) Error() string {
 	return fmt.Sprintf("session: host key for %s changed (now %s %s; known_hosts %s:%d)", e.Host, e.Key.Type(), e.Fingerprint, e.File, e.Line)
 }
 
-// KnownHosts is a known_hosts file in OpenSSH's format, SSHYard's own,
+// KnownHosts is a known_hosts file in OpenSSH's format, Opswright's own,
 // which it adds keys the user trusts to.
 type KnownHosts struct {
 	path string
@@ -163,8 +163,8 @@ var probeAddr = &net.TCPAddr{}
 
 type probeKey struct{}
 
-func (probeKey) Type() string                        { return "sshyard-probe" }
-func (probeKey) Marshal() []byte                     { return []byte("sshyard-probe") }
+func (probeKey) Type() string                        { return "opswright-probe" }
+func (probeKey) Marshal() []byte                     { return []byte("opswright-probe") }
 func (probeKey) Verify([]byte, *ssh.Signature) error { return errors.New("probe") }
 
 // Callback is the ssh.HostKeyCallback that checks keys against the file.

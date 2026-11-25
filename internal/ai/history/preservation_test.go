@@ -8,7 +8,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/lvbibir/sshyard/internal/keychain"
+	"github.com/lvbibir/opswright/internal/keychain"
 )
 
 type unreadableSealer struct {

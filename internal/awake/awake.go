@@ -149,7 +149,7 @@ func (k *Keeper) run() {
 			applied = want
 			k.held.Store(want && err == nil)
 			if err != nil && !k.logged.Swap(true) {
-				k.logf("sshyard: keeping the computer awake: %v", err)
+				k.logf("opswright: keeping the computer awake: %v", err)
 			}
 		}
 		if closed {

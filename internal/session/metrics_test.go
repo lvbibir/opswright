@@ -17,7 +17,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/lvbibir/sshyard/internal/sshtest"
+	"github.com/lvbibir/opswright/internal/sshtest"
 	"golang.org/x/crypto/ssh"
 )
 
@@ -177,7 +177,7 @@ func TestParseDuplicateLastWins(t *testing.T) {
 
 func TestParseTruncatedFrame(t *testing.T) {
 	var open Decoder
-	samples, err := open.Write([]byte("<<<SSHYARD\nos linux\n"))
+	samples, err := open.Write([]byte("<<<OPSWRIGHT\nos linux\n"))
 	if err != nil || len(samples) != 0 {
 		t.Fatalf("samples %d err %v", len(samples), err)
 	}
@@ -186,7 +186,7 @@ func TestParseTruncatedFrame(t *testing.T) {
 	}
 
 	var big Decoder
-	_, err = big.Write([]byte("<<<SSHYARD\n" + strings.Repeat("a", 5000)))
+	_, err = big.Write([]byte("<<<OPSWRIGHT\n" + strings.Repeat("a", 5000)))
 	if !errors.Is(err, ErrTruncated) {
 		t.Fatalf("%v", err)
 	}
@@ -194,7 +194,7 @@ func TestParseTruncatedFrame(t *testing.T) {
 	// A finished frame followed by a cut one: the finished sample is
 	// kept, and closing reports the cut.
 	var both Decoder
-	samples, err = both.Write([]byte("<<<SSHYARD\nos linux\n>>>\n<<<SSHYARD\nos linux\n"))
+	samples, err = both.Write([]byte("<<<OPSWRIGHT\nos linux\n>>>\n<<<OPSWRIGHT\nos linux\n"))
 	if err != nil || len(samples) != 1 || samples[0].OS != "linux" {
 		t.Fatalf("samples %v err %v", samples, err)
 	}
@@ -205,7 +205,7 @@ func TestParseTruncatedFrame(t *testing.T) {
 
 func TestParseGarbageFrame(t *testing.T) {
 	cases := []string{
-		"<<<SSHYARD\nnope\n>>>\n",
+		"<<<OPSWRIGHT\nnope\n>>>\n",
 		"hello\n",
 		"",
 	}
@@ -229,14 +229,14 @@ func TestParseGarbageFrame(t *testing.T) {
 	}
 	// A good frame and then junk: the good sample is returned with the error.
 	var d Decoder
-	samples, err := d.Write([]byte("<<<SSHYARD\nos linux\n>>>\njunk\n"))
+	samples, err := d.Write([]byte("<<<OPSWRIGHT\nos linux\n>>>\njunk\n"))
 	if !errors.Is(err, ErrGarbage) || len(samples) != 1 || samples[0].OS != "linux" {
 		t.Fatalf("samples %v err %v", samples, err)
 	}
 }
 
 func TestParseSplitFramesIgnoreHeartbeat(t *testing.T) {
-	const stream = ".\n<<<SSHYARD\nos linux\n>>>\n.\n<<<SSHYARD\nos darwin\n>>>\n"
+	const stream = ".\n<<<OPSWRIGHT\nos linux\n>>>\n.\n<<<OPSWRIGHT\nos darwin\n>>>\n"
 	var d Decoder
 	var got []Sample
 	for i := 0; i < len(stream); i++ {
@@ -479,8 +479,8 @@ func TestMetricsCommandQuotesMount(t *testing.T) {
 	if strings.Contains(metricsScript, "'") || strings.Contains(metricsScript, "`") {
 		t.Fatal("script cannot be wrapped in single quotes")
 	}
-	// <<<SSHYARD is the frame marker. Anything else starting with << is a here-document.
-	if strings.Contains(strings.ReplaceAll(metricsScript, "<<<SSHYARD", ""), "<<") {
+	// <<<OPSWRIGHT is the frame marker. Anything else starting with << is a here-document.
+	if strings.Contains(strings.ReplaceAll(metricsScript, "<<<OPSWRIGHT", ""), "<<") {
 		t.Fatal("here-document would be written to a temp file")
 	}
 }
@@ -626,12 +626,12 @@ func TestMetricsScriptInterval(t *testing.T) {
 		case <-time.After(time.Until(deadline)):
 		}
 		for {
-			i := bytes.Index(acc, []byte("<<<SSHYARD\n"))
+			i := bytes.Index(acc, []byte("<<<OPSWRIGHT\n"))
 			if i < 0 {
 				break
 			}
 			marks = append(marks, time.Now())
-			acc = acc[i+len("<<<SSHYARD\n"):]
+			acc = acc[i+len("<<<OPSWRIGHT\n"):]
 		}
 	}
 	if len(marks) < 3 {
@@ -725,12 +725,12 @@ func TestMetricsScriptSecondFrame(t *testing.T) {
 		case <-time.After(time.Until(deadline)):
 		}
 		for {
-			i := bytes.Index(acc, []byte("<<<SSHYARD\n"))
+			i := bytes.Index(acc, []byte("<<<OPSWRIGHT\n"))
 			if i < 0 {
 				break
 			}
 			marks = append(marks, time.Now())
-			acc = acc[i+len("<<<SSHYARD\n"):]
+			acc = acc[i+len("<<<OPSWRIGHT\n"):]
 		}
 	}
 	if len(marks) < 3 {
@@ -1107,11 +1107,11 @@ func TestMetricsScriptLiveSample(t *testing.T) {
 }
 
 func twoFrames() string {
-	return "<<<SSHYARD\n" +
+	return "<<<OPSWRIGHT\n" +
 		"os linux\n" +
 		"cpu 100 0 0 900 0 0 0 0\n" +
 		">>>\n" +
-		"<<<SSHYARD\n" +
+		"<<<OPSWRIGHT\n" +
 		"os linux\n" +
 		"cpu 200 0 0 1000 0 0 0 0\n" +
 		">>>\n"

@@ -18,9 +18,9 @@ import (
 	"strings"
 	"time"
 
-	"github.com/lvbibir/sshyard/internal/ai/agent"
-	"github.com/lvbibir/sshyard/internal/ai/llm"
-	"github.com/lvbibir/sshyard/internal/settings"
+	"github.com/lvbibir/opswright/internal/ai/agent"
+	"github.com/lvbibir/opswright/internal/ai/llm"
+	"github.com/lvbibir/opswright/internal/settings"
 )
 
 // Sealer seals the store's files; *keychain.Keychain is one.

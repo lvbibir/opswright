@@ -7,8 +7,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/lvbibir/sshyard/internal/ai/llm"
-	"github.com/lvbibir/sshyard/internal/ai/policy"
+	"github.com/lvbibir/opswright/internal/ai/llm"
+	"github.com/lvbibir/opswright/internal/ai/policy"
 )
 
 // failAudit is an audit log whose open (prep) or append (rec) fails.

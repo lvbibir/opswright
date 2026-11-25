@@ -5,7 +5,7 @@ import (
 	"io"
 	"time"
 
-	"github.com/lvbibir/sshyard/internal/xfer"
+	"github.com/lvbibir/opswright/internal/xfer"
 )
 
 // Takeover finds, in what the shell prints, a transfer that takes the

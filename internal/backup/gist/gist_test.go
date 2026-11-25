@@ -14,7 +14,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/lvbibir/sshyard/internal/backup"
+	"github.com/lvbibir/opswright/internal/backup"
 )
 
 const token = "ghp_secretTOKEN123"
@@ -125,7 +125,7 @@ func (f *fakeGitHub) serve(w http.ResponseWriter, r *http.Request) {
 		writeJSON(w, http.StatusUnauthorized, map[string]string{"message": "Bad credentials"})
 		return
 	}
-	for h, want := range map[string]string{"Accept": "application/vnd.github+json", "X-GitHub-Api-Version": "2022-11-28", "User-Agent": "SSHYard"} {
+	for h, want := range map[string]string{"Accept": "application/vnd.github+json", "X-GitHub-Api-Version": "2022-11-28", "User-Agent": "Opswright"} {
 		if got := r.Header.Get(h); got != want {
 			f.t.Errorf("%s %s: %s = %q, want %q", r.Method, r.URL.Path, h, got, want)
 		}

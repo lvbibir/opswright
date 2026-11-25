@@ -787,7 +787,7 @@ func (w *writer) file() (*os.File, error) {
 	if w.f != nil {
 		return w.f, nil
 	}
-	f, err := os.CreateTemp("", "sshyard-scp-*")
+	f, err := os.CreateTemp("", "opswright-scp-*")
 	if err != nil {
 		return nil, err
 	}

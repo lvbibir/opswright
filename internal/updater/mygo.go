@@ -16,7 +16,7 @@ import (
 
 // Plugin is MyGo's updater plugin drawn in native UI, which reads the
 // manifest `mygo build` publishes to the latest release of the repository
-// in mygo.json (updates.github = lvbibir/sshyard) and verifies signatures.
+// in mygo.json (updates.github = lvbibir/opswright) and verifies signatures.
 // It checks again as the user installs, and as Check is called while it
 // offers a version, so a release published since the offer is the one
 // installed.

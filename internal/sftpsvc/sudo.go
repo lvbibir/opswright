@@ -26,9 +26,9 @@ var ErrSudoNoServer = fmt.Errorf("%w: no sftp-server", ErrSudo)
 // The marks the remote command writes on stderr: sudo's prompt, the SFTP
 // server about to start, and no SFTP server found.
 const (
-	sudoPrompt   = "[sshyard-sudo-password]"
-	sudoReady    = "[sshyard-sudo-ready]"
-	sudoNoServer = "[sshyard-sudo-no-server]"
+	sudoPrompt   = "[opswright-sudo-password]"
+	sudoReady    = "[opswright-sudo-ready]"
+	sudoNoServer = "[opswright-sudo-no-server]"
 )
 
 // sudoTimeout bounds how long sudo may take to start the server.

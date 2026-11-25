@@ -3,9 +3,9 @@ package app
 import (
 	"testing"
 
-	"github.com/lvbibir/sshyard/internal/ai/acp"
-	"github.com/lvbibir/sshyard/internal/ai/agent"
-	"github.com/lvbibir/sshyard/locales"
+	"github.com/lvbibir/opswright/internal/ai/acp"
+	"github.com/lvbibir/opswright/internal/ai/agent"
+	"github.com/lvbibir/opswright/locales"
 )
 
 // An audit failure from either agent lands on the pane's timeline as an

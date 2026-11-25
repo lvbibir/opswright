@@ -21,7 +21,7 @@ func TestLoadSessionResumes(t *testing.T) {
 	if _, err := first.Prompt(t.Context(), "q1", nil); err != nil {
 		t.Fatal(err)
 	}
-	if d := waitDiag(t, first, "sshyard://instructions"); !strings.Contains(d, "sshyard://instructions") {
+	if d := waitDiag(t, first, "opswright://instructions"); !strings.Contains(d, "opswright://instructions") {
 		t.Fatalf("first session not introduced: %s", d)
 	}
 	id, cwd := first.ID(), first.Sandbox()
@@ -49,7 +49,7 @@ func TestLoadSessionResumes(t *testing.T) {
 	if got := b.texts(); !strings.Contains(got, "fresh answer") || strings.Contains(got, "old answer") {
 		t.Fatalf("updates %q", got)
 	}
-	if d := waitDiag(t, s, "prompt "); strings.Contains(d, "sshyard://instructions") {
+	if d := waitDiag(t, s, "prompt "); strings.Contains(d, "opswright://instructions") {
 		t.Fatalf("a loaded session was introduced again: %s", d)
 	}
 	s.Close()

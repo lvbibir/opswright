@@ -78,7 +78,7 @@ func TestAIProviderRoundTrip(t *testing.T) {
 	s.AIConsentHosts = []string{"h1"}
 	s.AIProviders = []AIProvider{{
 		ID: "p1", Name: "lab", BaseURL: "https://models.example.test/v1", Model: "fake-model",
-		Headers: map[string]string{"X-Title": "SSHYard"}, Temperature: ptr(0.2), MaxTokens: ptr(400),
+		Headers: map[string]string{"X-Title": "Opswright"}, Temperature: ptr(0.2), MaxTokens: ptr(400),
 		Format: AIFormatAnthropic, Models: []string{"fake-model", "other"},
 	}}
 	if err := Save(p, s); err != nil {
@@ -88,7 +88,7 @@ func TestAIProviderRoundTrip(t *testing.T) {
 	if err != nil || got.AIDefaultMode != "review" || got.AIReviewProvider != "p1" || got.AIContextLines != 80 {
 		t.Fatalf("load %+v %v", got, err)
 	}
-	if len(got.AIProviders) != 1 || got.AIProviders[0].Headers["X-Title"] != "SSHYard" || got.AIProviders[0].Model != "fake-model" {
+	if len(got.AIProviders) != 1 || got.AIProviders[0].Headers["X-Title"] != "Opswright" || got.AIProviders[0].Model != "fake-model" {
 		t.Fatalf("provider %+v", got.AIProviders)
 	}
 	if gp := got.AIProviders[0]; gp.Format != AIFormatAnthropic || *gp.Temperature != 0.2 || *gp.MaxTokens != 400 || gp.TopP != nil || len(gp.Models) != 2 || gp.LegacyMaxTokens {
@@ -119,7 +119,7 @@ func TestProviderURLAndHeaders(t *testing.T) {
 		t.Fatalf("public http: warn %v err %v", warn, err)
 	}
 
-	if err := CheckHeaders(map[string]string{"X-Title": "SSHYard"}); err != nil {
+	if err := CheckHeaders(map[string]string{"X-Title": "Opswright"}); err != nil {
 		t.Fatal(err)
 	}
 	if err := CheckHeaders(map[string]string{"X-Bad": "a\nb"}); err == nil {

@@ -26,10 +26,10 @@ link() {
 }
 
 # One assignment per link: in "$(a) · $(b)" only b's status reaches set -e
-win_x64_setup="$(link Installer 'sshyard-setup-*-amd64.exe')"
-win_x64_portable="$(link 'Portable ZIP' 'sshyard-*-windows-amd64-portable.zip')"
-win_arm_setup="$(link Installer 'sshyard-setup-*-arm64.exe')"
-win_arm_portable="$(link 'Portable ZIP' 'sshyard-*-windows-arm64-portable.zip')"
+win_x64_setup="$(link Installer 'opswright-setup-*-amd64.exe')"
+win_x64_portable="$(link 'Portable ZIP' 'opswright-*-windows-amd64-portable.zip')"
+win_arm_setup="$(link Installer 'opswright-setup-*-arm64.exe')"
+win_arm_portable="$(link 'Portable ZIP' 'opswright-*-windows-arm64-portable.zip')"
 checksums="$(link SHA256SUMS 'SHA256SUMS')"
 
 cat <<EOF
@@ -47,7 +47,7 @@ cat <<EOF
 
 The installer installs for the current user into \`%LOCALAPPDATA%\\Programs\` and supports in-app updates; no administrator rights needed.
 
-For the portable version, extract the ZIP into a writable folder and run \`SSHYard.exe\`; no installation needed. App data is stored in \`%APPDATA%\\SSHYard\`, and saved credentials remain tied to the Windows user account.
+For the portable version, extract the ZIP into a writable folder and run \`Opswright.exe\`; no installation needed. App data is stored in \`%APPDATA%\\Opswright\`, and saved credentials remain tied to the Windows user account.
 
 Verify downloads with $checksums.
 EOF

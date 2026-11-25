@@ -5,7 +5,7 @@ import (
 	"testing"
 
 	"github.com/egoist/mygo/ui"
-	"github.com/lvbibir/sshyard/internal/vt"
+	"github.com/lvbibir/opswright/internal/vt"
 )
 
 // TestCursorMoveBytes: the arrows for a move, in the cursor key mode.

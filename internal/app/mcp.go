@@ -13,13 +13,13 @@ import (
 	"sync"
 	"time"
 
-	"github.com/lvbibir/sshyard/internal/ai/audit"
-	"github.com/lvbibir/sshyard/internal/ai/policy"
-	"github.com/lvbibir/sshyard/internal/ai/remote"
-	"github.com/lvbibir/sshyard/internal/assets"
-	"github.com/lvbibir/sshyard/internal/keychain"
-	"github.com/lvbibir/sshyard/internal/mcp"
-	"github.com/lvbibir/sshyard/internal/session"
+	"github.com/lvbibir/opswright/internal/ai/audit"
+	"github.com/lvbibir/opswright/internal/ai/policy"
+	"github.com/lvbibir/opswright/internal/ai/remote"
+	"github.com/lvbibir/opswright/internal/assets"
+	"github.com/lvbibir/opswright/internal/keychain"
+	"github.com/lvbibir/opswright/internal/mcp"
+	"github.com/lvbibir/opswright/internal/session"
 	"golang.org/x/crypto/ssh"
 )
 
@@ -89,7 +89,7 @@ const (
 
 // errMCPNeedsInput refuses a host that logs in with something the user
 // types: the endpoint never asks for a secret, nor hands one out.
-var errMCPNeedsInput = errors.New("this host needs a password or passphrase typed in SSHYard; MCP never asks for secrets, so the connection was refused")
+var errMCPNeedsInput = errors.New("this host needs a password or passphrase typed in Opswright; MCP never asks for secrets, so the connection was refused")
 
 // syncMCP starts or stops the endpoint as the settings say, on the
 // settings' port. Restarting drops every agent connection.
@@ -148,7 +148,7 @@ func (a *App) mcpToken() (string, error) {
 	if _, err := rand.Read(b[:]); err != nil {
 		return "", err
 	}
-	tok := "sshyard_" + base64.RawURLEncoding.EncodeToString(b[:])
+	tok := "opswright_" + base64.RawURLEncoding.EncodeToString(b[:])
 	return tok, a.kc.Set(keychain.MCPToken, []byte(tok))
 }
 
@@ -179,7 +179,7 @@ func (a *App) mcpConfig() string {
 	if a.mcp.srv == nil {
 		return ""
 	}
-	b, _ := json.MarshalIndent(map[string]any{"mcpServers": map[string]any{"sshyard": map[string]any{
+	b, _ := json.MarshalIndent(map[string]any{"mcpServers": map[string]any{"opswright": map[string]any{
 		"type":    "http",
 		"url":     a.mcp.srv.URL(),
 		"headers": map[string]string{"Authorization": "Bearer " + a.mcp.token},
@@ -227,7 +227,7 @@ func (a *App) mcpSession(id string) (*mcpSession, error) {
 	return nil, fmt.Errorf("no session %q; call connect first", id)
 }
 
-const mcpInstructions = "SSHYard holds the user's saved SSH hosts. Call list_groups or list_hosts to find a host, connect with its id to get a session_id, then run_command on that session and disconnect when done. Passwords, keys and passphrases are never revealed; a host that needs one typed is refused. Every command runs on a real server: prefer read-only commands and ask the user before anything destructive."
+const mcpInstructions = "Opswright holds the user's saved SSH hosts. Call list_groups or list_hosts to find a host, connect with its id to get a session_id, then run_command on that session and disconnect when done. Passwords, keys and passphrases are never revealed; a host that needs one typed is refused. Every command runs on a real server: prefer read-only commands and ask the user before anything destructive."
 
 func schema(props string, required ...string) json.RawMessage {
 	req, _ := json.Marshal(required)
@@ -256,7 +256,7 @@ func (a *App) mcpHandler(token string) *mcp.Handler {
 		version = "dev"
 	}
 	return &mcp.Handler{
-		Name: "sshyard", Version: version, Instructions: mcpInstructions, Token: token,
+		Name: "opswright", Version: version, Instructions: mcpInstructions, Token: token,
 		Tools: []mcp.Tool{
 			{
 				Name:        "list_groups",
@@ -272,7 +272,7 @@ func (a *App) mcpHandler(token string) *mcp.Handler {
 			},
 			{
 				Name:        "connect",
-				Description: "Open an SSH connection to a saved host with the credentials saved in SSHYard, which are never revealed. Returns a session_id for run_command. Fails if the host needs a password or passphrase typed, or its host key is not trusted yet.",
+				Description: "Open an SSH connection to a saved host with the credentials saved in Opswright, which are never revealed. Returns a session_id for run_command. Fails if the host needs a password or passphrase typed, or its host key is not trusted yet.",
 				Schema:      schema(`"host_id":{"type":"string","description":"The id from list_hosts"}`, "host_id"),
 				Call: func(ctx context.Context, raw json.RawMessage) (string, error) {
 					request := ctx
@@ -561,9 +561,9 @@ func mcpDialErr(err error) error {
 	var changed *session.HostKeyChangedError
 	switch {
 	case errors.As(err, &unknown):
-		return fmt.Errorf("the host key of %s is not trusted yet; connect to it once in SSHYard and trust the key", unknown.Host)
+		return fmt.Errorf("the host key of %s is not trusted yet; connect to it once in Opswright and trust the key", unknown.Host)
 	case errors.As(err, &changed):
-		return fmt.Errorf("the host key of %s changed; SSHYard refused to connect. Only the user can review and trust the new key, in SSHYard", changed.Host)
+		return fmt.Errorf("the host key of %s changed; Opswright refused to connect. Only the user can review and trust the new key, in Opswright", changed.Host)
 	case errors.Is(err, errMCPNeedsInput), errors.Is(err, session.ErrNoCredentials),
 		errors.Is(err, session.ErrPassphraseNeeded), errors.Is(err, session.ErrPassphraseWrong),
 		errors.As(err, new(*session.LocalKeyError)), errors.As(err, new(*session.KeysRefusedError)):

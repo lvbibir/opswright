@@ -6,7 +6,7 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/lvbibir/sshyard/internal/keychain"
+	"github.com/lvbibir/opswright/internal/keychain"
 )
 
 func write(t *testing.T, path, s string) {
@@ -37,7 +37,7 @@ func gone(t *testing.T, path string) {
 
 func dirs(t *testing.T) (exe, appData string) {
 	root := t.TempDir()
-	exe, appData = filepath.Join(root, "app"), filepath.Join(root, "config", "SSHYard")
+	exe, appData = filepath.Join(root, "app"), filepath.Join(root, "config", "Opswright")
 	if err := os.MkdirAll(exe, 0o700); err != nil {
 		t.Fatal(err)
 	}

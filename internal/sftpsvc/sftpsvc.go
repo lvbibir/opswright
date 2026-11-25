@@ -1,4 +1,4 @@
-// Package sftpsvc is SSHYard's file transfer service over SFTP
+// Package sftpsvc is Opswright's file transfer service over SFTP
 // (github.com/pkg/sftp): it lists remote and local directories and
 // uploads or downloads a single file at a time, reporting progress.
 package sftpsvc

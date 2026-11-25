@@ -8,10 +8,10 @@ import (
 	"sync"
 	"testing"
 
-	"github.com/lvbibir/sshyard/internal/assets"
-	"github.com/lvbibir/sshyard/internal/layout"
-	"github.com/lvbibir/sshyard/internal/session"
-	"github.com/lvbibir/sshyard/locales"
+	"github.com/lvbibir/opswright/internal/assets"
+	"github.com/lvbibir/opswright/internal/layout"
+	"github.com/lvbibir/opswright/internal/session"
+	"github.com/lvbibir/opswright/locales"
 )
 
 // TestHostEditorProtocols: the editor switches a new host to Telnet, with
@@ -163,7 +163,7 @@ func TestStreamHostGates(t *testing.T) {
 func TestSerialPaneOnce(t *testing.T) {
 	a, tt := newTestApp(t)
 	m := locales.In("en")
-	dev := "/dev/sshyard-test-missing"
+	dev := "/dev/opswright-test-missing"
 	h, err := a.store.Add(assets.Host{Protocol: assets.ProtoSerial, Serial: &assets.SerialLine{Device: dev}})
 	if err != nil {
 		t.Fatal(err)
@@ -205,7 +205,7 @@ func TestQuickConnectStream(t *testing.T) {
 	if a.QuickConnect(m) || a.quick.err != m.QuickStreamInvalid() {
 		t.Fatalf("bad destination: %q", a.quick.err)
 	}
-	a.quick.target = "serial:///dev/sshyard-test-missing?baud=9600&parity=odd"
+	a.quick.target = "serial:///dev/opswright-test-missing?baud=9600&parity=odd"
 	if !a.QuickConnect(m) {
 		t.Fatalf("serial: %q", a.quick.err)
 	}
@@ -213,7 +213,7 @@ func TestQuickConnectStream(t *testing.T) {
 	for _, h := range a.temps {
 		tmp = h
 	}
-	if tmp.Protocol != assets.ProtoSerial || tmp.Auth != assets.AuthNone || tmp.Target() != "/dev/sshyard-test-missing · 9600 8O1" {
+	if tmp.Protocol != assets.ProtoSerial || tmp.Auth != assets.AuthNone || tmp.Target() != "/dev/opswright-test-missing · 9600 8O1" {
 		t.Fatalf("temp %+v", tmp)
 	}
 

@@ -12,8 +12,8 @@ import (
 
 	"github.com/egoist/mygo/i18n"
 	"github.com/egoist/mygo/ui"
-	"github.com/lvbibir/sshyard/internal/settings"
-	"github.com/lvbibir/sshyard/locales"
+	"github.com/lvbibir/opswright/internal/settings"
+	"github.com/lvbibir/opswright/locales"
 )
 
 const backgroundBytes = 20 << 20
@@ -272,7 +272,7 @@ func (a *App) closeBackground() {
 	b.preview = nil
 	for path := range b.pending {
 		if err := deleteBackground(path); err != nil {
-			log.Printf("sshyard: background cleanup failed: %v", err)
+			log.Printf("opswright: background cleanup failed: %v", err)
 		}
 		delete(b.pending, path)
 	}

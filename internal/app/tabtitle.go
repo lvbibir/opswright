@@ -4,8 +4,8 @@ import (
 	"path"
 	"strings"
 
-	"github.com/lvbibir/sshyard/internal/layout"
-	"github.com/lvbibir/sshyard/internal/settings"
+	"github.com/lvbibir/opswright/internal/layout"
+	"github.com/lvbibir/opswright/internal/settings"
 )
 
 // tabName is what a tab is called: the name the user gave it (manual);

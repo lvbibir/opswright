@@ -8,8 +8,8 @@ import (
 	"syscall"
 	"testing"
 
-	"github.com/lvbibir/sshyard/internal/keychain"
-	"github.com/lvbibir/sshyard/locales"
+	"github.com/lvbibir/opswright/internal/keychain"
+	"github.com/lvbibir/opswright/locales"
 )
 
 func TestSecretStoreErrorTextSanitizesTypedErrors(t *testing.T) {

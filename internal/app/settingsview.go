@@ -6,19 +6,19 @@ import (
 	"strconv"
 
 	"github.com/egoist/mygo/ui"
-	"github.com/lvbibir/sshyard/internal/fonts"
-	"github.com/lvbibir/sshyard/internal/icons"
-	"github.com/lvbibir/sshyard/internal/keymap"
-	"github.com/lvbibir/sshyard/internal/settings"
-	"github.com/lvbibir/sshyard/internal/theme"
-	"github.com/lvbibir/sshyard/locales"
+	"github.com/lvbibir/opswright/internal/fonts"
+	"github.com/lvbibir/opswright/internal/icons"
+	"github.com/lvbibir/opswright/internal/keymap"
+	"github.com/lvbibir/opswright/internal/settings"
+	"github.com/lvbibir/opswright/internal/theme"
+	"github.com/lvbibir/opswright/locales"
 )
 
 // languageNames are the languages offered, by their own names.
 var languageNames = map[string]string{"en": "English", "zh-Hans": "简体中文"}
 
-// repoURL is where SSHYard's source and issues live.
-const repoURL = "https://github.com/lvbibir/sshyard"
+// repoURL is where Opswright's source and issues live.
+const repoURL = "https://github.com/lvbibir/opswright"
 
 // issuesURL is where feedback goes on GitHub.
 const issuesURL = repoURL + "/issues"
@@ -329,7 +329,7 @@ func (a *App) themeSwitch(c *ui.Context, m locales.Messages) (theme.Mode, bool) 
 	return theme.Modes[a.themeIdx], true
 }
 
-// prefGeneral is what applies to all of SSHYard rather than to how it
+// prefGeneral is what applies to all of Opswright rather than to how it
 // looks: the language, the window and the tray, reminders and updates.
 func (a *App) prefGeneral(c *ui.Context, m locales.Messages, tok theme.Tokens, s *settings.Settings, changed *bool) {
 	a.settingsSection(c, tok, nil, "", func(g *settingsGroup) {
@@ -927,7 +927,7 @@ func (a *App) aboutPage(c *ui.Context, m locales.Messages, tok theme.Tokens) {
 	})
 }
 
-// updatesSection is how SSHYard looks for updates: on its own or not, how
+// updatesSection is how Opswright looks for updates: on its own or not, how
 // often and through which proxy, with the update found.
 func (a *App) updatesSection(c *ui.Context, m locales.Messages, tok theme.Tokens, s *settings.Settings, changed *bool) {
 	a.settingsSection(c, tok, icons.Download, m.Updates(), func(g *settingsGroup) {

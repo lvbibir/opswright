@@ -17,16 +17,16 @@ import (
 	"time"
 
 	"github.com/egoist/mygo/ui"
-	"github.com/lvbibir/sshyard/internal/assets"
-	"github.com/lvbibir/sshyard/internal/backup"
-	"github.com/lvbibir/sshyard/internal/backup/gist"
-	"github.com/lvbibir/sshyard/internal/backup/s3"
-	"github.com/lvbibir/sshyard/internal/backup/webdav"
-	"github.com/lvbibir/sshyard/internal/icons"
-	"github.com/lvbibir/sshyard/internal/keychain"
-	"github.com/lvbibir/sshyard/internal/settings"
-	"github.com/lvbibir/sshyard/internal/theme"
-	"github.com/lvbibir/sshyard/locales"
+	"github.com/lvbibir/opswright/internal/assets"
+	"github.com/lvbibir/opswright/internal/backup"
+	"github.com/lvbibir/opswright/internal/backup/gist"
+	"github.com/lvbibir/opswright/internal/backup/s3"
+	"github.com/lvbibir/opswright/internal/backup/webdav"
+	"github.com/lvbibir/opswright/internal/icons"
+	"github.com/lvbibir/opswright/internal/keychain"
+	"github.com/lvbibir/opswright/internal/settings"
+	"github.com/lvbibir/opswright/internal/theme"
+	"github.com/lvbibir/opswright/locales"
 )
 
 // Cloud backup: the places this device backs up to (settings.BackupTarget),
@@ -132,7 +132,7 @@ func (a *App) saveCloud() {
 		err = settings.WriteFileAtomic(filepath.Join(a.p.DataDir, cloudFile), b, 0o600)
 	}
 	if err != nil {
-		log.Printf("sshyard: saving %s: %v", cloudFile, err)
+		log.Printf("opswright: saving %s: %v", cloudFile, err)
 	}
 }
 
@@ -869,14 +869,14 @@ func (a *App) targetFields(c *ui.Context, m locales.Messages, tok theme.Tokens, 
 			ui.Field(c, m.FieldServerURL(), func() {
 				formTextInput(c.Key("bt:url"), &f.url).Placeholder("https://dav.example.com/remote.php/dav/files/me/")
 			})
-			ui.Field(c, m.WebdavFolder(), func() { formTextInput(c.Key("bt:dir"), &f.dir).Placeholder("SSHYard") })
+			ui.Field(c, m.WebdavFolder(), func() { formTextInput(c.Key("bt:dir"), &f.dir).Placeholder("Opswright") })
 			ui.Field(c, m.FieldUser(), func() { formTextInput(c.Key("bt:user"), &f.user) })
 			ui.Field(c, m.FieldPassword(), func() { formTextInput(c.Key("bt:secret"), &f.secret).Password().Placeholder(unchanged) })
 		case settings.BackupS3:
 			ui.Field(c, m.S3Endpoint(), func() { formTextInput(c.Key("bt:url"), &f.url).Placeholder(m.S3EndpointPlaceholder()) })
 			ui.Field(c, m.S3Region(), func() { formTextInput(c.Key("bt:region"), &f.region).Placeholder("us-east-1") })
 			ui.Field(c, m.S3Bucket(), func() { formTextInput(c.Key("bt:bucket"), &f.bucket) })
-			ui.Field(c, m.S3Prefix(), func() { formTextInput(c.Key("bt:dir"), &f.dir).Placeholder("sshyard/") })
+			ui.Field(c, m.S3Prefix(), func() { formTextInput(c.Key("bt:dir"), &f.dir).Placeholder("opswright/") })
 			ui.Field(c, m.S3AccessKey(), func() { formTextInput(c.Key("bt:user"), &f.user) })
 			ui.Field(c, m.S3SecretKey(), func() { formTextInput(c.Key("bt:secret"), &f.secret).Password().Placeholder(unchanged) })
 		case settings.BackupGist:

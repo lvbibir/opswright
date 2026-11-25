@@ -6,7 +6,7 @@ import (
 
 	"github.com/egoist/mygo"
 	"github.com/egoist/mygo/ui"
-	"github.com/lvbibir/sshyard/internal/app"
+	"github.com/lvbibir/opswright/internal/app"
 )
 
 // openWith lets the user choose the app that opens path: the system's

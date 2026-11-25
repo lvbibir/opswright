@@ -2,7 +2,7 @@ package app
 
 import (
 	"github.com/egoist/mygo/ui"
-	"github.com/lvbibir/sshyard/internal/vt"
+	"github.com/lvbibir/opswright/internal/vt"
 )
 
 // A selection dragged with ⌥ (Alt elsewhere) held is a block: the same

@@ -5,7 +5,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/lvbibir/sshyard/internal/vt"
+	"github.com/lvbibir/opswright/internal/vt"
 )
 
 // marked is text with each span's bytes in brackets.

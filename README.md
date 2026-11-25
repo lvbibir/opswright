@@ -1,12 +1,12 @@
 <p align="left"><strong>English</strong> · <a href="README_ZH.md">简体中文</a></p>
 
 <p align="center">
-  <img src="resources/icon.png" alt="SSHYard logo" width="128" height="128">
+  <img src="resources/icon.png" alt="Opswright logo" width="128" height="128">
 </p>
 
-<h1 align="center">SSHYard</h1>
+<h1 align="center">Opswright</h1>
 
-SSHYard is a native desktop SSH / SFTP client for Windows, bringing terminals, file management and AI assistance into one app.
+Opswright is a native desktop SSH / SFTP client for Windows, bringing terminals, file management and AI assistance into one app.
 
 ## Screenshots
 
@@ -94,11 +94,11 @@ SSHYard is a native desktop SSH / SFTP client for Windows, bringing terminals, f
 
 ## Secrets and the master password
 
-Run SSHYard as your normal desktop user, without root or `sudo`. Saving and unlocking credentials needs no setup of its own: a single **master password** seals a random master key in `master.enc`, and that key encrypts everything SSHYard saves in `secrets.enc`.
+Run Opswright as your normal desktop user, without root or `sudo`. Saving and unlocking credentials needs no setup of its own: a single **master password** seals a random master key in `master.enc`, and that key encrypts everything Opswright saves in `secrets.enc`.
 
-The first time you use SSHYard it asks you to set the master password. That computer then remembers the key in the Windows Credential Manager, through the operating system itself, so later launches open without asking. A lock you ask for by hand — the shortcut, the tray, the settings — needs the password again for the rest of that run; the next launch is remembered again. Idle time, screen lock and sleep only hide the windows and never ask.
+The first time you use Opswright it asks you to set the master password. That computer then remembers the key in the Windows Credential Manager, through the operating system itself, so later launches open without asking. A lock you ask for by hand — the shortcut, the tray, the settings — needs the password again for the rest of that run; the next launch is remembered again. Idle time, screen lock and sleep only hide the windows and never ask.
 
-Copying your data folder to another computer, or to another OS user, carries `master.enc`, so that computer asks for the password once and then remembers it too. SSHYard never stores the password: if you forget it, saved secrets can only be recovered from a backup, and the lock screen's reset deletes them. **Settings → About → Secret storage** changes the password, and forgets the key on this computer if you want to be asked again.
+Copying your data folder to another computer, or to another OS user, carries `master.enc`, so that computer asks for the password once and then remembers it too. Opswright never stores the password: if you forget it, saved secrets can only be recovered from a backup, and the lock screen's reset deletes them. **Settings → About → Secret storage** changes the password, and forgets the key on this computer if you want to be asked again.
 
 ## Development
 
@@ -112,7 +112,7 @@ go run .
 scripts/run-dev-app.sh
 
 # keep data in a separate directory
-SSHYARD_DATA_DIR=/tmp/demo go run .
+OPSWRIGHT_DATA_DIR=/tmp/demo go run .
 
 # a local SSH server for testing
 go run ./cmd/devsshd -addr 127.0.0.1:2222 -user demo -password demo -root /tmp/remote
@@ -142,4 +142,4 @@ Contributor rules are in [AGENTS.md](AGENTS.md).
 
 ## License
 
-SSHYard is licensed under the [GNU Affero General Public License v3.0](LICENSE).
+Opswright is licensed under the [GNU Affero General Public License v3.0](LICENSE).

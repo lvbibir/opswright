@@ -2,8 +2,8 @@ package app
 
 import (
 	"github.com/egoist/mygo/ui"
-	"github.com/lvbibir/sshyard/internal/fileicons"
-	"github.com/lvbibir/sshyard/internal/sftpsvc"
+	"github.com/lvbibir/opswright/internal/fileicons"
+	"github.com/lvbibir/opswright/internal/sftpsvc"
 )
 
 func entryIcon(e sftpsvc.Entry) *fileicons.Icon {

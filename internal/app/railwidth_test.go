@@ -5,8 +5,8 @@ import (
 	"testing"
 
 	"github.com/egoist/mygo/ui"
-	"github.com/lvbibir/sshyard/internal/keychain"
-	"github.com/lvbibir/sshyard/internal/layout"
+	"github.com/lvbibir/opswright/internal/keychain"
+	"github.com/lvbibir/opswright/internal/layout"
 )
 
 // TestRailPaneKeepsWidth: a pane the rail opens comes back as wide as the

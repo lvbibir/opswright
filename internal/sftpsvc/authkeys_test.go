@@ -12,8 +12,8 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/lvbibir/sshyard/internal/session"
-	"github.com/lvbibir/sshyard/internal/sshtest"
+	"github.com/lvbibir/opswright/internal/session"
+	"github.com/lvbibir/opswright/internal/sshtest"
 	"golang.org/x/crypto/ssh"
 )
 
@@ -111,7 +111,7 @@ func TestInstallKey(t *testing.T) {
 	for _, d := range []string{root, filepath.Join(root, ".ssh")} {
 		ents, _ := os.ReadDir(d)
 		for _, e := range ents {
-			if strings.HasPrefix(e.Name(), ".sshyard-") {
+			if strings.HasPrefix(e.Name(), ".opswright-") {
 				t.Fatalf("left %s in %s", e.Name(), d)
 			}
 		}
@@ -162,7 +162,7 @@ func TestInstallKeyPrivateBeforeRename(t *testing.T) {
 		for _, d := range []string{root, dir} {
 			ents, _ := os.ReadDir(d)
 			for _, e := range ents {
-				if strings.HasPrefix(e.Name(), ".sshyard-") {
+				if strings.HasPrefix(e.Name(), ".opswright-") {
 					t.Fatalf("left %s in %s", e.Name(), d)
 				}
 			}

@@ -14,7 +14,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/lvbibir/sshyard/internal/backup"
+	"github.com/lvbibir/opswright/internal/backup"
 )
 
 // ErrEndpoint reports an endpoint that is not an http or https URL with a
@@ -38,7 +38,7 @@ type Bucket struct {
 	// Region is the bucket's region; "" is us-east-1.
 	Region string
 	Bucket string
-	// Prefix is the folder inside the bucket, as "sshyard/"; "" is none.
+	// Prefix is the folder inside the bucket, as "opswright/"; "" is none.
 	Prefix string
 	// PathStyle puts the bucket in the path (as MinIO wants) instead of the
 	// host name.

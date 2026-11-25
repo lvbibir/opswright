@@ -1,4 +1,4 @@
-// Package sshtest is an SSH server in process, for SSHYard's tests and
+// Package sshtest is an SSH server in process, for Opswright's tests and
 // its development server (cmd/devsshd): password and public-key auth (one
 // key, or an authorized_keys file checked as OpenSSH's StrictModes does),
 // a PTY shell (a toy line shell, or a real one through Shell), keepalive
@@ -201,7 +201,7 @@ func (s *Server) config() *ssh.ServerConfig {
 			return nil, fmt.Errorf("unknown key")
 		},
 		NoClientAuth:  s.NoClientAuth.Load(),
-		ServerVersion: "SSH-2.0-SSHYardTest",
+		ServerVersion: "SSH-2.0-OpswrightTest",
 	}
 	s.mu.Lock()
 	cfg.KeyboardInteractiveCallback = s.kbd
@@ -431,7 +431,7 @@ func (s *Server) serveSession(ch ssh.Channel, reqs <-chan *ssh.Request) {
 // "exit" ends it, "size" prints the PTY size, "color" prints SGR colors,
 // and "fail" exits with status 3.
 func LineShell(ch ssh.Channel, pty PTY, resize <-chan PTY) int {
-	io.WriteString(ch, "Welcome to the SSHYard test shell\r\n$ ")
+	io.WriteString(ch, "Welcome to the Opswright test shell\r\n$ ")
 	var line []byte
 	buf := make([]byte, 256)
 	for {

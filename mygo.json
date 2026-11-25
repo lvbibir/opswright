@@ -1,12 +1,12 @@
 {
-  "name": "SSHYard",
-  "identifier": "com.sshyard.desktop",
+  "name": "Opswright",
+  "identifier": "com.opswright.desktop",
   "version": "1.6.2",
   "icon": "resources/icon.png",
   "out": "build",
   "i18n": { "dir": "locales", "source": "en" },
   "updates": {
     "publicKey": "peCkTf50VMUGasVIxOZ3NLh9/uL0kWSSlu6Tf2dDVu8=",
-    "github": "lvbibir/sshyard"
+    "github": "lvbibir/opswright"
   }
 }

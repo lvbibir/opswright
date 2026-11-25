@@ -1,5 +1,5 @@
 // Command devproxy is a development proxy on loopback, speaking HTTP
-// CONNECT, SOCKS4/4a and SOCKS5 on one port, for trying SSHYard's proxy
+// CONNECT, SOCKS4/4a and SOCKS5 on one port, for trying Opswright's proxy
 // support where no proxy is installed. It is not part of the app and not
 // meant for anything but local testing.
 package main
@@ -9,7 +9,7 @@ import (
 	"log"
 	"net"
 
-	"github.com/lvbibir/sshyard/internal/netproxy"
+	"github.com/lvbibir/opswright/internal/netproxy"
 )
 
 func main() {

@@ -1,8 +1,8 @@
-// Package portable keeps the data of a portable copy of SSHYard beside its
-// executable, in sshyard_data, in place of the user's application data,
+// Package portable keeps the data of a portable copy of Opswright beside its
+// executable, in opswright_data, in place of the user's application data,
 // and moves it between the two.
 //
-// The folder is the switch: a copy whose executable has sshyard_data
+// The folder is the switch: a copy whose executable has opswright_data
 // beside it keeps its data there. A move is asked for while the app runs
 // (Request) and made by the next launch (Apply), before anything opens a
 // file of the data.
@@ -16,16 +16,16 @@ import (
 	"strings"
 	"time"
 
-	"github.com/lvbibir/sshyard/internal/keychain"
+	"github.com/lvbibir/opswright/internal/keychain"
 )
 
 // Dir is the folder beside the executable that holds a portable copy's
 // data.
-const Dir = "sshyard_data"
+const Dir = "opswright_data"
 
 // requestFile, beside the executable, asks the next launch to move the
 // data: "portable" beside the executable, "appdata" back.
-const requestFile = ".sshyard_data-move"
+const requestFile = ".opswright_data-move"
 
 // lockFile is the credential store's lifetime lock, which a running copy
 // holds in its data folder.
@@ -68,7 +68,7 @@ func Supported(goos, exeDir string) bool {
 	if _, err := os.Stat(filepath.Join(exeDir, "Uninstall.exe")); err == nil {
 		return false
 	}
-	f, err := os.CreateTemp(exeDir, ".sshyard-write-*")
+	f, err := os.CreateTemp(exeDir, ".opswright-write-*")
 	if err != nil {
 		return false
 	}

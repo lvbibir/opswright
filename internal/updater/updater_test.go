@@ -41,7 +41,7 @@ func TestCompare(t *testing.T) {
 
 func TestManifest(t *testing.T) {
 	const doc = `{"version":"0.2.0","notes":"- Faster","date":"2026-10-01T10:00:00Z",
-	 "url":"https://github.com/lvbibir/sshyard/releases/download/v0.2.0/SSHYard-0.2.0-linux-amd64.tar.gz",
+	 "url":"https://github.com/lvbibir/opswright/releases/download/v0.2.0/Opswright-0.2.0-linux-amd64.tar.gz",
 	 "size":1234,"signature":"c2ln","deltas":[{"from":"0.1.0","url":"https://example.com/d.delta","size":10,"signature":"eA=="}]}`
 	m, err := ParseManifest(strings.NewReader(doc))
 	if err != nil {
@@ -73,7 +73,7 @@ func TestManifest(t *testing.T) {
 }
 
 func TestManifestURL(t *testing.T) {
-	if got := ManifestURL(Repo, "darwin", "arm64"); got != "https://github.com/lvbibir/sshyard/releases/latest/download/update-darwin-arm64.json" {
+	if got := ManifestURL(Repo, "darwin", "arm64"); got != "https://github.com/lvbibir/opswright/releases/latest/download/update-darwin-arm64.json" {
 		t.Error(got)
 	}
 	if ManifestName("windows", "amd64") != "update-windows-amd64.json" {

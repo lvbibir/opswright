@@ -1,4 +1,4 @@
-// Package assets is SSHYard's asset store: the hosts the user saved, with
+// Package assets is Opswright's asset store: the hosts the user saved, with
 // their groups and favorites, and the credentials, proxies and port
 // forwards they use, kept as JSON in the user's data directory.
 // Secrets are never stored here; they live in the encrypted store
@@ -21,9 +21,9 @@ import (
 	"sync"
 	"time"
 
-	"github.com/lvbibir/sshyard/internal/session"
-	"github.com/lvbibir/sshyard/internal/settings"
-	"github.com/lvbibir/sshyard/internal/theme"
+	"github.com/lvbibir/opswright/internal/session"
+	"github.com/lvbibir/opswright/internal/settings"
+	"github.com/lvbibir/opswright/internal/theme"
 	"github.com/mattn/go-runewidth"
 )
 

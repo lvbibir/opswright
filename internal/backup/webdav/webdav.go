@@ -12,7 +12,7 @@ import (
 	"path"
 	"strings"
 
-	"github.com/lvbibir/sshyard/internal/backup"
+	"github.com/lvbibir/opswright/internal/backup"
 	"github.com/studio-b12/gowebdav"
 )
 

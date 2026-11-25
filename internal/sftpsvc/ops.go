@@ -622,7 +622,7 @@ func (c *Client) Version(p string) (Version, error) {
 // compared, as its size and time may not show an edit.
 //
 // The file is replaced atomically: data goes to a hidden sibling
-// (".sshyard-…-name", mode 0600 while written), which gets the file's
+// (".opswright-…-name", mode 0600 while written), which gets the file's
 // mode (and its owner and group, when they differ and the server lets
 // it) and is renamed over it with posix-rename@openssh.com; a reader sees
 // the old file or the new one, and a failed or cut save leaves the old

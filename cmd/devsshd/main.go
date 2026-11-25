@@ -1,7 +1,7 @@
 //go:build !windows
 
 // Command devsshd is a development SSH server on loopback that runs a real
-// shell in a PTY, with SFTP, for trying SSHYard where no sshd is installed.
+// shell in a PTY, with SFTP, for trying Opswright where no sshd is installed.
 // It is not part of the app and not meant for anything but local testing.
 package main
 
@@ -18,7 +18,7 @@ import (
 	"path/filepath"
 	"syscall"
 
-	"github.com/lvbibir/sshyard/internal/sshtest"
+	"github.com/lvbibir/opswright/internal/sshtest"
 	"golang.org/x/crypto/ssh"
 )
 

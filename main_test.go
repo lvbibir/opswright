@@ -4,7 +4,7 @@ import (
 	"testing"
 
 	"github.com/egoist/mygo"
-	"github.com/lvbibir/sshyard/internal/theme"
+	"github.com/lvbibir/opswright/internal/theme"
 )
 
 func TestThemeSource(t *testing.T) {

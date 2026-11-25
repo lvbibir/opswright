@@ -16,12 +16,12 @@ import (
 	"testing"
 	"time"
 
-	"github.com/lvbibir/sshyard/internal/assets"
-	"github.com/lvbibir/sshyard/internal/backup"
-	"github.com/lvbibir/sshyard/internal/backup/gist"
-	"github.com/lvbibir/sshyard/internal/keychain"
-	"github.com/lvbibir/sshyard/internal/settings"
-	"github.com/lvbibir/sshyard/internal/vault"
+	"github.com/lvbibir/opswright/internal/assets"
+	"github.com/lvbibir/opswright/internal/backup"
+	"github.com/lvbibir/opswright/internal/backup/gist"
+	"github.com/lvbibir/opswright/internal/keychain"
+	"github.com/lvbibir/opswright/internal/settings"
+	"github.com/lvbibir/opswright/internal/vault"
 	xwebdav "golang.org/x/net/webdav"
 )
 
@@ -140,7 +140,7 @@ func TestCloudTargetForm(t *testing.T) {
 	if a.SaveTargetForm(en) || f.err != en.ErrTargetURL() {
 		t.Fatalf("bad URL: %q", f.err)
 	}
-	f.url, f.dir, f.user, f.secret = srv.URL+"/", "SSHYard", "me", "wrong"
+	f.url, f.dir, f.user, f.secret = srv.URL+"/", "Opswright", "me", "wrong"
 	tt.Frame()
 	if !tt.HasText(en.WarnPlainHTTP()) {
 		t.Fatalf("no plain HTTP warning; texts %q", tt.Texts())
@@ -229,7 +229,7 @@ func TestCloudBackupAndRestore(t *testing.T) {
 	srv, fs := davServer(t)
 	src, stt, _ := backupApp(t)
 	pw, _, _ := fillStore(t, src)
-	tg := addTarget(t, src, settings.BackupTarget{Name: "NAS", Kind: settings.BackupWebDAV, URL: srv.URL, Dir: "SSHYard", User: "me", Keep: 5}, "dav-secret-1")
+	tg := addTarget(t, src, settings.BackupTarget{Name: "NAS", Kind: settings.BackupWebDAV, URL: srv.URL, Dir: "Opswright", User: "me", Keep: 5}, "dav-secret-1")
 	src.openSettings(prefBackup)
 	stt.Frame()
 	if !stt.HasText(en.TargetNeverBackedUp()) {
@@ -246,14 +246,14 @@ func TestCloudBackupAndRestore(t *testing.T) {
 	if !stt.HasText(en.BackupUploaded("NAS")) {
 		t.Fatalf("no success toast; texts %q", stt.Texts())
 	}
-	files := davFiles(t, fs, "/SSHYard")
+	files := davFiles(t, fs, "/Opswright")
 	if len(files) != 1 {
 		t.Fatalf("files %v", files)
 	}
 	if _, device, ok := backup.Parse(files[0]); !ok || device != src.deviceID() {
 		t.Fatalf("named %q", files[0])
 	}
-	sealed := davRead(t, fs, "/SSHYard/"+files[0])
+	sealed := davRead(t, fs, "/Opswright/"+files[0])
 	for _, secret := range []string{"hunter2", "proxy-pw", "sk-test", "10.0.0.5"} {
 		if bytes.Contains(sealed, []byte(secret)) {
 			t.Fatalf("%q readable in the uploaded backup", secret)
@@ -269,7 +269,7 @@ func TestCloudBackupAndRestore(t *testing.T) {
 
 	// Another device restores it from the same place.
 	dst, tt, _ := backupApp(t)
-	tg2 := addTarget(t, dst, settings.BackupTarget{Name: "NAS", Kind: settings.BackupWebDAV, URL: srv.URL, Dir: "SSHYard", User: "me"}, "dav-secret-1")
+	tg2 := addTarget(t, dst, settings.BackupTarget{Name: "NAS", Kind: settings.BackupWebDAV, URL: srv.URL, Dir: "Opswright", User: "me"}, "dav-secret-1")
 	dst.OpenRemoteList(tg2.ID)
 	l := dst.remotes
 	waitFor(t, tt, "list", func() bool { return !l.loading })
@@ -515,7 +515,7 @@ func TestRestoreBackupBeforeArchives(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	a.openRestore(en, "/tmp/SSHYard-2026-01-01"+backupExt, sealed, nil)
+	a.openRestore(en, "/tmp/Opswright-2026-01-01"+backupExt, sealed, nil)
 	a.backup.password = testBackupPassword
 	if !a.RestoreBackup(en) {
 		t.Fatalf("restore refused: %q", a.backup.err)

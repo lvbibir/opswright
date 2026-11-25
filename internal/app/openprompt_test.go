@@ -4,7 +4,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/lvbibir/sshyard/locales"
+	"github.com/lvbibir/opswright/locales"
 )
 
 // The questions before opening a large file or a program show its name

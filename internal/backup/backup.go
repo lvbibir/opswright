@@ -1,4 +1,4 @@
-// Package backup is what SSHYard's backups are made of and where they are
+// Package backup is what Opswright's backups are made of and where they are
 // kept: the archive a backup seals (package vault does the sealing), the
 // names of sealed files, and the places that keep them, a folder on a
 // WebDAV server (package webdav), an S3 bucket (package s3) or a GitHub
@@ -18,7 +18,7 @@ import (
 )
 
 // Ext is the extension of a sealed backup file.
-const Ext = ".sshyard-backup"
+const Ext = ".opswright-backup"
 
 // MaxSize bounds a sealed file read from a place, and an archive's files
 // once unpacked.
@@ -89,12 +89,12 @@ type Remote interface {
 }
 
 const (
-	namePrefix = "SSHYard-"
+	namePrefix = "Opswright-"
 	nameTime   = "20060102T150405Z"
 )
 
 // Name is what a backup made at t on device is called in a place, as
-// SSHYard-20261104T101500Z-ab12cd34.sshyard-backup.
+// Opswright-20261104T101500Z-ab12cd34.opswright-backup.
 func Name(t time.Time, device string) string {
 	return namePrefix + t.UTC().Format(nameTime) + "-" + device + Ext
 }

@@ -4,7 +4,7 @@ import (
 	"fmt"
 
 	"github.com/egoist/mygo/ui"
-	"github.com/lvbibir/sshyard/internal/vt"
+	"github.com/lvbibir/opswright/internal/vt"
 )
 
 // xtermMods is xterm's modifier parameter: 1 plus Shift 1, Alt 2, Ctrl 4.
@@ -203,7 +203,7 @@ func pasteBytes(text string, m vt.Modes) []byte {
 	return b
 }
 
-// appMods are the modifiers of SSHYard's own shortcuts: Ctrl+Shift,
+// appMods are the modifiers of Opswright's own shortcuts: Ctrl+Shift,
 // leaving plain Ctrl combinations to the terminal.
 var appMods = ui.Ctrl | ui.Shift
 

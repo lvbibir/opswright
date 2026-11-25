@@ -6,11 +6,11 @@ import (
 	"strings"
 
 	"github.com/egoist/mygo/ui"
-	"github.com/lvbibir/sshyard/internal/highlight"
-	"github.com/lvbibir/sshyard/internal/icons"
-	"github.com/lvbibir/sshyard/internal/settings"
-	"github.com/lvbibir/sshyard/internal/theme"
-	"github.com/lvbibir/sshyard/locales"
+	"github.com/lvbibir/opswright/internal/highlight"
+	"github.com/lvbibir/opswright/internal/icons"
+	"github.com/lvbibir/opswright/internal/settings"
+	"github.com/lvbibir/opswright/internal/theme"
+	"github.com/lvbibir/opswright/locales"
 )
 
 // The terminal colors the keywords of its output (internal/highlight) as

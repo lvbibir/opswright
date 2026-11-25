@@ -33,7 +33,7 @@ var (
 	ErrCostly = errors.New("keys: the key's passphrase derivation costs more than usual")
 	// ErrTooCostly is a PuTTY key whose passphrase derivation costs more
 	// than this package ever derives; nothing was derived.
-	ErrTooCostly = errors.New("keys: the key's passphrase derivation costs more than SSHYard allows")
+	ErrTooCostly = errors.New("keys: the key's passphrase derivation costs more than Opswright allows")
 )
 
 // CostError is a PuTTY key whose derivation costs more than usual

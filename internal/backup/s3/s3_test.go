@@ -15,7 +15,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/lvbibir/sshyard/internal/backup"
+	"github.com/lvbibir/opswright/internal/backup"
 )
 
 // The example credentials of the AWS documentation.
@@ -105,7 +105,7 @@ func TestURLs(t *testing.T) {
 		key  string
 		want string
 	}{
-		{"aws default", Bucket{Bucket: "backups"}, "sshyard/a", "https://backups.s3.us-east-1.amazonaws.com/sshyard/a"},
+		{"aws default", Bucket{Bucket: "backups"}, "opswright/a", "https://backups.s3.us-east-1.amazonaws.com/opswright/a"},
 		{"aws region", Bucket{Region: "eu-west-1", Bucket: "backups"}, "", "https://backups.s3.eu-west-1.amazonaws.com/"},
 		{"aws path style", Bucket{Region: "eu-west-1", Bucket: "backups", PathStyle: true}, "k", "https://s3.eu-west-1.amazonaws.com/backups/k"},
 		{"virtual hosted", Bucket{Endpoint: "https://oss-cn-hangzhou.aliyuncs.com/", Bucket: "mine"}, "p/k", "https://mine.oss-cn-hangzhou.aliyuncs.com/p/k"},
@@ -279,7 +279,7 @@ func newFake(t *testing.T) (*fakeS3, *Bucket) {
 	f := &fakeS3{t: t, bucket: "backups", page: 2, keys: map[string][]byte{}}
 	srv := httptest.NewServer(f)
 	t.Cleanup(srv.Close)
-	b := &Bucket{Endpoint: srv.URL, Region: "auto", Bucket: "backups", Prefix: "/my box/sshyard", PathStyle: true,
+	b := &Bucket{Endpoint: srv.URL, Region: "auto", Bucket: "backups", Prefix: "/my box/opswright", PathStyle: true,
 		AccessKey: exampleAccess, SecretKey: exampleSecret, HTTP: srv.Client()}
 	return f, b
 }
@@ -299,12 +299,12 @@ func TestRoundTrip(t *testing.T) {
 			t.Fatal(err)
 		}
 	}
-	if _, ok := f.keys["my box/sshyard/"+names[0]]; !ok {
+	if _, ok := f.keys["my box/opswright/"+names[0]]; !ok {
 		t.Fatalf("keys %q", slices.Collect(maps.Keys(f.keys)))
 	}
 	// What is not a backup, deeper or outside the prefix is not listed.
-	f.keys["my box/sshyard/notes.txt"] = []byte("x")
-	f.keys["my box/sshyard/old/"+backup.Name(base, "ab12cd34")] = []byte("x")
+	f.keys["my box/opswright/notes.txt"] = []byte("x")
+	f.keys["my box/opswright/old/"+backup.Name(base, "ab12cd34")] = []byte("x")
 	f.keys["elsewhere/"+backup.Name(base, "ab12cd34")] = []byte("x")
 	f.lists = 0
 	objs, err := b.List(ctx)

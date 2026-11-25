@@ -150,7 +150,7 @@ func (c *Client) renameNew(tmp, p string, undo func()) error {
 func tempName(p string) string {
 	b := make([]byte, 6)
 	rand.Read(b)
-	return path.Join(path.Dir(p), ".sshyard-"+hex.EncodeToString(b)+"-"+path.Base(p))
+	return path.Join(path.Dir(p), ".opswright-"+hex.EncodeToString(b)+"-"+path.Base(p))
 }
 
 // mkdirPrivate creates the directory p with mode 0700.

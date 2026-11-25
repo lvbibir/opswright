@@ -39,24 +39,24 @@ func TestCleanLeftovers(t *testing.T) {
 	now := time.Now()
 	old := now.Add(-2 * leftoverAge)
 	parent := t.TempDir()
-	appDir := filepath.Join(parent, "sshyard")
-	makeTree(t, appDir, old, "SSHYard.exe")
+	appDir := filepath.Join(parent, "opswright")
+	makeTree(t, appDir, old, "Opswright.exe")
 
 	removed := map[string][]string{
-		".sshyard.update-123":  {"app/", "update.tar.gz"},
-		".sshyard.update-456":  {"app/SSHYard.exe", "app/resources/icon.png", "update.delta"},
-		".sshyard.update-789":  {},
-		".sshyard.update-1011": {"update.tar.gz"},
+		".opswright.update-123":  {"app/", "update.tar.gz"},
+		".opswright.update-456":  {"app/Opswright.exe", "app/resources/icon.png", "update.delta"},
+		".opswright.update-789":  {},
+		".opswright.update-1011": {"update.tar.gz"},
 	}
 	kept := map[string][]string{
-		".sshyard.update-abc":   {"app/", "update.tar.gz"},
-		".sshyard.update-":      {"app/"},
-		".other.update-123":     {"app/", "update.tar.gz"},
-		".sshyard.update-12":    {"app/", "notes.txt"},
-		".sshyard.update-13":    {"update.tar.gz/"},
-		".sshyard.update-14":    {"app"},
-		"sshyard.update-15":     {"app/"},
-		".sshyard.update-16.bk": {"app/"},
+		".opswright.update-abc":   {"app/", "update.tar.gz"},
+		".opswright.update-":      {"app/"},
+		".other.update-123":       {"app/", "update.tar.gz"},
+		".opswright.update-12":    {"app/", "notes.txt"},
+		".opswright.update-13":    {"update.tar.gz/"},
+		".opswright.update-14":    {"app"},
+		"opswright.update-15":     {"app/"},
+		".opswright.update-16.bk": {"app/"},
 	}
 	for name, files := range removed {
 		makeTree(t, filepath.Join(parent, name), old, append(files, "./")...)
@@ -65,24 +65,24 @@ func TestCleanLeftovers(t *testing.T) {
 		makeTree(t, filepath.Join(parent, name), old, append(files, "./")...)
 	}
 	// Still downloading: the directory is old, its archive is not.
-	makeTree(t, filepath.Join(parent, ".sshyard.update-20"), old, "app/", "update.tar.gz")
-	if err := os.Chtimes(filepath.Join(parent, ".sshyard.update-20", "update.tar.gz"), now, now); err != nil {
+	makeTree(t, filepath.Join(parent, ".opswright.update-20"), old, "app/", "update.tar.gz")
+	if err := os.Chtimes(filepath.Join(parent, ".opswright.update-20", "update.tar.gz"), now, now); err != nil {
 		t.Fatal(err)
 	}
-	kept[".sshyard.update-20"] = nil
+	kept[".opswright.update-20"] = nil
 	// Made just now by another instance.
-	makeTree(t, filepath.Join(parent, ".sshyard.update-21"), now, "app/")
-	kept[".sshyard.update-21"] = nil
+	makeTree(t, filepath.Join(parent, ".opswright.update-21"), now, "app/")
+	kept[".opswright.update-21"] = nil
 	// A file, not a directory.
-	if err := os.WriteFile(filepath.Join(parent, ".sshyard.update-22"), nil, 0o644); err != nil {
+	if err := os.WriteFile(filepath.Join(parent, ".opswright.update-22"), nil, 0o644); err != nil {
 		t.Fatal(err)
 	}
-	kept[".sshyard.update-22"] = nil
+	kept[".opswright.update-22"] = nil
 	// A symlink to a directory that looks like a leftover.
 	outside := filepath.Join(t.TempDir(), "data")
 	makeTree(t, outside, old, "app/", "update.tar.gz")
-	if err := os.Symlink(outside, filepath.Join(parent, ".sshyard.update-23")); err == nil {
-		kept[".sshyard.update-23"] = nil
+	if err := os.Symlink(outside, filepath.Join(parent, ".opswright.update-23")); err == nil {
+		kept[".opswright.update-23"] = nil
 	}
 
 	cleanLeftovers(appDir, now)
@@ -100,7 +100,7 @@ func TestCleanLeftovers(t *testing.T) {
 	if _, err := os.Stat(filepath.Join(outside, "update.tar.gz")); err != nil {
 		t.Errorf("the symlink's target was touched: %v", err)
 	}
-	if _, err := os.Stat(filepath.Join(appDir, "SSHYard.exe")); err != nil {
+	if _, err := os.Stat(filepath.Join(appDir, "Opswright.exe")); err != nil {
 		t.Errorf("the app directory was touched: %v", err)
 	}
 }

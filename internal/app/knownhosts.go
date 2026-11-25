@@ -6,11 +6,11 @@ import (
 	"strings"
 
 	"github.com/egoist/mygo/ui"
-	"github.com/lvbibir/sshyard/internal/assets"
-	"github.com/lvbibir/sshyard/internal/icons"
-	"github.com/lvbibir/sshyard/internal/session"
-	"github.com/lvbibir/sshyard/internal/theme"
-	"github.com/lvbibir/sshyard/locales"
+	"github.com/lvbibir/opswright/internal/assets"
+	"github.com/lvbibir/opswright/internal/icons"
+	"github.com/lvbibir/opswright/internal/session"
+	"github.com/lvbibir/opswright/internal/theme"
+	"github.com/lvbibir/opswright/locales"
 )
 
 // knowsHostKey reports whether known_hosts has a key for h.
@@ -54,7 +54,7 @@ func (a *App) knownKeyHosts() map[int][]string {
 	return out
 }
 
-// knownHostsPage lists the host keys SSHYard trusts, each of which can be
+// knownHostsPage lists the host keys Opswright trusts, each of which can be
 // removed, so a host whose key changed for good can be trusted again.
 func (a *App) knownHostsPage(c *ui.Context, m locales.Messages, tok theme.Tokens) {
 	if a.known == nil {

@@ -4,7 +4,7 @@ import (
 	"testing"
 
 	"github.com/egoist/mygo/ui"
-	"github.com/lvbibir/sshyard/locales"
+	"github.com/lvbibir/opswright/locales"
 )
 
 func TestRememberLayoutGeneralSwitch(t *testing.T) {

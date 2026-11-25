@@ -10,8 +10,8 @@ import (
 	"time"
 )
 
-// Repo is the GitHub repository SSHYard's releases are published in.
-const Repo = "lvbibir/sshyard"
+// Repo is the GitHub repository Opswright's releases are published in.
+const Repo = "lvbibir/opswright"
 
 // MaxManifestSize bounds a manifest read from the network.
 const MaxManifestSize = 1 << 20

@@ -18,8 +18,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/lvbibir/sshyard/internal/session"
-	"github.com/lvbibir/sshyard/internal/sshtest"
+	"github.com/lvbibir/opswright/internal/session"
+	"github.com/lvbibir/opswright/internal/sshtest"
 	"github.com/pkg/sftp"
 )
 

@@ -7,14 +7,14 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/lvbibir/sshyard/internal/mcp"
+	"github.com/lvbibir/opswright/internal/mcp"
 )
 
 func TestSkillText(t *testing.T) {
 	a, _ := newTestApp(t)
 	text := skillText("http://127.0.0.1:4000", "tok-123", a.mcpHandler("tok-123").Tools)
 	for _, want := range []string{
-		"---\nname: sshyard\ndescription: ",
+		"---\nname: opswright\ndescription: ",
 		"Base URL: http://127.0.0.1:4000/api/v1",
 		"Authorization: Bearer tok-123",
 		"### run_command",
@@ -37,14 +37,14 @@ func TestSkillInject(t *testing.T) {
 			t.Fatal(err)
 		}
 	}
-	claude := filepath.Join(home, ".claude", "skills", "sshyard", "SKILL.md")
-	agents := filepath.Join(home, ".agents", "skills", "sshyard", "SKILL.md")
+	claude := filepath.Join(home, ".claude", "skills", "opswright", "SKILL.md")
+	agents := filepath.Join(home, ".agents", "skills", "opswright", "SKILL.md")
 
 	// Off: what is found shows, but nothing can be injected.
 	a.openSettings(prefAgents)
 	tt.Frame()
-	if !tt.HasText(filepath.FromSlash("~/.codex/skills/sshyard · Not found")) || !tt.HasText(filepath.FromSlash("~/.claude/skills/sshyard · Not installed")) ||
-		!tt.HasText(filepath.FromSlash("~/.agents/skills/sshyard · Not installed")) {
+	if !tt.HasText(filepath.FromSlash("~/.codex/skills/opswright · Not found")) || !tt.HasText(filepath.FromSlash("~/.claude/skills/opswright · Not installed")) ||
+		!tt.HasText(filepath.FromSlash("~/.agents/skills/opswright · Not installed")) {
 		t.Fatalf("off: %q", tt.Texts())
 	}
 	mustClick(t, tt, "Inject into All Found Agents")
@@ -76,12 +76,12 @@ func TestSkillInject(t *testing.T) {
 	if _, err := os.Stat(filepath.Join(home, ".codex")); err == nil {
 		t.Fatal("made a folder for an agent that is not there")
 	}
-	if !tt.HasText(filepath.FromSlash("~/.claude/skills/sshyard · Installed")) || !tt.HasText("Skill injected into 2 agents.") {
+	if !tt.HasText(filepath.FromSlash("~/.claude/skills/opswright · Installed")) || !tt.HasText("Skill injected into 2 agents.") {
 		t.Fatalf("installed: %q", tt.Texts())
 	}
 
-	// A skill of the same name that is not SSHYard's is left alone.
-	other := filepath.Join(home, ".codex", "skills", "sshyard", "SKILL.md")
+	// A skill of the same name that is not Opswright's is left alone.
+	other := filepath.Join(home, ".codex", "skills", "opswright", "SKILL.md")
 	if err := os.MkdirAll(filepath.Dir(other), 0o755); err != nil {
 		t.Fatal(err)
 	}
@@ -89,7 +89,7 @@ func TestSkillInject(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	// A new token rewrites SSHYard's skills.
+	// A new token rewrites Opswright's skills.
 	if err := a.newMCPToken(); err != nil {
 		t.Fatal(err)
 	}
@@ -100,7 +100,7 @@ func TestSkillInject(t *testing.T) {
 		t.Fatalf("overwrote another skill: %q", b)
 	}
 	tt.Frame()
-	if !tt.HasText(filepath.FromSlash("~/.codex/skills/sshyard · A file with this name is managed by the user and was not changed")) {
+	if !tt.HasText(filepath.FromSlash("~/.codex/skills/opswright · A file with this name is managed by the user and was not changed")) {
 		t.Fatalf("stale: %q", tt.Texts())
 	}
 

@@ -3,8 +3,8 @@ package app
 import (
 	"testing"
 
-	"github.com/lvbibir/sshyard/internal/layout"
-	"github.com/lvbibir/sshyard/internal/session"
+	"github.com/lvbibir/opswright/internal/layout"
+	"github.com/lvbibir/opswright/internal/session"
 )
 
 func TestSidebarLiveConnections(t *testing.T) {

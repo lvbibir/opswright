@@ -8,7 +8,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/lvbibir/sshyard/internal/vault"
+	"github.com/lvbibir/opswright/internal/vault"
 )
 
 // testPassword is the master password the tests set up their stores with.
@@ -20,7 +20,7 @@ var cheapKDF = vault.Params{Time: 1, Memory: 8, Threads: 1}
 func options(t *testing.T) OpenOptions {
 	t.Helper()
 	dir := t.TempDir()
-	return OpenOptions{Path: filepath.Join(dir, "data", "secrets.enc"), LockPath: filepath.Join(dir, "app", "secrets.lock"), Scope: "test.sshyard", KDF: cheapKDF, System: NewMemory()}
+	return OpenOptions{Path: filepath.Join(dir, "data", "secrets.enc"), LockPath: filepath.Join(dir, "app", "secrets.lock"), Scope: "test.opswright", KDF: cheapKDF, System: NewMemory()}
 }
 
 // openLockedTest opens a store and leaves it as it is: locked unless the

@@ -183,7 +183,7 @@ jobs:
       # repository's default retention (0).
       - uses: actions/upload-artifact@v7
         with:
-          name: sshyard-${{ steps.v.outputs.version }}-${{ matrix.goos }}-${{ join(matrix.goarch, '-') }}
+          name: opswright-${{ steps.v.outputs.version }}-${{ matrix.goos }}-${{ join(matrix.goarch, '-') }}
           retention-days: ${{ github.event_name == 'push' && github.ref_type == 'branch' && 7 || 0 }}
           if-no-files-found: error
           path: |

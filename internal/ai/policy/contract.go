@@ -1,6 +1,6 @@
 // Package policy grades what an AI agent wants to do by risk and decides,
-// under the session's permission mode, whether SSHYard runs it, asks the
-// user, or asks the review model. SSHYard is the final judge; nothing the
+// under the session's permission mode, whether Opswright runs it, asks the
+// user, or asks the review model. Opswright is the final judge; nothing the
 // agent says (its reason, its own approval settings, allow_always) changes
 // a decision.
 //

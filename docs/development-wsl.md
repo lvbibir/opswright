@@ -1,6 +1,6 @@
 # 本地开发指南 (WSL2, 仅 Windows 客户端)
 
-本 fork (`lvbibir/sshyard`) 在 WSL2 中开发, 只交付 Windows 客户端, 上游 `Licoy/sshyard` 保留为 `upstream` 远程用于跟进. 本文只写本机的环境与操作流程; 仓库规则 (测试范围、文案语言、代码风格等) 以 [AGENTS.md](../AGENTS.md) 为准.
+本 fork (`lvbibir/opswright`) 在 WSL2 中开发, 只交付 Windows 客户端, 上游 `Licoy/sshyard` 保留为 `upstream` 远程用于跟进. 本文只写本机的环境与操作流程; 仓库规则 (测试范围、文案语言、代码风格等) 以 [AGENTS.md](../AGENTS.md) 为准.
 
 ## 环境现状
 
@@ -9,7 +9,7 @@
 | Go | go1.27.4, 官方 tarball 安装于 `/usr/local/go` (go.mod 最低要求 1.27.3) |
 | PATH | `/etc/profile.d/golang.sh`, 新开终端自动生效 |
 | 依赖缓存 | `/root/go/pkg/mod` (GOPATH 默认 `/root/go`) |
-| Git 远程 | `origin` = `lvbibir/sshyard` (推送目标), `upstream` = `Licoy/sshyard` (跟进上游) |
+| Git 远程 | `origin` = `lvbibir/opswright` (推送目标), `upstream` = `Licoy/sshyard` (跟进上游) |
 | Windows 侧 | `/mnt/c/Users/lvbibir`, WSL interop 已启用 (可从 WSL 直接运行 .exe) |
 
 不需要在 Windows 侧装 Go 或任何 C 工具链: 项目纯 Go、无 cgo, 在 WSL 里交叉编译即可.
@@ -31,7 +31,7 @@ EOF
 ## 日常开发循环
 
 ```sh
-cd /root/pi/sshyard
+cd /root/pi/sshyard  # 本机克隆目录名仍为 sshyard, 可自行 mv 改名
 
 # 1. 首次或 go.mod / go.sum 变更后拉依赖 (约 11 秒)
 go mod download
@@ -41,9 +41,9 @@ go test -race -count=1 ./internal/session/...                   # 换成本次�
 go test -race -count=1 ./internal/app -run '^TestAddHostFlow$'  # 单个用例示例
 
 # 3. 出 Windows 版 (约 20 秒)
-go tool mygo build -platform windows/amd64 -o /mnt/c/Users/lvbibir/sshyard-dev
-# 产物: /mnt/c/Users/lvbibir/sshyard-dev/windows-amd64/SSHYard.exe (GUI 子系统, 无控制台窗口)
-# Windows 双击运行; 或 WSL 里直接执行 /mnt/c/Users/lvbibir/sshyard-dev/windows-amd64/SSHYard.exe
+go tool mygo build -platform windows/amd64 -o /mnt/c/Users/lvbibir/opswright-dev
+# 产物: /mnt/c/Users/lvbibir/opswright-dev/windows-amd64/Opswright.exe (GUI 子系统, 无控制台窗口)
+# Windows 双击运行; 或 WSL 里直接执行 /mnt/c/Users/lvbibir/opswright-dev/windows-amd64/Opswright.exe
 
 # 4. 改了 locales/*.json 后重新生成 catalog (mygo build 时也会自动检查)
 GOFLAGS=-mod=mod go run github.com/egoist/mygo/cmd/mygo generate
@@ -68,9 +68,9 @@ go run ./cmd/devproxy -addr 127.0.0.1:3128
 
 **数据目录隔离.**
 
-- exe 默认把数据写到 Windows 用户配置目录 (`%APPDATA%\SSHYard`; 改名后随新名称走, 与已安装的原版互不影响).
-- 便携模式: 在 exe 同目录放一个空的 `sshyard_data` 文件夹 (Windows 与 Linux 都支持), 数据、缓存、日志就都留在那里; 删掉文件夹即回到默认目录.
-- 或设环境变量 `SSHYARD_DATA_DIR` (如 PowerShell: `$env:SSHYARD_DATA_DIR = 'D:\dev\sshyard-data'`), 设置后不再启用便携逻辑.
+- exe 默认把数据写到 Windows 用户配置目录 (`%APPDATA%\Opswright`), 与上游原版 (`%APPDATA%\SSHYard`) 互不影响.
+- 便携模式: 在 exe 同目录放一个空的 `opswright_data` 文件夹 (Windows 与 Linux 都支持), 数据、缓存、日志就都留在那里; 删掉文件夹即回到默认目录.
+- 或设环境变量 `OPSWRIGHT_DATA_DIR` (如 PowerShell: `$env:OPSWRIGHT_DATA_DIR = 'D:\dev\opswright-data'`), 设置后不再启用便携逻辑.
 
 **安装器与更新.**
 

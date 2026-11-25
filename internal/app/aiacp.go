@@ -15,12 +15,12 @@ import (
 	"sync"
 	"time"
 
-	"github.com/lvbibir/sshyard/internal/ai/acp"
-	"github.com/lvbibir/sshyard/internal/ai/acp/detect"
-	"github.com/lvbibir/sshyard/internal/ai/agent"
-	"github.com/lvbibir/sshyard/internal/ai/policy"
-	"github.com/lvbibir/sshyard/internal/ai/remote"
-	"github.com/lvbibir/sshyard/internal/session"
+	"github.com/lvbibir/opswright/internal/ai/acp"
+	"github.com/lvbibir/opswright/internal/ai/acp/detect"
+	"github.com/lvbibir/opswright/internal/ai/agent"
+	"github.com/lvbibir/opswright/internal/ai/policy"
+	"github.com/lvbibir/opswright/internal/ai/remote"
+	"github.com/lvbibir/opswright/internal/session"
 )
 
 // acpRuntime owns only this pane's process, SFTP subsystem and pool reference
@@ -262,13 +262,13 @@ func (a *App) sendACP(c *conn, text string, files []*aiAttach) {
 	cfg := a.hostConfig(host, c, func(context.Context) (session.Credentials, error) { return a.credentials(c, host) })
 	key := a.poolKey(host)
 	meta := a.aiMeta(c)
-	resources := []acp.Resource{{URI: "sshyard://host", Text: fmt.Sprintf("Host: %s\nAddress: %s\nUser: %s\nWorking directory: %s", meta.Name, meta.Address, meta.User, meta.Cwd)}}
+	resources := []acp.Resource{{URI: "opswright://host", Text: fmt.Sprintf("Host: %s\nAddress: %s\nUser: %s\nWorking directory: %s", meta.Name, meta.Address, meta.User, meta.Cwd)}}
 	if terminal := a.aiTerminal(c); terminal != "" {
-		resources = append(resources, acp.Resource{URI: "sshyard://terminal", Text: agent.WrapUntrusted("terminal", terminal)})
+		resources = append(resources, acp.Resource{URI: "opswright://terminal", Text: agent.WrapUntrusted("terminal", terminal)})
 	}
 	for i, f := range files {
 		if f.text() {
-			uri := "sshyard://attachment/" + strconv.Itoa(i+1) + "/" + url.PathEscape(f.name)
+			uri := "opswright://attachment/" + strconv.Itoa(i+1) + "/" + url.PathEscape(f.name)
 			resources = append(resources, acp.Resource{URI: uri, Text: agent.WrapUntrusted("file "+f.name, string(f.data))})
 		}
 	}
@@ -300,7 +300,7 @@ func (a *App) sendACP(c *conn, text string, files []*aiAttach) {
 			}
 			close(r.ready)
 			if err == nil && earlier != "" && !r.session.Resumed() {
-				resources = append([]acp.Resource{{URI: "sshyard://conversation", Text: earlier}}, resources...)
+				resources = append([]acp.Resource{{URI: "opswright://conversation", Text: earlier}}, resources...)
 			}
 			if err == nil {
 				// A choice that fails to apply leaves the agent's own value.

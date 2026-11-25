@@ -1,4 +1,4 @@
-// Package icons is SSHYard's icon set: SVGs from Remix Icon
+// Package icons is Opswright's icon set: SVGs from Remix Icon
 // (https://remixicon.com, github.com/Remix-Design/RemixIcon, v4.8.0,
 // Apache License 2.0; see LICENSE and NOTICE in this directory), embedded
 // in the binary and drawn natively by MyGo's ui (ui.Icon), in the color of

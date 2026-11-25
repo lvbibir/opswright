@@ -3,9 +3,9 @@ package app
 import (
 	"testing"
 
-	"github.com/lvbibir/sshyard/internal/ai/agent"
-	"github.com/lvbibir/sshyard/internal/ai/policy"
-	"github.com/lvbibir/sshyard/internal/session"
+	"github.com/lvbibir/opswright/internal/ai/agent"
+	"github.com/lvbibir/opswright/internal/ai/policy"
+	"github.com/lvbibir/opswright/internal/session"
 )
 
 // TestAITerminalMode: an SSH host's assistant turned to the terminal goes

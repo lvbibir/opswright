@@ -1,4 +1,4 @@
-// Package settings keeps SSHYard's preferences in a JSON file.
+// Package settings keeps Opswright's preferences in a JSON file.
 package settings
 
 import (
@@ -13,10 +13,10 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/lvbibir/sshyard/internal/highlight"
-	"github.com/lvbibir/sshyard/internal/keymap"
-	"github.com/lvbibir/sshyard/internal/session"
-	"github.com/lvbibir/sshyard/internal/theme"
+	"github.com/lvbibir/opswright/internal/highlight"
+	"github.com/lvbibir/opswright/internal/keymap"
+	"github.com/lvbibir/opswright/internal/session"
+	"github.com/lvbibir/opswright/internal/theme"
 )
 
 // Settings are the user's preferences.
@@ -260,7 +260,7 @@ type Settings struct {
 // SessionLog is how terminal sessions are logged.
 type SessionLog struct {
 	// Dir is the folder of the logs, an absolute path; "" is
-	// SSHYard/logs in the home folder.
+	// Opswright/logs in the home folder.
 	Dir string `json:"dir,omitempty"`
 	// Raw keeps the bytes printed, escape sequences and all, rather than
 	// the lines shown; Stamps starts each line with its time.
@@ -670,7 +670,7 @@ func (s Settings) FilesScale() float32 {
 	return float32(s.FilesZoom) / 100
 }
 
-// Languages are the languages SSHYard ships, besides following the system.
+// Languages are the languages Opswright ships, besides following the system.
 var Languages = []string{"en", "zh-Hans"}
 
 // Main-window close behaviors.
@@ -1040,7 +1040,7 @@ var ErrBaseURL = errors.New("settings: base URL must be http or https with a hos
 // this computer. CheckBaseURL still returns a nil error for it.
 var ErrPlainHTTP = errors.New("settings: plain http to a non-loopback host")
 
-// ErrHeader reports a header name or value SSHYard will not send, including
+// ErrHeader reports a header name or value Opswright will not send, including
 // Authorization (the API key lives in the keychain).
 var ErrHeader = errors.New("settings: invalid header")
 

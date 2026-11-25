@@ -1,6 +1,6 @@
 // Package sshconfig reads OpenSSH client configuration (~/.ssh/config)
 // for import and for the keys a host offers: the Host blocks, with the
-// directives SSHYard keeps (HostName, User, Port, IdentityFile,
+// directives Opswright keeps (HostName, User, Port, IdentityFile,
 // IdentitiesOnly, ProxyJump), Include, and the defaults of
 // pattern blocks such as Host *. It only reads files; it never writes.
 package sshconfig

@@ -10,7 +10,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/lvbibir/sshyard/internal/shellhist"
+	"github.com/lvbibir/opswright/internal/shellhist"
 )
 
 func TestParseHistoryDump(t *testing.T) {

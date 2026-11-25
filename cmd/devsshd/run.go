@@ -8,7 +8,7 @@ import (
 	"os/exec"
 
 	"github.com/creack/pty"
-	"github.com/lvbibir/sshyard/internal/sshtest"
+	"github.com/lvbibir/opswright/internal/sshtest"
 	"golang.org/x/crypto/ssh"
 )
 

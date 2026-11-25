@@ -14,15 +14,15 @@ import (
 func TestNames(t *testing.T) {
 	at := time.Date(2026, 11, 4, 18, 15, 7, 0, time.FixedZone("CST", 8*3600))
 	n := Name(at, "ab12cd34")
-	if n != "SSHYard-20261104T101507Z-ab12cd34.sshyard-backup" {
+	if n != "Opswright-20261104T101507Z-ab12cd34.opswright-backup" {
 		t.Fatalf("name %q", n)
 	}
 	got, dev, ok := Parse(n)
 	if !ok || !got.Equal(at) || dev != "ab12cd34" {
 		t.Fatalf("parsed %v %q %v", got, dev, ok)
 	}
-	for _, bad := range []string{"", "notes.txt", "SSHYard-20261104T101507Z-ab12cd34.json", "SSHYard-20261104T101507Z-.sshyard-backup",
-		"SSHYard-20261104T101507Z-AB.sshyard-backup", "SSHYard-2026-11-04-ab.sshyard-backup", "SSHYard-20261104T101507Z-a/b.sshyard-backup"} {
+	for _, bad := range []string{"", "notes.txt", "Opswright-20261104T101507Z-ab12cd34.json", "Opswright-20261104T101507Z-.opswright-backup",
+		"Opswright-20261104T101507Z-AB.opswright-backup", "Opswright-2026-11-04-ab.opswright-backup", "Opswright-20261104T101507Z-a/b.opswright-backup"} {
 		if _, _, ok := Parse(bad); ok {
 			t.Errorf("%q parsed", bad)
 		}
@@ -98,7 +98,7 @@ func zipOf(t *testing.T, files ...[2]string) []byte {
 
 func TestUnpackRefuses(t *testing.T) {
 	manifest := func(v int) [2]string {
-		return [2]string{manifestName, `{"format":"sshyard-backup","version":` + string(rune('0'+v)) + `}`}
+		return [2]string{manifestName, `{"format":"opswright-backup","version":` + string(rune('0'+v)) + `}`}
 	}
 	for name, b := range map[string][]byte{
 		"not a zip":   []byte("PK\x03\x04garbage"),
@@ -123,7 +123,7 @@ func TestUnpackRefuses(t *testing.T) {
 // headers say.
 func TestUnpackBounded(t *testing.T) {
 	big := strings.Repeat("0", MaxSize/2+1)
-	b := zipOf(t, [2]string{manifestName, `{"format":"sshyard-backup","version":2}`}, [2]string{"a", big}, [2]string{"b", big})
+	b := zipOf(t, [2]string{manifestName, `{"format":"opswright-backup","version":2}`}, [2]string{"a", big}, [2]string{"b", big})
 	if _, _, err := Unpack(b); !errors.Is(err, ErrTooLarge) {
 		t.Fatalf("unpacked past the bound: %v", err)
 	}

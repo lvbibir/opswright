@@ -3,8 +3,8 @@ package app
 import (
 	"context"
 
-	"github.com/lvbibir/sshyard/internal/assets"
-	"github.com/lvbibir/sshyard/internal/session"
+	"github.com/lvbibir/opswright/internal/assets"
+	"github.com/lvbibir/opswright/internal/session"
 )
 
 // When the network changes under the SSH connections (another Wi-Fi

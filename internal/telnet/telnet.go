@@ -1,4 +1,4 @@
-// Package telnet is SSHYard's Telnet client (RFC 854/855) over any byte
+// Package telnet is Opswright's Telnet client (RFC 854/855) over any byte
 // stream. It negotiates options with the RFC 1143 Q method, answers
 // TERMINAL-TYPE and NAWS, measures round trips with TIMING-MARK, and hands
 // the caller the server's data with the protocol stripped, ready for a

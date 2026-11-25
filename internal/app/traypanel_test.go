@@ -5,8 +5,8 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/lvbibir/sshyard/internal/assets"
-	"github.com/lvbibir/sshyard/internal/keychain"
+	"github.com/lvbibir/opswright/internal/assets"
+	"github.com/lvbibir/opswright/internal/keychain"
 )
 
 func TestTrayHostGroupingAndSearch(t *testing.T) {
@@ -91,7 +91,7 @@ func TestTrayConnectionPreservesProtocolAndSecretGate(t *testing.T) {
 	for _, proto := range []assets.Protocol{assets.ProtoSSH, assets.ProtoTelnet, assets.ProtoSerial} {
 		h := assets.Host{Name: "saved", Address: "localhost", User: "test", Auth: assets.AuthPassword, Protocol: proto}
 		if proto == assets.ProtoSerial {
-			h.Serial = &assets.SerialLine{Device: "/dev/sshyard-tray-missing", Baud: 9600, DataBits: 8, StopBits: "1"}
+			h.Serial = &assets.SerialLine{Device: "/dev/opswright-tray-missing", Baud: 9600, DataBits: 8, StopBits: "1"}
 		}
 		saved, err := a.store.Add(h)
 		if err != nil {

@@ -21,7 +21,7 @@ func TestUnfinishedSaveNotice(t *testing.T) {
 		name = "a\u202eb.conf"
 		notice = "“a\\u202eb.conf”’s last save didn’t finish; it can be restored"
 	}
-	backup := ".sshyard-old-0123456789ab-" + name
+	backup := ".opswright-old-0123456789ab-" + name
 	write(t, filepath.Join(root, backup), "old")
 	a.refreshSides(fc)
 	waitFor(t, tt, "notice", func() bool { return tt.HasText(notice) })
@@ -34,25 +34,25 @@ func TestUnfinishedSaveNotice(t *testing.T) {
 		t.Fatal("the backup is left")
 	}
 
-	write(t, filepath.Join(root, ".sshyard-old-0123456789ab-d.conf"), "old d")
+	write(t, filepath.Join(root, ".opswright-old-0123456789ab-d.conf"), "old d")
 	a.refreshSides(fc)
 	waitFor(t, tt, "notice", func() bool { return tt.HasText("“d.conf”’s last save didn’t finish; it can be restored") })
 	mustClick(t, tt, "Discard")
 	waitFor(t, tt, "discarded", func() bool { return !tt.HasText("“d.conf”’s last save didn’t finish; it can be restored") })
-	for _, p := range []string{".sshyard-old-0123456789ab-d.conf", "d.conf"} {
+	for _, p := range []string{".opswright-old-0123456789ab-d.conf", "d.conf"} {
 		if _, err := os.Lstat(filepath.Join(root, p)); err == nil {
 			t.Fatalf("%s left", p)
 		}
 	}
 
 	// Uploaded again since the listing: Restore replaces nothing.
-	write(t, filepath.Join(root, ".sshyard-old-0123456789ab-e.conf"), "old e")
+	write(t, filepath.Join(root, ".opswright-old-0123456789ab-e.conf"), "old e")
 	a.refreshSides(fc)
 	waitFor(t, tt, "notice", func() bool { return tt.HasText("“e.conf”’s last save didn’t finish; it can be restored") })
 	write(t, filepath.Join(root, "e.conf"), "new e")
 	mustClick(t, tt, "Restore")
 	waitFor(t, tt, "error", func() bool { return strings.Contains(fc.fs.remote.err, "is there again") })
-	if read(filepath.Join(root, "e.conf")) != "new e" || read(filepath.Join(root, ".sshyard-old-0123456789ab-e.conf")) != "old e" {
+	if read(filepath.Join(root, "e.conf")) != "new e" || read(filepath.Join(root, ".opswright-old-0123456789ab-e.conf")) != "old e" {
 		t.Fatal("replaced")
 	}
 }

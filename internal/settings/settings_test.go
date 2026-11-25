@@ -8,8 +8,8 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/lvbibir/sshyard/internal/highlight"
-	"github.com/lvbibir/sshyard/internal/theme"
+	"github.com/lvbibir/opswright/internal/highlight"
+	"github.com/lvbibir/opswright/internal/theme"
 )
 
 func TestRoundTrip(t *testing.T) {

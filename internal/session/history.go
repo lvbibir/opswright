@@ -9,7 +9,7 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/lvbibir/sshyard/internal/shellhist"
+	"github.com/lvbibir/opswright/internal/shellhist"
 	"golang.org/x/crypto/ssh"
 )
 
@@ -41,7 +41,7 @@ done
 func historyMark() string {
 	var b [12]byte
 	rand.Read(b[:])
-	return "@SSHYARD-HIST-" + hex.EncodeToString(b[:])
+	return "@OPSWRIGHT-HIST-" + hex.EncodeToString(b[:])
 }
 
 // ReadHistory reads the shell history of client's user on the server.

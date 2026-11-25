@@ -9,10 +9,10 @@ import (
 	"testing"
 
 	"github.com/egoist/mygo/ui"
-	"github.com/lvbibir/sshyard/internal/keychain"
-	"github.com/lvbibir/sshyard/internal/layout"
-	"github.com/lvbibir/sshyard/internal/localkeys"
-	"github.com/lvbibir/sshyard/internal/session"
+	"github.com/lvbibir/opswright/internal/keychain"
+	"github.com/lvbibir/opswright/internal/layout"
+	"github.com/lvbibir/opswright/internal/localkeys"
+	"github.com/lvbibir/opswright/internal/session"
 )
 
 func TestLayoutRememberedLocalCredentialsWaitForUnlock(t *testing.T) {
@@ -51,7 +51,7 @@ func TestLayoutRememberedLocalCredentialsWaitForUnlock(t *testing.T) {
 			a.Close()
 			// The next start has a real store under a master password, so
 			// the remembered key stays shut until that password opens it.
-			store, err := keychain.OpenLocked(keychain.OpenOptions{Path: filepath.Join(dir, "secrets.enc"), LockPath: filepath.Join(dir, "secrets.lock"), Scope: "sshyard", KDF: cheapKDF})
+			store, err := keychain.OpenLocked(keychain.OpenOptions{Path: filepath.Join(dir, "secrets.enc"), LockPath: filepath.Join(dir, "secrets.lock"), Scope: "opswright", KDF: cheapKDF})
 			if err != nil {
 				t.Fatal(err)
 			}

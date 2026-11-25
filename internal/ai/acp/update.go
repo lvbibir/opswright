@@ -5,8 +5,8 @@ import (
 	"strings"
 
 	sdk "github.com/coder/acp-go-sdk"
-	"github.com/lvbibir/sshyard/internal/ai/agent"
-	"github.com/lvbibir/sshyard/internal/ai/policy"
+	"github.com/lvbibir/opswright/internal/ai/agent"
+	"github.com/lvbibir/opswright/internal/ai/policy"
 )
 
 // PlanLine is one entry of an agent plan.

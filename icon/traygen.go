@@ -4,7 +4,7 @@
 // or their sources. Run from the repository root: go run icon/traygen.go
 //
 // tray-white.svg is the authoritative monochrome vector, traced from the
-// existing SSHYard logo silhouette with its white background removed.
+// existing Opswright logo silhouette with its white background removed.
 // MyGo's tray accepts PNG, so its native SVG renderer is used here at
 // generation time, never during app startup.
 package main

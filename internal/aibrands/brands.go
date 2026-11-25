@@ -9,7 +9,7 @@ import (
 	"sync"
 
 	"github.com/egoist/mygo/ui"
-	"github.com/lvbibir/sshyard/internal/settings"
+	"github.com/lvbibir/opswright/internal/settings"
 )
 
 // files is the artwork gen.go scaled to the size the interface draws.

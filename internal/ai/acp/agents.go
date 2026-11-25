@@ -11,7 +11,7 @@ import (
 )
 
 // What each kind of agent is told so that its work happens on the remote
-// host through SSHYard and not with its own tools on this computer.
+// host through Opswright and not with its own tools on this computer.
 //
 //   - claude: its local tools are off except web access and its to-do list,
 //     only the MCP servers given here are loaded, the remote tools need no
@@ -98,8 +98,8 @@ func (s *Session) agentEnv() map[string]string {
 	return env
 }
 
-// codexConfig adds SSHYard's settings to the user's CODEX_CONFIG, if any:
-// theirs stay unless SSHYard sets the same key. Without a url, as when
+// codexConfig adds Opswright's settings to the user's CODEX_CONFIG, if any:
+// theirs stay unless Opswright sets the same key. Without a url, as when
 // only probed, the remote tools are not served.
 func codexConfig(base, url, token string, userServers []string) string {
 	cfg := map[string]any{}

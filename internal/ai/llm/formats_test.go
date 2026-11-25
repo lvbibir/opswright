@@ -253,7 +253,7 @@ data: {"type":"message_stop"}
 
 func TestAnthropicStreamToolCallsAndReplay(t *testing.T) {
 	srv, got, payload := serve(t, antStream)
-	c := &Client{Format: FormatAnthropic, BaseURL: srv.URL + "/v1", APIKey: "test-key-not-real", Model: "claude", Headers: map[string]string{"X-Api-Key": "other", "X-Title": "SSHYard"}}
+	c := &Client{Format: FormatAnthropic, BaseURL: srv.URL + "/v1", APIKey: "test-key-not-real", Model: "claude", Headers: map[string]string{"X-Api-Key": "other", "X-Title": "Opswright"}}
 	var text, think string
 	msg, err := c.Stream(t.Context(), Request{Effort: EffortMedium, Messages: []Message{
 		{Role: "system", Content: "sys"}, {Role: "system", Content: "host"},
@@ -262,7 +262,7 @@ func TestAnthropicStreamToolCallsAndReplay(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if got.URL.Path != "/v1/messages" || got.Header.Get("X-Api-Key") != "test-key-not-real" || got.Header.Get("Anthropic-Version") != anthropicVersion || got.Header.Get("Authorization") != "" || got.Header.Get("X-Title") != "SSHYard" {
+	if got.URL.Path != "/v1/messages" || got.Header.Get("X-Api-Key") != "test-key-not-real" || got.Header.Get("Anthropic-Version") != anthropicVersion || got.Header.Get("Authorization") != "" || got.Header.Get("X-Title") != "Opswright" {
 		t.Fatalf("request %s %v", got.URL.Path, got.Header)
 	}
 	m := decode(t, *payload)

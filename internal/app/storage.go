@@ -4,8 +4,8 @@ import (
 	"errors"
 
 	"github.com/egoist/mygo/ui"
-	"github.com/lvbibir/sshyard/internal/portable"
-	"github.com/lvbibir/sshyard/locales"
+	"github.com/lvbibir/opswright/internal/portable"
+	"github.com/lvbibir/opswright/locales"
 )
 
 // Storage is where the data of a portable copy may live: beside its

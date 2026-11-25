@@ -7,11 +7,11 @@ import (
 	"errors"
 	"os"
 
-	"github.com/lvbibir/sshyard/internal/vault"
+	"github.com/lvbibir/opswright/internal/vault"
 	"golang.org/x/crypto/chacha20poly1305"
 )
 
-// The master password is the one secret SSHYard asks for: the random
+// The master password is the one secret Opswright asks for: the random
 // master key is sealed under it (vault, Argon2id) in master.enc beside
 // secrets.enc. The password itself is never stored. The same key is
 // cached in the computer's own keychain, so this computer opens the store

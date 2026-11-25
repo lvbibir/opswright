@@ -107,7 +107,7 @@ func TestLifetimeLockAndConcurrentWrites(t *testing.T) {
 		mustGet(t, k, fmt.Sprintf("key%d", i), []byte{byte(i)})
 	}
 	cmd := exec.Command(os.Args[0], "-test.run=^TestLockChild$")
-	cmd.Env = append(os.Environ(), "SSHYARD_TEST_LOCK="+o.LockPath)
+	cmd.Env = append(os.Environ(), "OPSWRIGHT_TEST_LOCK="+o.LockPath)
 	if out, err := cmd.CombinedOutput(); err != nil {
 		t.Fatalf("cross-process lock: %v %s", err, out)
 	}
@@ -122,7 +122,7 @@ func TestLifetimeLockAndConcurrentWrites(t *testing.T) {
 	}
 }
 func TestLockChild(t *testing.T) {
-	path := os.Getenv("SSHYARD_TEST_LOCK")
+	path := os.Getenv("OPSWRIGHT_TEST_LOCK")
 	if path == "" {
 		t.Skip("subprocess helper")
 	}

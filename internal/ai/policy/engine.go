@@ -3,7 +3,7 @@ package policy
 import "strings"
 
 // Engine grades an action and applies the session's permission mode.
-// SSHYard is the judge: the agent's reason never changes the result.
+// Opswright is the judge: the agent's reason never changes the result.
 type Engine interface {
 	Classify(a Action, scope Scope) Grade
 	Decide(mode Mode, grade Grade, reviewerConfigured bool) Decision
@@ -80,7 +80,7 @@ func (engine) Classify(a Action, scope Scope) Grade {
 // reviewer, ReadOnly and Low auto-run and all other grades ask the user.
 //
 // ModeFull auto-runs every grade, Unknown included: the user picked the
-// mode that promises to stop asking, and a grade SSHYard could not settle
+// mode that promises to stop asking, and a grade Opswright could not settle
 // is not evidence against the action. Critical and Unknown still set Red
 // and never offer Similar; what ran unjudged stays visible through its
 // grade, "unknown" on the tool card and in the audit. High auto-runs.

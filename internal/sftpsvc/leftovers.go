@@ -30,7 +30,7 @@ import (
 //     user to restore (Restore) or discard (Discard). One whose file is
 //     there is removed once it is staleLeftover old (a save dates its
 //     backup when it makes it).
-//   - a copy (".sshyard-<12 hex>-name", a regular file) is removed once
+//   - a copy (".opswright-<12 hex>-name", a regular file) is removed once
 //     it is staleLeftover old, and its file is there: a copy that young
 //     may be another save's, under way; one whose file is missing may be
 //     an old file moved aside by an earlier version of this app, and is
@@ -38,8 +38,8 @@ import (
 //
 // Only names in exactly these forms are touched.
 var (
-	tempRe   = regexp.MustCompile(`(?s)^\.sshyard-[0-9a-f]{12}-(.+)$`)
-	backupRe = regexp.MustCompile(`(?s)^\.sshyard-old-[0-9a-f]{12}-(.+)$`)
+	tempRe   = regexp.MustCompile(`(?s)^\.opswright-[0-9a-f]{12}-(.+)$`)
+	backupRe = regexp.MustCompile(`(?s)^\.opswright-old-[0-9a-f]{12}-(.+)$`)
 )
 
 // staleLeftover is how old a save's copy must be to be removed.
@@ -51,7 +51,7 @@ var staleLeftover = time.Hour
 // random hex; listing still cleans those up.)
 func backupName(p string) string {
 	sum := sha256.Sum256([]byte(path.Base(p)))
-	return path.Join(path.Dir(p), ".sshyard-old-"+hex.EncodeToString(sum[:6])+"-"+path.Base(p))
+	return path.Join(path.Dir(p), ".opswright-old-"+hex.EncodeToString(sum[:6])+"-"+path.Base(p))
 }
 
 // leftover reports whether name is in a form cleanLeftovers handles.

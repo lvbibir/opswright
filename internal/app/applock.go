@@ -11,10 +11,10 @@ import (
 	"time"
 
 	"github.com/egoist/mygo/ui"
-	"github.com/lvbibir/sshyard/internal/applock"
-	"github.com/lvbibir/sshyard/internal/keychain"
-	"github.com/lvbibir/sshyard/internal/settings"
-	"github.com/lvbibir/sshyard/locales"
+	"github.com/lvbibir/opswright/internal/applock"
+	"github.com/lvbibir/opswright/internal/keychain"
+	"github.com/lvbibir/opswright/internal/settings"
+	"github.com/lvbibir/opswright/locales"
 )
 
 // The app lock stands in front of every window (applock): while it is
@@ -60,7 +60,7 @@ type appLock struct {
 	now func() time.Time
 }
 
-// minMasterPassword is the shortest master password SSHYard accepts: the
+// minMasterPassword is the shortest master password Opswright accepts: the
 // key it seals is only as strong as what an offline guess pays for.
 const minMasterPassword = 8
 
@@ -90,7 +90,7 @@ func (a *App) loadAppLock() {
 	}
 	cfg, err := applock.Load(a.lockPath())
 	if err != nil {
-		log.Printf("sshyard: app lock settings unreadable, using defaults: %v", err)
+		log.Printf("opswright: app lock settings unreadable, using defaults: %v", err)
 		return
 	}
 	l.cfg = cfg
@@ -110,7 +110,7 @@ func (a *App) LockApp() {
 	}
 	l.manual = true
 	if err := a.kc.Lock(); err != nil {
-		log.Printf("sshyard: locking the secret store failed: %v", err)
+		log.Printf("opswright: locking the secret store failed: %v", err)
 	}
 	a.unlock.secretsReady.Store(false)
 	l.locked = true
@@ -122,7 +122,7 @@ func (a *App) LockApp() {
 // noteInput is told of each input in a window.
 func (a *App) noteInput(ui.InputEvent) { a.lock.input = a.lockClock() }
 
-// checkIdle hides the windows once SSHYard had no input for the minutes
+// checkIdle hides the windows once Opswright had no input for the minutes
 // set, and is how long until then otherwise: 0 when it never does.
 // Hiding never asks for the master password: only a lock by hand does.
 func (a *App) checkIdle() time.Duration {
@@ -232,7 +232,7 @@ func (a *App) countFailure() {
 	cfg := a.lock.cfg
 	cfg.Fail(a.lockClock())
 	if err := a.saveLock(cfg); err != nil {
-		log.Printf("sshyard: app lock attempts not saved: %v", err)
+		log.Printf("opswright: app lock attempts not saved: %v", err)
 		a.lock.cfg = cfg
 	}
 }
@@ -282,7 +282,7 @@ func (a *App) SubmitAppUnlock(m locales.Messages) bool {
 }
 
 // setOrUnlockMaster opens the store with pw. Without a master password
-// yet, it sets that password: the master key of a former SSHYard, which
+// yet, it sets that password: the master key of a former Opswright, which
 // the OS keychain still holds, is sealed under it first, and a store
 // without one starts a new key.
 func (a *App) setOrUnlockMaster(pw []byte) error {
@@ -312,7 +312,7 @@ func (a *App) appUnlockDone(m locales.Messages, gen int, err error) {
 	cfg := l.cfg
 	cfg.Succeed()
 	if err := a.saveLock(cfg); err != nil {
-		log.Printf("sshyard: app lock attempts not saved: %v", err)
+		log.Printf("opswright: app lock attempts not saved: %v", err)
 		l.cfg = cfg
 	}
 	a.openStoreNow()
@@ -353,10 +353,10 @@ func (a *App) relaunch() {
 
 // resetFile in the data folder asks the next start to empty it: the app
 // lock was reset.
-const resetFile = ".sshyard-reset"
+const resetFile = ".opswright-reset"
 
 // resetFiles are what a reset deletes from the data folder, which may be
-// one set from outside holding more than SSHYard's: everything SSHYard
+// one set from outside holding more than Opswright's: everything Opswright
 // keeps there but the lifetime lock, the updater's state and the
 // windows' places. resetTemps are the prefixes of the files written
 // beside them before they replace them.

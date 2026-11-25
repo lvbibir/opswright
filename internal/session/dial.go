@@ -1,4 +1,4 @@
-// Package session is SSHYard's SSH sessions: it dials with
+// Package session is Opswright's SSH sessions: it dials with
 // golang.org/x/crypto/ssh, authenticates by password, private key or the
 // SSH agent,
 // checks the host key against known_hosts, opens a shell on a PTY that
@@ -18,7 +18,7 @@ import (
 	"sync/atomic"
 	"time"
 
-	"github.com/lvbibir/sshyard/internal/netproxy"
+	"github.com/lvbibir/opswright/internal/netproxy"
 	"golang.org/x/crypto/ssh"
 )
 
@@ -63,7 +63,7 @@ type Credentials struct {
 }
 
 // ErrPassphraseNeeded reports a private key encrypted with a passphrase
-// SSHYard does not have.
+// Opswright does not have.
 var ErrPassphraseNeeded = errors.New("session: the private key needs a passphrase")
 
 // ErrPassphraseWrong reports a passphrase that does not decrypt the key.
@@ -349,7 +349,7 @@ func dialHop(ctx context.Context, hop Hop, dial func(ctx context.Context, networ
 		AuthCallback:    next,
 		HostKeyCallback: hop.HostKey,
 		Timeout:         timeout,
-		ClientVersion:   "SSH-2.0-SSHYard",
+		ClientVersion:   "SSH-2.0-Opswright",
 	})
 	if !stop() || err != nil {
 		conn.Close()

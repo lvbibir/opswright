@@ -4,7 +4,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/lvbibir/sshyard/internal/ai/agent"
+	"github.com/lvbibir/opswright/internal/ai/agent"
 )
 
 // TestACPTranscript checks what a new ACP session is told of the

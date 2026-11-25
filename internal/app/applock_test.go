@@ -8,8 +8,8 @@ import (
 	"time"
 
 	"github.com/egoist/mygo/ui"
-	"github.com/lvbibir/sshyard/internal/applock"
-	"github.com/lvbibir/sshyard/internal/keychain"
+	"github.com/lvbibir/opswright/internal/applock"
+	"github.com/lvbibir/opswright/internal/keychain"
 )
 
 // lockTestApp is a locked test app whose clock the test moves.

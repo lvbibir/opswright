@@ -15,8 +15,8 @@ import (
 	"time"
 
 	sdk "github.com/coder/acp-go-sdk"
-	"github.com/lvbibir/sshyard/internal/ai/policy"
-	"github.com/lvbibir/sshyard/internal/mcp"
+	"github.com/lvbibir/opswright/internal/ai/policy"
+	"github.com/lvbibir/opswright/internal/mcp"
 )
 
 // Config starts one agent process for one pane.
@@ -340,7 +340,7 @@ func (s *Session) initialize(ctx context.Context) error {
 }
 
 // sandboxPrefix names the sandboxes, in the system's temporary folder.
-const sandboxPrefix = "sshyard-acp-"
+const sandboxPrefix = "opswright-acp-"
 
 // makeSandbox creates the empty folder the agent runs in: want again, to
 // resume a session that ran there, when it is a sandbox's name and is
@@ -550,7 +550,7 @@ func (s *Session) Prompt(ctx context.Context, text string, resources []Resource)
 		return "", err
 	}
 	defer s.finishTurn(t)
-	// An agent without a system prompt of SSHYard's learns where it works
+	// An agent without a system prompt of Opswright's learns where it works
 	// before its first request.
 	s.mu.Lock()
 	introduce := !s.introduced && !ownPrompt(s.cfg.Type)
@@ -558,7 +558,7 @@ func (s *Session) Prompt(ctx context.Context, text string, resources []Resource)
 	s.mu.Unlock()
 	if introduce {
 		blocks = append([]sdk.ContentBlock{sdk.ResourceBlock(sdk.EmbeddedResourceResource{
-			TextResourceContents: &sdk.TextResourceContents{Uri: "sshyard://instructions", Text: Instructions},
+			TextResourceContents: &sdk.TextResourceContents{Uri: "opswright://instructions", Text: Instructions},
 		})}, blocks...)
 	}
 	resp, err := s.conn.Prompt(t.ctx, sdk.PromptRequest{SessionId: sid, Prompt: blocks})

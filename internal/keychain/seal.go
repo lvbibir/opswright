@@ -14,7 +14,7 @@ import (
 // text (as the AI conversations) is sealed under a key derived from the
 // master key for its purpose. The master key never leaves the package.
 
-const sealMagic = "SSHYARD-SEALED\x00"
+const sealMagic = "OPSWRIGHT-SEALED\x00"
 const sealVersion byte = 1
 
 // sealer is a backend that seals data under its master key.
@@ -65,7 +65,7 @@ func deriveSealKey(master []byte, purpose string) (cipher.AEAD, error) {
 	if len(master) != chacha20poly1305.KeySize || purpose == "" {
 		return nil, ErrLocked
 	}
-	key, err := hkdf.Key(sha256.New, master, nil, "sshyard/seal/"+purpose, chacha20poly1305.KeySize)
+	key, err := hkdf.Key(sha256.New, master, nil, "opswright/seal/"+purpose, chacha20poly1305.KeySize)
 	if err != nil {
 		return nil, err
 	}

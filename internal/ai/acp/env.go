@@ -39,7 +39,7 @@ func deniedName(name string) bool {
 	if _, ok := deniedExact[name]; ok {
 		return true
 	}
-	return strings.HasPrefix(name, "SSHYARD_")
+	return strings.HasPrefix(name, "OPSWRIGHT_")
 }
 
 func allowedBase(name string) bool {

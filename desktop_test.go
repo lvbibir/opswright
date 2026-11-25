@@ -20,20 +20,20 @@ import (
 
 	"github.com/egoist/mygo"
 	"github.com/egoist/mygo/ui"
-	"github.com/lvbibir/sshyard/internal/app"
-	"github.com/lvbibir/sshyard/internal/keychain"
-	"github.com/lvbibir/sshyard/internal/settings"
+	"github.com/lvbibir/opswright/internal/app"
+	"github.com/lvbibir/opswright/internal/keychain"
+	"github.com/lvbibir/opswright/internal/settings"
 )
 
 // TestMain keeps the opt-in native event loop on the process's main thread.
 // Normal unit tests neither open windows nor access a system credential store.
 func TestMain(m *testing.M) {
-	if mode := os.Getenv("SSHYARD_NATIVE_HELPER"); mode != "" {
+	if mode := os.Getenv("OPSWRIGHT_NATIVE_HELPER"); mode != "" {
 		runtime.LockOSThread()
 		if strings.HasPrefix(mode, "layout-") {
-			runNativeLayout(mode, os.Getenv("SSHYARD_NATIVE_DIR"))
+			runNativeLayout(mode, os.Getenv("OPSWRIGHT_NATIVE_DIR"))
 		} else {
-			runNativeDesktop(mode, os.Getenv("SSHYARD_NATIVE_DIR"))
+			runNativeDesktop(mode, os.Getenv("OPSWRIGHT_NATIVE_DIR"))
 		}
 		os.Exit(0)
 	}
@@ -41,8 +41,8 @@ func TestMain(m *testing.M) {
 }
 
 func TestDesktopNativeLifecycle(t *testing.T) {
-	if os.Getenv("SSHYARD_NATIVE_TEST") != "1" {
-		t.Skip("set SSHYARD_NATIVE_TEST=1 on a desktop session to run real MyGo windows and tray")
+	if os.Getenv("OPSWRIGHT_NATIVE_TEST") != "1" {
+		t.Skip("set OPSWRIGHT_NATIVE_TEST=1 on a desktop session to run real MyGo windows and tray")
 	}
 	for _, mode := range []string{"tray", "quit", "unavailable", "panel"} {
 		t.Run(mode, func(t *testing.T) {
@@ -53,7 +53,7 @@ func TestDesktopNativeLifecycle(t *testing.T) {
 				t.Fatal(err)
 			}
 			cmd := exec.CommandContext(ctx, exe, "-test.run=^$")
-			cmd.Env = append(os.Environ(), "SSHYARD_NATIVE_HELPER="+mode, "SSHYARD_NATIVE_DIR="+t.TempDir())
+			cmd.Env = append(os.Environ(), "OPSWRIGHT_NATIVE_HELPER="+mode, "OPSWRIGHT_NATIVE_DIR="+t.TempDir())
 			output, err := cmd.CombinedOutput()
 			if err != nil || !bytes.Contains(output, []byte("native lifecycle passed: "+mode)) {
 				t.Fatalf("native subprocess: %v\n%s", err, output)
@@ -72,7 +72,7 @@ func nativeCheck(ok bool, message string) {
 // This sequential integration setup exceeds the usual function size so the
 // isolated credential seed, actual UI loop and shutdown barrier stay together.
 func runNativeDesktop(mode, dir string) {
-	mygo.App.SetName("SSHYard Native Lifecycle Test")
+	mygo.App.SetName("Opswright Native Lifecycle Test")
 	mygo.App.SetPath(mygo.PathUserData, dir)
 	secrets := keychain.NewMemory()
 	store := keychain.New(secrets)
@@ -101,7 +101,7 @@ func runNativeDesktop(mode, dir string) {
 		nativeCheck(err == nil, fmt.Sprintf("create native app: %v", err))
 		draft := "retained native draft"
 		w := mygo.NewWindow(mygo.WindowOptions{
-			Title: "SSHYard Lifecycle Test", Width: 900, Height: 600,
+			Title: "Opswright Lifecycle Test", Width: 900, Height: 600,
 			Content: ui.View(func(c *ui.Context) {
 				ui.TextInput(c, &draft).Label("Lifecycle test draft")
 				a.View(c)

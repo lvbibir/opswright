@@ -10,9 +10,9 @@ import (
 	"time"
 
 	"github.com/egoist/mygo/ui"
-	"github.com/lvbibir/sshyard/internal/layout"
-	"github.com/lvbibir/sshyard/internal/settings"
-	"github.com/lvbibir/sshyard/locales"
+	"github.com/lvbibir/opswright/internal/layout"
+	"github.com/lvbibir/opswright/internal/settings"
+	"github.com/lvbibir/opswright/locales"
 )
 
 // Version 1 keeps workspace structure only, never session content or directories.
@@ -142,7 +142,7 @@ func (a *App) saveLayout() {
 			a.layoutNotice(false)
 		}
 		a.layoutSaveFailed = true
-		log.Printf("sshyard: workspace layout save failed")
+		log.Printf("opswright: workspace layout save failed")
 		return
 	}
 	a.layoutSaveFailed = false
@@ -190,7 +190,7 @@ func (a *App) layoutNotice(read bool) {
 // ReportLayoutError makes native geometry failures observable without exposing paths.
 func (a *App) ReportLayoutError(err error) {
 	if err != nil {
-		log.Printf("sshyard: native layout persistence failed")
+		log.Printf("opswright: native layout persistence failed")
 		a.post(func() { a.layoutNotice(false) })
 	}
 }

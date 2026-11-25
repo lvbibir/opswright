@@ -15,7 +15,7 @@ import (
 // TagEnv is the variable that marks a terminal's shell on its server,
 // set with the "env" request before the shell starts. OpenSSH takes LC_*
 // variables in the default configuration of most distributions.
-const TagEnv = "LC_SSHYARD_TERM"
+const TagEnv = "LC_OPSWRIGHT_TERM"
 
 // ErrNoCwd is ShellCwd finding no shell, or no directory for it.
 var ErrNoCwd = errors.New("session: the shell's directory could not be read")

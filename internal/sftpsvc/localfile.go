@@ -82,7 +82,7 @@ func localChanged(p string, fi fs.FileInfo, was Version) bool {
 }
 
 func replaceLocal(p string, data []byte, perm fs.FileMode) error {
-	tmp, err := os.CreateTemp(filepath.Dir(p), ".sshyard-*-"+filepath.Base(p))
+	tmp, err := os.CreateTemp(filepath.Dir(p), ".opswright-*-"+filepath.Base(p))
 	if err != nil {
 		return err
 	}

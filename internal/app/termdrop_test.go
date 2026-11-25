@@ -3,7 +3,7 @@ package app
 import (
 	"testing"
 
-	"github.com/lvbibir/sshyard/internal/vt"
+	"github.com/lvbibir/opswright/internal/vt"
 )
 
 func TestDropText(t *testing.T) {

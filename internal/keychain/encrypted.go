@@ -10,12 +10,12 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/lvbibir/sshyard/internal/vault"
+	"github.com/lvbibir/opswright/internal/vault"
 	"golang.org/x/crypto/chacha20poly1305"
 )
 
 const MasterKey = "master/v1"
-const fileMagic = "SSHYARD-SECRETS\x00"
+const fileMagic = "OPSWRIGHT-SECRETS\x00"
 const fileVersion byte = 1
 const maxStoreSize = 64 << 20
 

@@ -2,7 +2,7 @@ package app
 
 import (
 	"github.com/egoist/mygo/ui"
-	"github.com/lvbibir/sshyard/locales"
+	"github.com/lvbibir/opswright/locales"
 )
 
 // ReportError displays an already localized platform error without blocking

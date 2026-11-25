@@ -8,8 +8,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/lvbibir/sshyard/internal/xfer"
-	"github.com/lvbibir/sshyard/internal/xfer/xfertest"
+	"github.com/lvbibir/opswright/internal/xfer"
+	"github.com/lvbibir/opswright/internal/xfer/xfertest"
 )
 
 func TestFind(t *testing.T) {

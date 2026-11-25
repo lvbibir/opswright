@@ -8,9 +8,9 @@ import (
 	"time"
 
 	"github.com/egoist/mygo/i18n"
-	"github.com/lvbibir/sshyard/internal/ai/policy"
-	"github.com/lvbibir/sshyard/internal/keychain"
-	"github.com/lvbibir/sshyard/locales"
+	"github.com/lvbibir/opswright/internal/ai/policy"
+	"github.com/lvbibir/opswright/internal/keychain"
+	"github.com/lvbibir/opswright/locales"
 )
 
 func receiveNoticeTest[T any](t *testing.T, ch <-chan T) T {

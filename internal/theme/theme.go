@@ -1,4 +1,4 @@
-// Package theme holds SSHYard's design tokens: the brand color, the light
+// Package theme holds Opswright's design tokens: the brand color, the light
 // and dark palettes of the interface and of the terminal, and how a mode
 // (auto, light, dark) chooses between them.
 package theme
@@ -10,7 +10,7 @@ import (
 	"github.com/egoist/mygo/ui"
 )
 
-// BrandHex is SSHYard's fixed brand color.
+// BrandHex is Opswright's fixed brand color.
 const BrandHex = "#1984FC"
 
 // Brand is the brand color.

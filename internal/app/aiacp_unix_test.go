@@ -14,14 +14,14 @@ import (
 	"testing"
 	"time"
 
-	"github.com/lvbibir/sshyard/internal/session"
-	"github.com/lvbibir/sshyard/internal/settings"
-	"github.com/lvbibir/sshyard/locales"
+	"github.com/lvbibir/opswright/internal/session"
+	"github.com/lvbibir/opswright/internal/settings"
+	"github.com/lvbibir/opswright/locales"
 )
 
 func TestACPAppProtocolAndLifecycle(t *testing.T) {
 	binary := filepath.Join(t.TempDir(), "fakeagent")
-	command := exec.Command("go", "build", "-o", binary, "github.com/lvbibir/sshyard/internal/ai/acp/internal/fakeagent")
+	command := exec.Command("go", "build", "-o", binary, "github.com/lvbibir/opswright/internal/ai/acp/internal/fakeagent")
 	if output, err := command.CombinedOutput(); err != nil {
 		t.Fatalf("build fakeagent: %v %s", err, output)
 	}
@@ -201,7 +201,7 @@ func TestACPAppProtocolAndLifecycle(t *testing.T) {
 		if c.ai.acpSID != "sess-fake" || c.ai.acpCwd != cwd || c.ai.acpAgent != c.ai.agent {
 			t.Fatalf("session %q of %q in %q", c.ai.acpSID, c.ai.acpAgent, c.ai.acpCwd)
 		}
-		if d := first.session.Diagnostics(); strings.Contains(d, "sshyard://conversation") {
+		if d := first.session.Diagnostics(); strings.Contains(d, "opswright://conversation") {
 			t.Fatalf("a new conversation was told an earlier one: %s", d)
 		}
 		conv := c.ai.conv
@@ -218,7 +218,7 @@ func TestACPAppProtocolAndLifecycle(t *testing.T) {
 		}
 		second := ask("second question")
 		d := second.session.Diagnostics()
-		if !second.session.Resumed() || !strings.Contains(d, "load sess-fake cwd "+cwd) || strings.Contains(d, "sshyard://conversation") {
+		if !second.session.Resumed() || !strings.Contains(d, "load sess-fake cwd "+cwd) || strings.Contains(d, "opswright://conversation") {
 			t.Fatalf("not resumed: %s", d)
 		}
 		if paneHas(a, id, "replayed answer") || !paneHas(a, id, "first question") {
@@ -231,7 +231,7 @@ func TestACPAppProtocolAndLifecycle(t *testing.T) {
 		third := ask("third question")
 		ask("fourth question")
 		d = third.session.Diagnostics()
-		if third.session.Resumed() || strings.Contains(d, "load ") || strings.Count(d, "sshyard://conversation") != 1 ||
+		if third.session.Resumed() || strings.Contains(d, "load ") || strings.Count(d, "opswright://conversation") != 1 ||
 			!strings.Contains(d, "User: first question") || !strings.Contains(d, "User: second question") {
 			t.Fatalf("not told the conversation once: %s", d)
 		}

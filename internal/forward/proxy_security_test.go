@@ -12,7 +12,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/lvbibir/sshyard/internal/netproxy"
+	"github.com/lvbibir/opswright/internal/netproxy"
 )
 
 type proxyLogCapture struct {

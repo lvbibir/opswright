@@ -4,9 +4,9 @@ import (
 	"errors"
 	"strings"
 
-	"github.com/lvbibir/sshyard/internal/netproxy"
-	"github.com/lvbibir/sshyard/internal/sftpsvc"
-	"github.com/lvbibir/sshyard/locales"
+	"github.com/lvbibir/opswright/internal/netproxy"
+	"github.com/lvbibir/opswright/internal/sftpsvc"
+	"github.com/lvbibir/opswright/locales"
 )
 
 // securityErrorText recognizes typed failures through wrappers, while keeping

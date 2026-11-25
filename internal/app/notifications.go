@@ -6,7 +6,7 @@ import (
 	"log"
 
 	"github.com/egoist/mygo/i18n"
-	"github.com/lvbibir/sshyard/locales"
+	"github.com/lvbibir/opswright/locales"
 )
 
 // Notification is a desktop notification. An empty ID makes it unique;

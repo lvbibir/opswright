@@ -10,7 +10,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/lvbibir/sshyard/internal/xfer"
+	"github.com/lvbibir/opswright/internal/xfer"
 )
 
 // End is one end of a Pipe.

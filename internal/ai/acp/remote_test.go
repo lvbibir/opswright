@@ -9,7 +9,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/lvbibir/sshyard/internal/ai/policy"
+	"github.com/lvbibir/opswright/internal/ai/policy"
 
 	sdk "github.com/coder/acp-go-sdk"
 )
@@ -28,7 +28,7 @@ func TestRemoteToolsRunThroughGate(t *testing.T) {
 		t.Fatal(err)
 	}
 	d := waitDiag(t, s, "wrote /home/me/out")
-	if !strings.Contains(d, `"name":"sshyard"`) || !strings.Contains(d, `exit code: 0\nlisting`) || !strings.Contains(d, `a\nb`) || !strings.Contains(d, "wrote /home/me/out") {
+	if !strings.Contains(d, `"name":"opswright"`) || !strings.Contains(d, `exit code: 0\nlisting`) || !strings.Contains(d, `a\nb`) || !strings.Contains(d, "wrote /home/me/out") {
 		t.Fatalf("diag %s", d)
 	}
 	if got, _ := files.get("/home/me/out"); got != "hi" {
@@ -96,7 +96,7 @@ func TestNewSessionRequestByKind(t *testing.T) {
 	}
 	o := meta.ClaudeCode.Options
 	if meta.SystemPrompt.Append != Instructions || !o.Strict || o.Skip || slices.Contains(o.Tools, "Bash") || slices.Contains(o.Tools, "Read") ||
-		!slices.Contains(o.AllowedTools, "mcp__sshyard__remote_run") || len(o.AllowedTools) != len(remoteToolNames) {
+		!slices.Contains(o.AllowedTools, "mcp__opswright__remote_run") || len(o.AllowedTools) != len(remoteToolNames) {
 		t.Fatalf("claude meta %s", b)
 	}
 
@@ -128,7 +128,7 @@ func TestCodexConfigMerges(t *testing.T) {
 		t.Fatalf("bad base %s", bad)
 	}
 	// Probing serves no remote tools but still keeps Codex's own off.
-	if probe := codexConfig("", "", "", []string{"cua"}); strings.Contains(probe, `"sshyard"`) || !strings.Contains(probe, `"cua":{"enabled":false}`) {
+	if probe := codexConfig("", "", "", []string{"cua"}); strings.Contains(probe, `"opswright"`) || !strings.Contains(probe, `"cua":{"enabled":false}`) {
 		t.Fatalf("probe config %s", probe)
 	}
 }
@@ -157,10 +157,10 @@ func TestCodexGetsConfigAndNoPromptInstructions(t *testing.T) {
 		t.Fatal(err)
 	}
 	d := waitDiag(t, s, "env CODEX_CONFIG=")
-	if !strings.Contains(d, `"shell_tool":false`) || !strings.Contains(d, `"cua":{"enabled":false}`) || !strings.Contains(d, `"sshyard":{`) {
+	if !strings.Contains(d, `"shell_tool":false`) || !strings.Contains(d, `"cua":{"enabled":false}`) || !strings.Contains(d, `"opswright":{`) {
 		t.Fatalf("diag %s", d)
 	}
-	if strings.Contains(d, "sshyard://instructions") || !strings.Contains(d, "prompt text\n") {
+	if strings.Contains(d, "opswright://instructions") || !strings.Contains(d, "prompt text\n") {
 		t.Fatalf("codex prompt carried instructions: %s", d)
 	}
 }
@@ -173,7 +173,7 @@ func TestInstructionsOnlyBeforeFirstRequest(t *testing.T) {
 		}
 	}
 	d := waitDiag(t, s, "prompt text\n")
-	if strings.Count(d, "sshyard://instructions") != 1 || !strings.Contains(d, "prompt resource text\n") {
+	if strings.Count(d, "opswright://instructions") != 1 || !strings.Contains(d, "prompt resource text\n") {
 		t.Fatalf("diag %s", d)
 	}
 }
@@ -220,7 +220,7 @@ func TestToolViewLocal(t *testing.T) {
 		{ToolView{Kind: "execute", Title: "ls -l"}, true},
 		{ToolView{Kind: "search", Title: "grep foo"}, true},
 		{ToolView{Kind: "execute", Title: "ls", TerminalID: "t1"}, false},
-		{ToolView{Kind: "execute", Title: "mcp__sshyard__remote_run"}, false},
+		{ToolView{Kind: "execute", Title: "mcp__opswright__remote_run"}, false},
 		{ToolView{Kind: "read", Title: "Read /etc/hosts"}, false},
 		{ToolView{Kind: "edit", Title: "Edit a.go"}, false},
 	} {

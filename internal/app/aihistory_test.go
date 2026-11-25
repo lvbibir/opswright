@@ -9,9 +9,9 @@ import (
 	"sync"
 	"testing"
 
-	"github.com/lvbibir/sshyard/internal/ai/agent"
-	"github.com/lvbibir/sshyard/internal/ai/history"
-	"github.com/lvbibir/sshyard/internal/ai/llm"
+	"github.com/lvbibir/opswright/internal/ai/agent"
+	"github.com/lvbibir/opswright/internal/ai/history"
+	"github.com/lvbibir/opswright/internal/ai/llm"
 )
 
 func chatSummaries(t *testing.T, a *App, host string) []history.Summary {
@@ -157,7 +157,7 @@ func TestChatHistory(t *testing.T) {
 func TestChatOfExternalAgent(t *testing.T) {
 	a, _ := newTestApp(t)
 	h := savedHost(t, a, "web", "10.0.0.8")
-	session := &history.ACPSession{ID: "sess-1", Agent: "acp", Cwd: "/tmp/sshyard-acp-1"}
+	session := &history.ACPSession{ID: "sess-1", Agent: "acp", Cwd: "/tmp/opswright-acp-1"}
 	conv := history.Conversation{ID: history.NewID(), Host: h.ID, Title: "deploy", Agent: "acp", ACP: session,
 		Items: []history.Item{{Kind: "user", Text: "deploy"}, {Kind: "text", Text: "done"}}}
 	old := history.Conversation{ID: history.NewID(), Host: h.ID, Title: "older", Agent: "acp",

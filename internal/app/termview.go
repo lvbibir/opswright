@@ -14,14 +14,14 @@ import (
 
 	"github.com/egoist/mygo/transfer"
 	"github.com/egoist/mygo/ui"
-	"github.com/lvbibir/sshyard/internal/highlight"
-	"github.com/lvbibir/sshyard/internal/session"
-	"github.com/lvbibir/sshyard/internal/settings"
-	"github.com/lvbibir/sshyard/internal/theme"
-	"github.com/lvbibir/sshyard/internal/vt"
+	"github.com/lvbibir/opswright/internal/highlight"
+	"github.com/lvbibir/opswright/internal/session"
+	"github.com/lvbibir/opswright/internal/settings"
+	"github.com/lvbibir/opswright/internal/theme"
+	"github.com/lvbibir/opswright/internal/vt"
 )
 
-// TerminalView is SSHYard's own native terminal widget: it draws a
+// TerminalView is Opswright's own native terminal widget: it draws a
 // vt.Terminal's grid with the ui Painter, glyph by glyph in its cells,
 // and turns keys, text, the input method's composition, the pointer and
 // the wheel into what the program on the other end reads. No web view

@@ -8,7 +8,7 @@ import (
 	"testing"
 
 	"github.com/egoist/mygo/ui"
-	"github.com/lvbibir/sshyard/internal/layout"
+	"github.com/lvbibir/opswright/internal/layout"
 	"golang.org/x/crypto/ssh"
 )
 

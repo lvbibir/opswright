@@ -5,7 +5,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/lvbibir/sshyard/internal/sshtest"
+	"github.com/lvbibir/opswright/internal/sshtest"
 )
 
 // A save does not list the file's folder, however big: with
@@ -28,7 +28,7 @@ func TestSaveDoesNotList(t *testing.T) {
 		}
 		var looked []string
 		for _, r := range ffs.Seen() {
-			if strings.HasPrefix(path.Base(strings.Fields(r)[1]), ".sshyard-old-") && (strings.HasPrefix(r, "Lstat ") || strings.HasPrefix(r, "Stat ")) {
+			if strings.HasPrefix(path.Base(strings.Fields(r)[1]), ".opswright-old-") && (strings.HasPrefix(r, "Lstat ") || strings.HasPrefix(r, "Stat ")) {
 				looked = append(looked, r)
 			}
 		}

@@ -8,11 +8,11 @@ import (
 	"testing"
 	"time"
 
-	"github.com/lvbibir/sshyard/internal/ai/acp"
-	"github.com/lvbibir/sshyard/internal/ai/acp/detect"
-	"github.com/lvbibir/sshyard/internal/ai/policy"
-	"github.com/lvbibir/sshyard/internal/settings"
-	"github.com/lvbibir/sshyard/locales"
+	"github.com/lvbibir/opswright/internal/ai/acp"
+	"github.com/lvbibir/opswright/internal/ai/acp/detect"
+	"github.com/lvbibir/opswright/internal/ai/policy"
+	"github.com/lvbibir/opswright/internal/settings"
+	"github.com/lvbibir/opswright/locales"
 )
 
 // fakeACPScan replaces detection with agents for one test and counts the
@@ -274,7 +274,7 @@ func TestACPToolCardWhere(t *testing.T) {
 	}
 	a.onACPUpdate(c, acp.Update{Kind: "tool", Tool: &acp.ToolView{ID: "1", Kind: "execute", Title: "ls -la", Status: "pending"}})
 	a.onACPUpdate(c, acp.Update{Kind: "tool", Tool: &acp.ToolView{ID: "1", Status: "completed"}})
-	a.onACPUpdate(c, acp.Update{Kind: "tool", Tool: &acp.ToolView{ID: "2", Kind: "execute", Title: "mcp__sshyard__remote_run"}})
+	a.onACPUpdate(c, acp.Update{Kind: "tool", Tool: &acp.ToolView{ID: "2", Kind: "execute", Title: "mcp__opswright__remote_run"}})
 	a.onACPUpdate(c, acp.Update{Kind: "tool", Tool: &acp.ToolView{ID: "3", Kind: "edit", Title: "Edit a.go"}})
 	if where("1") != string(policy.Local) || where("2") != string(policy.Remote) || where("3") != string(policy.Remote) {
 		t.Fatalf("where %q %q %q", where("1"), where("2"), where("3"))

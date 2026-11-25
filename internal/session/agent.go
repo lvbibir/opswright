@@ -20,7 +20,7 @@ var ErrAgentEmpty = errors.New("session: the SSH agent has no keys")
 var DialAgent = dialAgent
 
 // agentSigners are the agent's keys. The keys never leave the agent:
-// SSHYard neither reads nor caches them. The connection to the agent is
+// Opswright neither reads nor caches them. The connection to the agent is
 // closed with closer once the handshake is done.
 func agentSigners() ([]ssh.Signer, io.Closer, error) {
 	rw, err := DialAgent()

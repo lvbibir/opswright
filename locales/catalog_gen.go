@@ -34,11 +34,11 @@ type Messages struct{ locale string }
 // source language.
 func In(locale string) Messages { return Messages{locale} }
 
-// AppName says "SSHYard"
+// AppName says "Opswright"
 // in the language the app shows.
 func AppName() string { return In(i18n.Locale()).AppName() }
 
-// AppName says "SSHYard"
+// AppName says "Opswright"
 // in the language of msgs.
 func (msgs Messages) AppName() string {
 	return Catalog.Format(msgs.locale, "appName", nil)
@@ -74,11 +74,11 @@ func (msgs Messages) TrayIconColor() string {
 	return Catalog.Format(msgs.locale, "trayIconColor", nil)
 }
 
-// TrayIconStyleNote says "Choose a monochrome or colorful version of the SSHYard logo."
+// TrayIconStyleNote says "Choose a monochrome or colorful version of the Opswright logo."
 // in the language the app shows.
 func TrayIconStyleNote() string { return In(i18n.Locale()).TrayIconStyleNote() }
 
-// TrayIconStyleNote says "Choose a monochrome or colorful version of the SSHYard logo."
+// TrayIconStyleNote says "Choose a monochrome or colorful version of the Opswright logo."
 // in the language of msgs.
 func (msgs Messages) TrayIconStyleNote() string {
 	return Catalog.Format(msgs.locale, "trayIconStyleNote", nil)
@@ -214,11 +214,11 @@ func (msgs Messages) CloseToTray() string {
 	return Catalog.Format(msgs.locale, "closeToTray", nil)
 }
 
-// CloseQuit says "Quit SSHYard"
+// CloseQuit says "Quit Opswright"
 // in the language the app shows.
 func CloseQuit() string { return In(i18n.Locale()).CloseQuit() }
 
-// CloseQuit says "Quit SSHYard"
+// CloseQuit says "Quit Opswright"
 // in the language of msgs.
 func (msgs Messages) CloseQuit() string {
 	return Catalog.Format(msgs.locale, "closeQuit", nil)
@@ -264,31 +264,31 @@ func (msgs Messages) TrayPanelFailed() string {
 	return Catalog.Format(msgs.locale, "trayPanelFailed", nil)
 }
 
-// TrayShowWindow says "Show SSHYard"
+// TrayShowWindow says "Show Opswright"
 // in the language the app shows.
 func TrayShowWindow() string { return In(i18n.Locale()).TrayShowWindow() }
 
-// TrayShowWindow says "Show SSHYard"
+// TrayShowWindow says "Show Opswright"
 // in the language of msgs.
 func (msgs Messages) TrayShowWindow() string {
 	return Catalog.Format(msgs.locale, "trayShowWindow", nil)
 }
 
-// TrayQuit says "Quit SSHYard"
+// TrayQuit says "Quit Opswright"
 // in the language the app shows.
 func TrayQuit() string { return In(i18n.Locale()).TrayQuit() }
 
-// TrayQuit says "Quit SSHYard"
+// TrayQuit says "Quit Opswright"
 // in the language of msgs.
 func (msgs Messages) TrayQuit() string {
 	return Catalog.Format(msgs.locale, "trayQuit", nil)
 }
 
-// TrayUnavailable says "The system tray is unavailable, so SSHYard cannot hide the window."
+// TrayUnavailable says "The system tray is unavailable, so Opswright cannot hide the window."
 // in the language the app shows.
 func TrayUnavailable() string { return In(i18n.Locale()).TrayUnavailable() }
 
-// TrayUnavailable says "The system tray is unavailable, so SSHYard cannot hide the window."
+// TrayUnavailable says "The system tray is unavailable, so Opswright cannot hide the window."
 // in the language of msgs.
 func (msgs Messages) TrayUnavailable() string {
 	return Catalog.Format(msgs.locale, "trayUnavailable", nil)
@@ -734,11 +734,11 @@ func (msgs Messages) DropToOpen() string {
 	return Catalog.Format(msgs.locale, "dropToOpen", nil)
 }
 
-// WelcomeTitle says "Welcome to SSHYard"
+// WelcomeTitle says "Welcome to Opswright"
 // in the language the app shows.
 func WelcomeTitle() string { return In(i18n.Locale()).WelcomeTitle() }
 
-// WelcomeTitle says "Welcome to SSHYard"
+// WelcomeTitle says "Welcome to Opswright"
 // in the language of msgs.
 func (msgs Messages) WelcomeTitle() string {
 	return Catalog.Format(msgs.locale, "welcomeTitle", nil)
@@ -836,11 +836,11 @@ func (msgs Messages) ErrNetwork(host string, detail string) string {
 	return Catalog.Format(msgs.locale, "errNetwork", map[string]any{"host": host, "detail": detail})
 }
 
-// ErrHostKeyChanged says "The host key of {host} has changed. This could mean someone is intercepting the connection, so SSHYard refused to con…"
+// ErrHostKeyChanged says "The host key of {host} has changed. This could mean someone is intercepting the connection, so Opswright refused to c…"
 // in the language the app shows.
 func ErrHostKeyChanged(host string) string { return In(i18n.Locale()).ErrHostKeyChanged(host) }
 
-// ErrHostKeyChanged says "The host key of {host} has changed. This could mean someone is intercepting the connection, so SSHYard refused to con…"
+// ErrHostKeyChanged says "The host key of {host} has changed. This could mean someone is intercepting the connection, so Opswright refused to c…"
 // in the language of msgs.
 func (msgs Messages) ErrHostKeyChanged(host string) string {
 	return Catalog.Format(msgs.locale, "errHostKeyChanged", map[string]any{"host": host})
@@ -1230,11 +1230,11 @@ func (msgs Messages) UpdateInterval() string {
 	return Catalog.Format(msgs.locale, "updateInterval", nil)
 }
 
-// UpdateIntervalNote says "Takes effect after SSHYard relaunches."
+// UpdateIntervalNote says "Takes effect after Opswright relaunches."
 // in the language the app shows.
 func UpdateIntervalNote() string { return In(i18n.Locale()).UpdateIntervalNote() }
 
-// UpdateIntervalNote says "Takes effect after SSHYard relaunches."
+// UpdateIntervalNote says "Takes effect after Opswright relaunches."
 // in the language of msgs.
 func (msgs Messages) UpdateIntervalNote() string {
 	return Catalog.Format(msgs.locale, "updateIntervalNote", nil)
@@ -2184,11 +2184,11 @@ func (msgs Messages) MonospacedOnlyNote() string {
 	return Catalog.Format(msgs.locale, "monospacedOnlyNote", nil)
 }
 
-// FontPreviewText says "SSHYard keeps your servers close"
+// FontPreviewText says "Opswright - the ops tool professionals trust"
 // in the language the app shows.
 func FontPreviewText() string { return In(i18n.Locale()).FontPreviewText() }
 
-// FontPreviewText says "SSHYard keeps your servers close"
+// FontPreviewText says "Opswright - the ops tool professionals trust"
 // in the language of msgs.
 func (msgs Messages) FontPreviewText() string {
 	return Catalog.Format(msgs.locale, "fontPreviewText", nil)
@@ -4674,11 +4674,11 @@ func (msgs Messages) OpenWithTitle(name string) string {
 	return Catalog.Format(msgs.locale, "openWithTitle", map[string]any{"name": name})
 }
 
-// OpenWithMessage says "SSHYard can’t show this kind of file. Open it in another app, or as text."
+// OpenWithMessage says "Opswright can’t show this kind of file. Open it in another app, or as text."
 // in the language the app shows.
 func OpenWithMessage() string { return In(i18n.Locale()).OpenWithMessage() }
 
-// OpenWithMessage says "SSHYard can’t show this kind of file. Open it in another app, or as text."
+// OpenWithMessage says "Opswright can’t show this kind of file. Open it in another app, or as text."
 // in the language of msgs.
 func (msgs Messages) OpenWithMessage() string {
 	return Catalog.Format(msgs.locale, "openWithMessage", nil)
@@ -6998,21 +6998,21 @@ func (msgs Messages) AboutSection() string {
 	return Catalog.Format(msgs.locale, "aboutSection", nil)
 }
 
-// AppearanceDesc says "How SSHYard looks: theme, zoom, background and the interface font."
+// AppearanceDesc says "How Opswright looks: theme, zoom, background and the interface font."
 // in the language the app shows.
 func AppearanceDesc() string { return In(i18n.Locale()).AppearanceDesc() }
 
-// AppearanceDesc says "How SSHYard looks: theme, zoom, background and the interface font."
+// AppearanceDesc says "How Opswright looks: theme, zoom, background and the interface font."
 // in the language of msgs.
 func (msgs Messages) AppearanceDesc() string {
 	return Catalog.Format(msgs.locale, "appearanceDesc", nil)
 }
 
-// GeneralDesc says "What applies to all of SSHYard: language, layout, reminders, the window and tray, and updates."
+// GeneralDesc says "What applies to all of Opswright: language, layout, reminders, the window and tray, and updates."
 // in the language the app shows.
 func GeneralDesc() string { return In(i18n.Locale()).GeneralDesc() }
 
-// GeneralDesc says "What applies to all of SSHYard: language, layout, reminders, the window and tray, and updates."
+// GeneralDesc says "What applies to all of Opswright: language, layout, reminders, the window and tray, and updates."
 // in the language of msgs.
 func (msgs Messages) GeneralDesc() string {
 	return Catalog.Format(msgs.locale, "generalDesc", nil)
@@ -7088,21 +7088,21 @@ func (msgs Messages) ProxiesDesc() string {
 	return Catalog.Format(msgs.locale, "proxiesDesc", nil)
 }
 
-// ShortcutsDesc says "SSHYard's own shortcuts: record a new one for any action. Every other key goes to the shell."
+// ShortcutsDesc says "Opswright's own shortcuts: record a new one for any action. Every other key goes to the shell."
 // in the language the app shows.
 func ShortcutsDesc() string { return In(i18n.Locale()).ShortcutsDesc() }
 
-// ShortcutsDesc says "SSHYard's own shortcuts: record a new one for any action. Every other key goes to the shell."
+// ShortcutsDesc says "Opswright's own shortcuts: record a new one for any action. Every other key goes to the shell."
 // in the language of msgs.
 func (msgs Messages) ShortcutsDesc() string {
 	return Catalog.Format(msgs.locale, "shortcutsDesc", nil)
 }
 
-// AboutDesc says "Version, updates and information about SSHYard."
+// AboutDesc says "Version, updates and information about Opswright."
 // in the language the app shows.
 func AboutDesc() string { return In(i18n.Locale()).AboutDesc() }
 
-// AboutDesc says "Version, updates and information about SSHYard."
+// AboutDesc says "Version, updates and information about Opswright."
 // in the language of msgs.
 func (msgs Messages) AboutDesc() string {
 	return Catalog.Format(msgs.locale, "aboutDesc", nil)
@@ -7238,11 +7238,11 @@ func (msgs Messages) StorageLocation() string {
 	return Catalog.Format(msgs.locale, "storageLocation", nil)
 }
 
-// StorageLocationNote says "Portable keeps all data in sshyard_data beside the app, so it travels with the app's folder."
+// StorageLocationNote says "Portable keeps all data in opswright_data beside the app, so it travels with the app's folder."
 // in the language the app shows.
 func StorageLocationNote() string { return In(i18n.Locale()).StorageLocationNote() }
 
-// StorageLocationNote says "Portable keeps all data in sshyard_data beside the app, so it travels with the app's folder."
+// StorageLocationNote says "Portable keeps all data in opswright_data beside the app, so it travels with the app's folder."
 // in the language of msgs.
 func (msgs Messages) StorageLocationNote() string {
 	return Catalog.Format(msgs.locale, "storageLocationNote", nil)
@@ -7278,21 +7278,21 @@ func (msgs Messages) StorageMoveTitle() string {
 	return Catalog.Format(msgs.locale, "storageMoveTitle", nil)
 }
 
-// StorageMoveToPortable says "SSHYard will restart, move all its data to {path} and then remove it from the app data folder. Moving or deleting the…"
+// StorageMoveToPortable says "Opswright will restart, move all its data to {path} and then remove it from the app data folder. Moving or deleting t…"
 // in the language the app shows.
 func StorageMoveToPortable(path string) string { return In(i18n.Locale()).StorageMoveToPortable(path) }
 
-// StorageMoveToPortable says "SSHYard will restart, move all its data to {path} and then remove it from the app data folder. Moving or deleting the…"
+// StorageMoveToPortable says "Opswright will restart, move all its data to {path} and then remove it from the app data folder. Moving or deleting t…"
 // in the language of msgs.
 func (msgs Messages) StorageMoveToPortable(path string) string {
 	return Catalog.Format(msgs.locale, "storageMoveToPortable", map[string]any{"path": path})
 }
 
-// StorageMoveToAppData says "SSHYard will restart, move all its data back to {path} and then remove the sshyard_data folder beside the app."
+// StorageMoveToAppData says "Opswright will restart, move all its data back to {path} and then remove the opswright_data folder beside the app."
 // in the language the app shows.
 func StorageMoveToAppData(path string) string { return In(i18n.Locale()).StorageMoveToAppData(path) }
 
-// StorageMoveToAppData says "SSHYard will restart, move all its data back to {path} and then remove the sshyard_data folder beside the app."
+// StorageMoveToAppData says "Opswright will restart, move all its data back to {path} and then remove the opswright_data folder beside the app."
 // in the language of msgs.
 func (msgs Messages) StorageMoveToAppData(path string) string {
 	return Catalog.Format(msgs.locale, "storageMoveToAppData", map[string]any{"path": path})
@@ -7338,11 +7338,11 @@ func (msgs Messages) StorageMoveOccupied(path string) string {
 	return Catalog.Format(msgs.locale, "storageMoveOccupied", map[string]any{"path": path})
 }
 
-// StorageMoveBusy says "Couldn't move the data: another SSHYard is still using it. It was left where it was."
+// StorageMoveBusy says "Couldn't move the data: another Opswright is still using it. It was left where it was."
 // in the language the app shows.
 func StorageMoveBusy() string { return In(i18n.Locale()).StorageMoveBusy() }
 
-// StorageMoveBusy says "Couldn't move the data: another SSHYard is still using it. It was left where it was."
+// StorageMoveBusy says "Couldn't move the data: another Opswright is still using it. It was left where it was."
 // in the language of msgs.
 func (msgs Messages) StorageMoveBusy() string {
 	return Catalog.Format(msgs.locale, "storageMoveBusy", nil)
@@ -8880,11 +8880,11 @@ func (msgs Messages) FollowHowTo() string {
 	return Catalog.Format(msgs.locale, "followHowTo", nil)
 }
 
-// FollowHowToText says "On Linux servers SSHYard reads the shell’s folder by itself. On other servers, or when the server refuses SSHYard…"
+// FollowHowToText says "On Linux servers Opswright reads the shell’s folder by itself. On other servers, or when the server refuses Opswrig…"
 // in the language the app shows.
 func FollowHowToText() string { return In(i18n.Locale()).FollowHowToText() }
 
-// FollowHowToText says "On Linux servers SSHYard reads the shell’s folder by itself. On other servers, or when the server refuses SSHYard…"
+// FollowHowToText says "On Linux servers Opswright reads the shell’s folder by itself. On other servers, or when the server refuses Opswrig…"
 // in the language of msgs.
 func (msgs Messages) FollowHowToText() string {
 	return Catalog.Format(msgs.locale, "followHowToText", nil)
@@ -10576,11 +10576,11 @@ func (msgs Messages) BackupSection() string {
 	return Catalog.Format(msgs.locale, "backupSection", nil)
 }
 
-// BackupDesc says "Keep a copy of SSHYard, or move it to another device, in one encrypted file, on this computer or in the cloud."
+// BackupDesc says "Keep a copy of Opswright, or move it to another device, in one encrypted file, on this computer or in the cloud."
 // in the language the app shows.
 func BackupDesc() string { return In(i18n.Locale()).BackupDesc() }
 
-// BackupDesc says "Keep a copy of SSHYard, or move it to another device, in one encrypted file, on this computer or in the cloud."
+// BackupDesc says "Keep a copy of Opswright, or move it to another device, in one encrypted file, on this computer or in the cloud."
 // in the language of msgs.
 func (msgs Messages) BackupDesc() string {
 	return Catalog.Format(msgs.locale, "backupDesc", nil)
@@ -10790,21 +10790,21 @@ func (msgs Messages) BackupOpenFailed(name string, detail string) string {
 	return Catalog.Format(msgs.locale, "backupOpenFailed", map[string]any{"name": name, "detail": detail})
 }
 
-// BackupNotBackup says "This isn’t an SSHYard backup."
+// BackupNotBackup says "This isn’t an Opswright backup."
 // in the language the app shows.
 func BackupNotBackup() string { return In(i18n.Locale()).BackupNotBackup() }
 
-// BackupNotBackup says "This isn’t an SSHYard backup."
+// BackupNotBackup says "This isn’t an Opswright backup."
 // in the language of msgs.
 func (msgs Messages) BackupNotBackup() string {
 	return Catalog.Format(msgs.locale, "backupNotBackup", nil)
 }
 
-// BackupNewer says "This backup was made by a newer version of SSHYard. Update SSHYard to restore it."
+// BackupNewer says "This backup was made by a newer version of Opswright. Update Opswright to restore it."
 // in the language the app shows.
 func BackupNewer() string { return In(i18n.Locale()).BackupNewer() }
 
-// BackupNewer says "This backup was made by a newer version of SSHYard. Update SSHYard to restore it."
+// BackupNewer says "This backup was made by a newer version of Opswright. Update Opswright to restore it."
 // in the language of msgs.
 func (msgs Messages) BackupNewer() string {
 	return Catalog.Format(msgs.locale, "backupNewer", nil)
@@ -10830,11 +10830,11 @@ func (msgs Messages) BackupDamaged() string {
 	return Catalog.Format(msgs.locale, "backupDamaged", nil)
 }
 
-// BackupTooCostly says "This backup needs more memory or time to open than SSHYard allows, so it can’t be opened."
+// BackupTooCostly says "This backup needs more memory or time to open than Opswright allows, so it can’t be opened."
 // in the language the app shows.
 func BackupTooCostly() string { return In(i18n.Locale()).BackupTooCostly() }
 
-// BackupTooCostly says "This backup needs more memory or time to open than SSHYard allows, so it can’t be opened."
+// BackupTooCostly says "This backup needs more memory or time to open than Opswright allows, so it can’t be opened."
 // in the language of msgs.
 func (msgs Messages) BackupTooCostly() string {
 	return Catalog.Format(msgs.locale, "backupTooCostly", nil)
@@ -10904,11 +10904,11 @@ func (msgs Messages) CostlyBusyNote() string {
 	return Catalog.Format(msgs.locale, "costlyBusyNote", nil)
 }
 
-// ErrKeyTooCostly says "This key needs more memory or time to open than SSHYard allows. Save it again in PuTTYgen with lower Argon2 settings."
+// ErrKeyTooCostly says "This key needs more memory or time to open than Opswright allows. Save it again in PuTTYgen with lower Argon2 settings."
 // in the language the app shows.
 func ErrKeyTooCostly() string { return In(i18n.Locale()).ErrKeyTooCostly() }
 
-// ErrKeyTooCostly says "This key needs more memory or time to open than SSHYard allows. Save it again in PuTTYgen with lower Argon2 settings."
+// ErrKeyTooCostly says "This key needs more memory or time to open than Opswright allows. Save it again in PuTTYgen with lower Argon2 settings."
 // in the language of msgs.
 func (msgs Messages) ErrKeyTooCostly() string {
 	return Catalog.Format(msgs.locale, "errKeyTooCostly", nil)
@@ -11316,11 +11316,11 @@ func (msgs Messages) AutoBackup() string {
 	return Catalog.Format(msgs.locale, "autoBackup", nil)
 }
 
-// AutoBackupNote says "Backs up on its own while SSHYard is open, skipped when nothing changed."
+// AutoBackupNote says "Backs up on its own while Opswright is open, skipped when nothing changed."
 // in the language the app shows.
 func AutoBackupNote() string { return In(i18n.Locale()).AutoBackupNote() }
 
-// AutoBackupNote says "Backs up on its own while SSHYard is open, skipped when nothing changed."
+// AutoBackupNote says "Backs up on its own while Opswright is open, skipped when nothing changed."
 // in the language of msgs.
 func (msgs Messages) AutoBackupNote() string {
 	return Catalog.Format(msgs.locale, "autoBackupNote", nil)
@@ -12194,11 +12194,11 @@ func (msgs Messages) SkillSection() string {
 	return Catalog.Format(msgs.locale, "skillSection", nil)
 }
 
-// SkillAbout says "SSHYard skill"
+// SkillAbout says "Opswright skill"
 // in the language the app shows.
 func SkillAbout() string { return In(i18n.Locale()).SkillAbout() }
 
-// SkillAbout says "SSHYard skill"
+// SkillAbout says "Opswright skill"
 // in the language of msgs.
 func (msgs Messages) SkillAbout() string {
 	return Catalog.Format(msgs.locale, "skillAbout", nil)
@@ -12404,11 +12404,11 @@ func (msgs Messages) SecretsReasonSystem() string {
 	return Catalog.Format(msgs.locale, "secretsReasonSystem", nil)
 }
 
-// SecretsReasonBusy says "Another SSHYard process is using this credential store; close it and try again."
+// SecretsReasonBusy says "Another Opswright process is using this credential store; close it and try again."
 // in the language the app shows.
 func SecretsReasonBusy() string { return In(i18n.Locale()).SecretsReasonBusy() }
 
-// SecretsReasonBusy says "Another SSHYard process is using this credential store; close it and try again."
+// SecretsReasonBusy says "Another Opswright process is using this credential store; close it and try again."
 // in the language of msgs.
 func (msgs Messages) SecretsReasonBusy() string {
 	return Catalog.Format(msgs.locale, "secretsReasonBusy", nil)
@@ -12960,11 +12960,11 @@ func (msgs Messages) AiACPIncomplete() string {
 	return Catalog.Format(msgs.locale, "aiACPIncomplete", nil)
 }
 
-// AiACPSafetyWarning says "ACP agent requested an unsafe approval mode; SSHYard restricted or stopped the session"
+// AiACPSafetyWarning says "ACP agent requested an unsafe approval mode; Opswright restricted or stopped the session"
 // in the language the app shows.
 func AiACPSafetyWarning() string { return In(i18n.Locale()).AiACPSafetyWarning() }
 
-// AiACPSafetyWarning says "ACP agent requested an unsafe approval mode; SSHYard restricted or stopped the session"
+// AiACPSafetyWarning says "ACP agent requested an unsafe approval mode; Opswright restricted or stopped the session"
 // in the language of msgs.
 func (msgs Messages) AiACPSafetyWarning() string {
 	return Catalog.Format(msgs.locale, "aiACPSafetyWarning", nil)
@@ -15322,11 +15322,11 @@ func (msgs Messages) OpenLocalOnStart() string {
 	return Catalog.Format(msgs.locale, "openLocalOnStart", nil)
 }
 
-// OpenLocalOnStartNote says "Open a local terminal when SSHYard starts"
+// OpenLocalOnStartNote says "Open a local terminal when Opswright starts"
 // in the language the app shows.
 func OpenLocalOnStartNote() string { return In(i18n.Locale()).OpenLocalOnStartNote() }
 
-// OpenLocalOnStartNote says "Open a local terminal when SSHYard starts"
+// OpenLocalOnStartNote says "Open a local terminal when Opswright starts"
 // in the language of msgs.
 func (msgs Messages) OpenLocalOnStartNote() string {
 	return Catalog.Format(msgs.locale, "openLocalOnStartNote", nil)
@@ -15974,11 +15974,11 @@ func (msgs Messages) AuthManual() string {
 	return Catalog.Format(msgs.locale, "authManual", nil)
 }
 
-// AutoLoginHint says "SSHYard answers the login and password prompts for you."
+// AutoLoginHint says "Opswright answers the login and password prompts for you."
 // in the language the app shows.
 func AutoLoginHint() string { return In(i18n.Locale()).AutoLoginHint() }
 
-// AutoLoginHint says "SSHYard answers the login and password prompts for you."
+// AutoLoginHint says "Opswright answers the login and password prompts for you."
 // in the language of msgs.
 func (msgs Messages) AutoLoginHint() string {
 	return Catalog.Format(msgs.locale, "autoLoginHint", nil)
@@ -16576,11 +16576,11 @@ func (msgs Messages) SendTestNotification() string {
 	return Catalog.Format(msgs.locale, "sendTestNotification", nil)
 }
 
-// NotificationTestTitle says "SSHYard notification test"
+// NotificationTestTitle says "Opswright notification test"
 // in the language the app shows.
 func NotificationTestTitle() string { return In(i18n.Locale()).NotificationTestTitle() }
 
-// NotificationTestTitle says "SSHYard notification test"
+// NotificationTestTitle says "Opswright notification test"
 // in the language of msgs.
 func (msgs Messages) NotificationTestTitle() string {
 	return Catalog.Format(msgs.locale, "notificationTestTitle", nil)
@@ -16596,11 +16596,11 @@ func (msgs Messages) NotificationTestBody() string {
 	return Catalog.Format(msgs.locale, "notificationTestBody", nil)
 }
 
-// NotificationTestDenied says "Allow notifications for SSHYard in your system settings and try again."
+// NotificationTestDenied says "Allow notifications for Opswright in your system settings and try again."
 // in the language the app shows.
 func NotificationTestDenied() string { return In(i18n.Locale()).NotificationTestDenied() }
 
-// NotificationTestDenied says "Allow notifications for SSHYard in your system settings and try again."
+// NotificationTestDenied says "Allow notifications for Opswright in your system settings and try again."
 // in the language of msgs.
 func (msgs Messages) NotificationTestDenied() string {
 	return Catalog.Format(msgs.locale, "notificationTestDenied", nil)
@@ -16626,11 +16626,11 @@ func (msgs Messages) AiApprovalNotificationTitle() string {
 	return Catalog.Format(msgs.locale, "aiApprovalNotificationTitle", nil)
 }
 
-// AiApprovalNotificationBody says "Open SSHYard to review the request."
+// AiApprovalNotificationBody says "Open Opswright to review the request."
 // in the language the app shows.
 func AiApprovalNotificationBody() string { return In(i18n.Locale()).AiApprovalNotificationBody() }
 
-// AiApprovalNotificationBody says "Open SSHYard to review the request."
+// AiApprovalNotificationBody says "Open Opswright to review the request."
 // in the language of msgs.
 func (msgs Messages) AiApprovalNotificationBody() string {
 	return Catalog.Format(msgs.locale, "aiApprovalNotificationBody", nil)
@@ -16820,11 +16820,11 @@ func (msgs Messages) HostKeyReview() string {
 	return Catalog.Format(msgs.locale, "hostKeyReview", nil)
 }
 
-// HostKeyChanged says "{host} presents a different host key from the one SSHYard saved. This is expected after the server is reinstalled or …"
+// HostKeyChanged says "{host} presents a different host key from the one Opswright saved. This is expected after the server is reinstalled o…"
 // in the language the app shows.
 func HostKeyChanged(host string) string { return In(i18n.Locale()).HostKeyChanged(host) }
 
-// HostKeyChanged says "{host} presents a different host key from the one SSHYard saved. This is expected after the server is reinstalled or …"
+// HostKeyChanged says "{host} presents a different host key from the one Opswright saved. This is expected after the server is reinstalled o…"
 // in the language of msgs.
 func (msgs Messages) HostKeyChanged(host string) string {
 	return Catalog.Format(msgs.locale, "hostKeyChanged", map[string]any{"host": host})
@@ -16884,21 +16884,21 @@ func (msgs Messages) KnownHosts() string {
 	return Catalog.Format(msgs.locale, "knownHosts", nil)
 }
 
-// KnownHostsDesc says "The host keys SSHYard trusts, kept in SSHYard's own file apart from ~/.ssh/known_hosts."
+// KnownHostsDesc says "The host keys Opswright trusts, kept in Opswright's own file apart from ~/.ssh/known_hosts."
 // in the language the app shows.
 func KnownHostsDesc() string { return In(i18n.Locale()).KnownHostsDesc() }
 
-// KnownHostsDesc says "The host keys SSHYard trusts, kept in SSHYard's own file apart from ~/.ssh/known_hosts."
+// KnownHostsDesc says "The host keys Opswright trusts, kept in Opswright's own file apart from ~/.ssh/known_hosts."
 // in the language of msgs.
 func (msgs Messages) KnownHostsDesc() string {
 	return Catalog.Format(msgs.locale, "knownHostsDesc", nil)
 }
 
-// KnownHostsEmpty says "No host keys are trusted yet. SSHYard asks the first time it connects to a host."
+// KnownHostsEmpty says "No host keys are trusted yet. Opswright asks the first time it connects to a host."
 // in the language the app shows.
 func KnownHostsEmpty() string { return In(i18n.Locale()).KnownHostsEmpty() }
 
-// KnownHostsEmpty says "No host keys are trusted yet. SSHYard asks the first time it connects to a host."
+// KnownHostsEmpty says "No host keys are trusted yet. Opswright asks the first time it connects to a host."
 // in the language of msgs.
 func (msgs Messages) KnownHostsEmpty() string {
 	return Catalog.Format(msgs.locale, "knownHostsEmpty", nil)
@@ -16974,11 +16974,11 @@ func (msgs Messages) ForgetHostKey() string {
 	return Catalog.Format(msgs.locale, "forgetHostKey", nil)
 }
 
-// HostKeyForgotten says "Forgot the host key of {host}. SSHYard asks to trust it on the next connection."
+// HostKeyForgotten says "Forgot the host key of {host}. Opswright asks to trust it on the next connection."
 // in the language the app shows.
 func HostKeyForgotten(host string) string { return In(i18n.Locale()).HostKeyForgotten(host) }
 
-// HostKeyForgotten says "Forgot the host key of {host}. SSHYard asks to trust it on the next connection."
+// HostKeyForgotten says "Forgot the host key of {host}. Opswright asks to trust it on the next connection."
 // in the language of msgs.
 func (msgs Messages) HostKeyForgotten(host string) string {
 	return Catalog.Format(msgs.locale, "hostKeyForgotten", map[string]any{"host": host})
@@ -18214,11 +18214,11 @@ func (msgs Messages) TermXferDropTitle(n string, host string) string {
 	return Catalog.Format(msgs.locale, "termXferDropTitle", map[string]any{"n": n, "host": host})
 }
 
-// TermXferDropBody says "SSHYard types the command that receives them at the prompt, then sends them."
+// TermXferDropBody says "Opswright types the command that receives them at the prompt, then sends them."
 // in the language the app shows.
 func TermXferDropBody() string { return In(i18n.Locale()).TermXferDropBody() }
 
-// TermXferDropBody says "SSHYard types the command that receives them at the prompt, then sends them."
+// TermXferDropBody says "Opswright types the command that receives them at the prompt, then sends them."
 // in the language of msgs.
 func (msgs Messages) TermXferDropBody() string {
 	return Catalog.Format(msgs.locale, "termXferDropBody", nil)
@@ -18534,11 +18534,11 @@ func (msgs Messages) SecuritySection() string {
 	return Catalog.Format(msgs.locale, "securitySection", nil)
 }
 
-// SecurityDesc says "Lock SSHYard with a password or one-time codes, and choose when it locks by itself."
+// SecurityDesc says "Lock Opswright with a password or one-time codes, and choose when it locks by itself."
 // in the language the app shows.
 func SecurityDesc() string { return In(i18n.Locale()).SecurityDesc() }
 
-// SecurityDesc says "Lock SSHYard with a password or one-time codes, and choose when it locks by itself."
+// SecurityDesc says "Lock Opswright with a password or one-time codes, and choose when it locks by itself."
 // in the language of msgs.
 func (msgs Messages) SecurityDesc() string {
 	return Catalog.Format(msgs.locale, "securityDesc", nil)
@@ -18564,11 +18564,11 @@ func (msgs Messages) AppLockIdle() string {
 	return Catalog.Format(msgs.locale, "appLockIdle", nil)
 }
 
-// AppLockIdleNote says "Hides the windows once SSHYard has had no keyboard or mouse input for this long; it never asks for the master password."
+// AppLockIdleNote says "Hides the windows once Opswright has had no keyboard or mouse input for this long; it never asks for the master passw…"
 // in the language the app shows.
 func AppLockIdleNote() string { return In(i18n.Locale()).AppLockIdleNote() }
 
-// AppLockIdleNote says "Hides the windows once SSHYard has had no keyboard or mouse input for this long; it never asks for the master password."
+// AppLockIdleNote says "Hides the windows once Opswright has had no keyboard or mouse input for this long; it never asks for the master passw…"
 // in the language of msgs.
 func (msgs Messages) AppLockIdleNote() string {
 	return Catalog.Format(msgs.locale, "appLockIdleNote", nil)
@@ -18614,11 +18614,11 @@ func (msgs Messages) AppLockNow() string {
 	return Catalog.Format(msgs.locale, "appLockNow", nil)
 }
 
-// AppLockAction says "Lock SSHYard"
+// AppLockAction says "Lock Opswright"
 // in the language the app shows.
 func AppLockAction() string { return In(i18n.Locale()).AppLockAction() }
 
-// AppLockAction says "Lock SSHYard"
+// AppLockAction says "Lock Opswright"
 // in the language of msgs.
 func (msgs Messages) AppLockAction() string {
 	return Catalog.Format(msgs.locale, "appLockAction", nil)
@@ -18634,11 +18634,11 @@ func (msgs Messages) AppLockScopeNote() string {
 	return Catalog.Format(msgs.locale, "appLockScopeNote", nil)
 }
 
-// AppLockedTitle says "SSHYard is locked"
+// AppLockedTitle says "Opswright is locked"
 // in the language the app shows.
 func AppLockedTitle() string { return In(i18n.Locale()).AppLockedTitle() }
 
-// AppLockedTitle says "SSHYard is locked"
+// AppLockedTitle says "Opswright is locked"
 // in the language of msgs.
 func (msgs Messages) AppLockedTitle() string {
 	return Catalog.Format(msgs.locale, "appLockedTitle", nil)
@@ -18694,11 +18694,11 @@ func (msgs Messages) AppLockResetTitle() string {
 	return Catalog.Format(msgs.locale, "appLockResetTitle", nil)
 }
 
-// AppLockResetBody says "Resetting deletes everything SSHYard keeps on this computer: hosts, groups, settings, AI conversations and every save…"
+// AppLockResetBody says "Resetting deletes everything Opswright keeps on this computer: hosts, groups, settings, AI conversations and every sa…"
 // in the language the app shows.
 func AppLockResetBody() string { return In(i18n.Locale()).AppLockResetBody() }
 
-// AppLockResetBody says "Resetting deletes everything SSHYard keeps on this computer: hosts, groups, settings, AI conversations and every save…"
+// AppLockResetBody says "Resetting deletes everything Opswright keeps on this computer: hosts, groups, settings, AI conversations and every sa…"
 // in the language of msgs.
 func (msgs Messages) AppLockResetBody() string {
 	return Catalog.Format(msgs.locale, "appLockResetBody", nil)
@@ -18714,21 +18714,21 @@ func (msgs Messages) AppLockReset() string {
 	return Catalog.Format(msgs.locale, "appLockReset", nil)
 }
 
-// AppLockResetDone says "The app lock was reset and SSHYard's data was deleted."
+// AppLockResetDone says "The app lock was reset and Opswright's data was deleted."
 // in the language the app shows.
 func AppLockResetDone() string { return In(i18n.Locale()).AppLockResetDone() }
 
-// AppLockResetDone says "The app lock was reset and SSHYard's data was deleted."
+// AppLockResetDone says "The app lock was reset and Opswright's data was deleted."
 // in the language of msgs.
 func (msgs Messages) AppLockResetDone() string {
 	return Catalog.Format(msgs.locale, "appLockResetDone", nil)
 }
 
-// AppLockResetPending says "The app lock was reset. SSHYard restarts to finish deleting its data."
+// AppLockResetPending says "The app lock was reset. Opswright restarts to finish deleting its data."
 // in the language the app shows.
 func AppLockResetPending() string { return In(i18n.Locale()).AppLockResetPending() }
 
-// AppLockResetPending says "The app lock was reset. SSHYard restarts to finish deleting its data."
+// AppLockResetPending says "The app lock was reset. Opswright restarts to finish deleting its data."
 // in the language of msgs.
 func (msgs Messages) AppLockResetPending() string {
 	return Catalog.Format(msgs.locale, "appLockResetPending", nil)
@@ -18764,11 +18764,11 @@ func (msgs Messages) MasterPasswordFirstTitle() string {
 	return Catalog.Format(msgs.locale, "masterPasswordFirstTitle", nil)
 }
 
-// MasterPasswordFirstNote says "One password protects everything SSHYard saves on this computer and the backups it makes: passwords, private keys, pa…"
+// MasterPasswordFirstNote says "One password protects everything Opswright saves on this computer and the backups it makes: passwords, private keys, …"
 // in the language the app shows.
 func MasterPasswordFirstNote() string { return In(i18n.Locale()).MasterPasswordFirstNote() }
 
-// MasterPasswordFirstNote says "One password protects everything SSHYard saves on this computer and the backups it makes: passwords, private keys, pa…"
+// MasterPasswordFirstNote says "One password protects everything Opswright saves on this computer and the backups it makes: passwords, private keys, …"
 // in the language of msgs.
 func (msgs Messages) MasterPasswordFirstNote() string {
 	return Catalog.Format(msgs.locale, "masterPasswordFirstNote", nil)

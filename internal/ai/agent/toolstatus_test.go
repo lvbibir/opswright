@@ -5,8 +5,8 @@ import (
 	"errors"
 	"testing"
 
-	"github.com/lvbibir/sshyard/internal/ai/llm"
-	"github.com/lvbibir/sshyard/internal/ai/policy"
+	"github.com/lvbibir/opswright/internal/ai/llm"
+	"github.com/lvbibir/opswright/internal/ai/policy"
 )
 
 func TestInterruptedToolEmitsFinalCard(t *testing.T) {

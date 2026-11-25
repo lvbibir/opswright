@@ -14,8 +14,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/lvbibir/sshyard/internal/ai/audit"
-	"github.com/lvbibir/sshyard/internal/assets"
+	"github.com/lvbibir/opswright/internal/ai/audit"
+	"github.com/lvbibir/opswright/internal/assets"
 )
 
 func connectMCPTest(t *testing.T, a *App, h assets.Host) string {

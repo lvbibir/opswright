@@ -10,8 +10,8 @@ import (
 	"path/filepath"
 
 	"github.com/egoist/mygo"
-	"github.com/lvbibir/sshyard/internal/app"
-	"github.com/lvbibir/sshyard/internal/settings"
+	"github.com/lvbibir/opswright/internal/app"
+	"github.com/lvbibir/opswright/internal/settings"
 )
 
 // layoutWindowStates shares the map handed to MyGo so disabling memory also

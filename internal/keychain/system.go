@@ -7,7 +7,7 @@ import (
 )
 
 // System is the computer's own keychain, mygo.Secrets, under the app's
-// identifier (com.sshyard.desktop), as a Backend. SSHYard keeps exactly
+// identifier (com.opswright.desktop), as a Backend. Opswright keeps exactly
 // one entry there, MasterKey: the same key master.enc seals under the
 // master password, cached so that this computer opens the store without
 // asking for it. Copying the data folder to another computer, or to

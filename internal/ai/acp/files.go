@@ -5,7 +5,7 @@ import (
 	"errors"
 	"io"
 
-	"github.com/lvbibir/sshyard/internal/sftpsvc"
+	"github.com/lvbibir/opswright/internal/sftpsvc"
 )
 
 var (

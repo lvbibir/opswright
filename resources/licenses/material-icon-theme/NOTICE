@@ -16,11 +16,11 @@ sha512-IrvgusbwtqxhUtVgUy0nToJcfN7CYVRdbBxKMfbo0vab9flVBHA5INZ9UiE5SgRj+PM6opCl5
 Archive SHA-256:
 6ea13a2dece7ca953c0315b1e93348660c02bb235706275d215be69f09d98efb
 
-SSHYard bundles 73 selected icons as 74 unchanged original SVG files,
+Opswright bundles 73 selected icons as 74 unchanged original SVG files,
 including the upstream toml_light.svg variant; SHA256SUMS records each
 vendored asset. Other themes share the same original SVG where upstream
 has no light variant. The selection and basename associations are local
-SSHYard code, not the complete upstream VS Code association manifest.
+Opswright code, not the complete upstream VS Code association manifest.
 No JavaScript, npm dependency, icon font, or network download is used at runtime.
 
 The upstream package README credits these icon sources:
@@ -44,7 +44,7 @@ respective owners. Copyright licenses do not grant trademark rights,
 and inclusion does not imply endorsement by Material Extensions,
 Pictogrammers, Google, or any represented brand.
 
-All files in this directory are distributed with SSHYard through its
+All files in this directory are distributed with Opswright through its
 resources directory, including the native macOS application bundle.
 
 LICENSE-MIT SHA-256: cdab3014d4f69b49dde2b85e81792208c72de613aa6aed7f7a9b5c6609b89670

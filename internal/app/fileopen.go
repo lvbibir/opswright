@@ -14,10 +14,10 @@ import (
 	"time"
 
 	"github.com/egoist/mygo/ui"
-	"github.com/lvbibir/sshyard/internal/icons"
-	"github.com/lvbibir/sshyard/internal/sftpsvc"
-	"github.com/lvbibir/sshyard/internal/theme"
-	"github.com/lvbibir/sshyard/locales"
+	"github.com/lvbibir/opswright/internal/icons"
+	"github.com/lvbibir/opswright/internal/sftpsvc"
+	"github.com/lvbibir/opswright/internal/theme"
+	"github.com/lvbibir/opswright/locales"
 )
 
 // appFiles are the extensions of files made for other apps (documents,
@@ -433,7 +433,7 @@ func (a *App) cacheDir() (string, error) {
 	if err != nil {
 		return "", err
 	}
-	return filepath.Join(d, "sshyard", "open"), nil
+	return filepath.Join(d, "opswright", "open"), nil
 }
 
 // cleanCache deletes the copies of files opened in other apps that a
