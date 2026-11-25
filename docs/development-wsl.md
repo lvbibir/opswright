@@ -40,10 +40,10 @@ go mod download
 go test -race -count=1 ./internal/session/...                   # 换成本次改动的包
 go test -race -count=1 ./internal/app -run '^TestAddHostFlow$'  # 单个用例示例
 
-# 3. 出 Windows 版 (约 20 秒)
-go tool mygo build -platform windows/amd64 -o /mnt/c/Users/lvbibir/opswright-dev
-# 产物: /mnt/c/Users/lvbibir/opswright-dev/windows-amd64/Opswright.exe (GUI 子系统, 无控制台窗口)
-# Windows 双击运行; 或 WSL 里直接执行 /mnt/c/Users/lvbibir/opswright-dev/windows-amd64/Opswright.exe
+# 3. 出 Windows 版 (约 20 秒), 直接出到桌面, 构建完双击就能测
+go tool mygo build -platform windows/amd64 -o /mnt/c/Users/lvbibir/Desktop
+# 产物: /mnt/c/Users/lvbibir/Desktop/windows-amd64/Opswright.exe (GUI 子系统, 无控制台窗口)
+# Windows 双击运行; 或 WSL 里直接执行 /mnt/c/Users/lvbibir/Desktop/windows-amd64/Opswright.exe
 
 # 4. 改了 locales/*.json 后重新生成 catalog (mygo build 时也会自动检查)
 GOFLAGS=-mod=mod go run github.com/egoist/mygo/cmd/mygo generate
