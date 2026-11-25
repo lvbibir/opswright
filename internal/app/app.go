@@ -385,9 +385,6 @@ type App struct {
 	ctx  ctxMenu
 	// card is the sidebar host whose card shows, or soon will
 	card cardHover
-	// clearContent is set while the content shows the window's material,
-	// as the appearance settings ask (see contentFill)
-	clearContent bool
 	// tmuxWarned are the hosts whose terminals were told that their
 	// server has no tmux, by ID
 	tmuxWarned map[string]bool
@@ -476,7 +473,6 @@ type App struct {
 	toolPanesChoice          int // how the rail opens its tools, by index
 	rightClickChoice         int // what a terminal's right click does, by index
 	completionChoice         int // how a terminal completes, by index
-	chromeMat, contentMat    int // the materials chosen, by materials' index
 	osc52KiB                 float64
 	clip                     clipGate
 	clipAsk                  *oscAsk

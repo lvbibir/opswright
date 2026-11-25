@@ -21,28 +21,17 @@ func bandHeight(c *ui.Context) float32 {
 	return max(c.TitleBar().Height, toolbarHeight)
 }
 
-// canvasAlpha and paneAlpha are how much of their fill the canvas of the
-// content and the panes on it keep over the window's material when the
-// content is translucent: the canvas lets most of it through, the panes,
-// whose text must read, less.
-const (
-	canvasAlpha = 0.35
-	paneAlpha   = 0.6
-)
-
-// contentFill is col, a fill of the content, as it shows: lightened to
-// alpha over the window's material while the content is translucent.
-func (a *App) contentFill(col ui.Color, alpha float32) ui.Color {
+// contentFill is col, a fill of the content, as it shows: over a
+// background image the canvas is left clear and the panes keep a tinted
+// fill of their own.
+func (a *App) contentFill(col ui.Color, canvas bool) ui.Color {
 	if a.hasBackground() {
-		if alpha == canvasAlpha {
+		if canvas {
 			return ui.Transparent
 		}
 		return a.backgroundContentFill(col)
 	}
-	if !a.clearContent {
-		return col
-	}
-	return col.Alpha(alpha)
+	return col
 }
 
 // tile is a rounded square of tint holding a white icon.

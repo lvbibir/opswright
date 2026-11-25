@@ -41,8 +41,6 @@ type Settings struct {
 	TrayIcon string `json:"trayIcon"`
 	// TrayClick selects the popup or the main window on a tray click.
 	TrayClick string `json:"trayClick"`
-	// TrayMaterial is independent of the main window material.
-	TrayMaterial string `json:"trayMaterial"`
 	// TrayHeight remembers the popup height chosen by dragging.
 	TrayHeight   int  `json:"trayHeight"`
 	CheckUpdates bool `json:"checkUpdates"`
@@ -73,12 +71,6 @@ type Settings struct {
 	// Privacy masks the IP addresses the app shows, for a screen share
 	// or a recording. What is typed in a form is shown as it is.
 	Privacy bool `json:"privacy,omitempty"`
-	// ChromeMaterial is how the sidebar and the title bar show the
-	// window's material: MaterialTranslucent, the default, or
-	// MaterialOpaque. ContentMaterial is that of the content beside them,
-	// opaque by default.
-	ChromeMaterial  string `json:"chromeMaterial,omitempty"`
-	ContentMaterial string `json:"contentMaterial,omitempty"`
 	// UIZoom is how large the interface shows, in percent, one of
 	// UIZooms; 0, the default, follows the system's text size.
 	UIZoom int `json:"uiZoom,omitempty"`
@@ -620,15 +612,6 @@ const (
 	OSC52MaxMax     = 8 << 20
 )
 
-// The materials of a part of the window: the system's translucent
-// material behind it, or its own solid fill.
-const (
-	MaterialTranslucent = "translucent"
-	MaterialOpaque      = "opaque"
-)
-
-func materialOK(s string) bool { return s == MaterialTranslucent || s == MaterialOpaque }
-
 // What a right click in a terminal does: open its menu, paste, or copy
 // the selection and paste without one.
 const (
@@ -746,7 +729,7 @@ const (
 
 // Default returns the defaults.
 func Default() Settings {
-	return Settings{Background: DefaultBackground(), Theme: theme.Auto, CloseBehavior: CloseToTray, TrayIcon: TrayIconColor, TrayClick: TrayClickPanel, TrayMaterial: MaterialTranslucent, TrayHeight: DefaultTrayHeight, CheckUpdates: true, UpdateIntervalHours: 1, TerminalFontSize: 13, TerminalLineHeight: 100, TerminalCharWidth: 100, TerminalCursorStyle: CursorBlock, TerminalCursorBlink: true, TerminalScrollOnKey: true, TerminalCompletion: CompletionInline, KeepAliveSeconds: 30, AutoReconnect: true, ReturnToFolder: true, SidebarWidth: 240, ChromeMaterial: MaterialTranslucent, ContentMaterial: MaterialOpaque, MonospacedOnly: true, TransferConcurrency: 3, KeepAwake: true, OpenConfirmMB: 10, FilesSplit: 50, FilesEdge: FilesRight, TerminalRightClick: RightClickMenu, EditorTreeWidth: 240, TerminalTransfers: true, OSC52Write: OSC52Ask, OSC52MaxBytes: OSC52MaxDefault, OSC52Notify: true, MetricsEnabled: true, MetricsInterval: 2,
+	return Settings{Background: DefaultBackground(), Theme: theme.Auto, CloseBehavior: CloseToTray, TrayIcon: TrayIconColor, TrayClick: TrayClickPanel, TrayHeight: DefaultTrayHeight, CheckUpdates: true, UpdateIntervalHours: 1, TerminalFontSize: 13, TerminalLineHeight: 100, TerminalCharWidth: 100, TerminalCursorStyle: CursorBlock, TerminalCursorBlink: true, TerminalScrollOnKey: true, TerminalCompletion: CompletionInline, KeepAliveSeconds: 30, AutoReconnect: true, ReturnToFolder: true, SidebarWidth: 240, MonospacedOnly: true, TransferConcurrency: 3, KeepAwake: true, OpenConfirmMB: 10, FilesSplit: 50, FilesEdge: FilesRight, TerminalRightClick: RightClickMenu, EditorTreeWidth: 240, TerminalTransfers: true, OSC52Write: OSC52Ask, OSC52MaxBytes: OSC52MaxDefault, OSC52Notify: true, MetricsEnabled: true, MetricsInterval: 2,
 		AIDefaultAgent: "builtin", AIDefaultMode: "ask", AIReviewStrictness: AIReviewStandard, AIContextLines: 200, AIAuditRetentionDays: 90, AIRequestTimeout: DefaultAIRequestTimeout, AIRedact: true, MCPPort: MCPPortDefault, LocalKeys: true, Highlight: Highlight{On: true}, RenewalNotify: true}
 }
 
@@ -774,9 +757,6 @@ func (s *Settings) Normalize() {
 	}
 	if s.TrayClick != TrayClickPanel && s.TrayClick != TrayClickWindow {
 		s.TrayClick = d.TrayClick
-	}
-	if !materialOK(s.TrayMaterial) {
-		s.TrayMaterial = d.TrayMaterial
 	}
 	s.TrayHeight = ClampTrayHeight(s.TrayHeight)
 	if s.CloseBehavior != CloseToTray && s.CloseBehavior != CloseQuit {
@@ -823,12 +803,6 @@ func (s *Settings) Normalize() {
 	}
 	if s.TerminalType = strings.TrimSpace(s.TerminalType); s.TerminalType == session.DefaultTerm || !session.TermOK(s.TerminalType) {
 		s.TerminalType = ""
-	}
-	if !materialOK(s.ChromeMaterial) {
-		s.ChromeMaterial = d.ChromeMaterial
-	}
-	if !materialOK(s.ContentMaterial) {
-		s.ContentMaterial = d.ContentMaterial
 	}
 	s.UIFont, s.TerminalFont = fontName(s.UIFont), fontName(s.TerminalFont)
 	s.TerminalFallbackFont = fontName(s.TerminalFallbackFont)

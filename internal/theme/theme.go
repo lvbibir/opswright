@@ -280,23 +280,12 @@ func (t Tokens) Tint(name string) ui.Color {
 	return p[0]
 }
 
-// Material is the theme for content drawn on the window's material
-// (vibrancy), whose own fill must stay clear for the material to show.
-func (t Tokens) Material(base ui.Theme) *ui.Theme {
-	th := t.Apply(base)
-	th.Background = ui.Transparent
-	return th
-}
-
 // SidebarTheme returns the theme of the sidebar: rounded rows,
 // a quiet hover and an unfocused selection in gray, on the sidebar's
-// own fill (or the clear material, when clear).
-func (t Tokens) SidebarTheme(base ui.Theme, clear bool) *ui.Theme {
+// own fill.
+func (t Tokens) SidebarTheme(base ui.Theme) *ui.Theme {
 	th := t.Apply(base)
 	th.Surface = t.Sidebar
-	if clear {
-		th.Surface, th.Background = ui.Transparent, ui.Transparent
-	}
 	th.SurfaceHover = t.Hover
 	th.SurfacePressed = t.Press
 	return th

@@ -204,9 +204,7 @@ func main() {
 			// The title bar draws the window's buttons, in the app's look
 			// (app.WindowControls).
 			HideWindowButtons: true,
-			// A solid sidebar fill, without window material.
-			Vibrancy:        mygo.VibrancyNone,
-			BackgroundColor: "light-dark(#EDEDF0,#28282A)",
+			BackgroundColor:   "light-dark(#EDEDF0,#28282A)",
 			// Native UI only: no web view anywhere in SSHYard.
 			Content: ui.View(a.View),
 		})

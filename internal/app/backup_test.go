@@ -239,7 +239,7 @@ func TestRestoreBrokenEntriesPutsSecretsBack(t *testing.T) {
 func TestMergeSettings(t *testing.T) {
 	cur := settings.Default()
 	cur.RememberLayout = false
-	cur.TrayClick, cur.TrayMaterial, cur.TrayHeight = settings.TrayClickWindow, settings.MaterialOpaque, 700
+	cur.TrayClick, cur.TrayHeight = settings.TrayClickWindow, 700
 	cur.SidebarWidth, cur.UIFont = 260, "Local Font"
 	cur.FilesDual, cur.FilesSplit, cur.EditorTreeWidth = true, 30, 300
 	cur.AIProviders = []settings.AIProvider{{ID: "a", Name: "A"}, {ID: "b", Name: "B"}}
@@ -253,8 +253,8 @@ func TestMergeSettings(t *testing.T) {
 	in.BackupTargets = []settings.BackupTarget{{ID: "there", Name: "Other", Kind: settings.BackupS3}}
 	cur.SessionLog.Dir, in.SessionLog.Dir = "/here/logs", "/there/logs"
 	out := mergeSettings(cur, in)
-	if out.TrayClick != cur.TrayClick || out.TrayMaterial != cur.TrayMaterial || out.TrayHeight != cur.TrayHeight {
-		t.Fatalf("device tray preferences replaced: click=%q material=%q height=%d", out.TrayClick, out.TrayMaterial, out.TrayHeight)
+	if out.TrayClick != cur.TrayClick || out.TrayHeight != cur.TrayHeight {
+		t.Fatalf("device tray preferences replaced: click=%q height=%d", out.TrayClick, out.TrayHeight)
 	}
 	if out.SessionLog.Dir != "/here/logs" {
 		t.Fatalf("session log folder %q", out.SessionLog.Dir)

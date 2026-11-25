@@ -57,7 +57,7 @@ func (a *App) editorChromeFill(col ui.Color) ui.Color {
 // cards must not hide the image or compound that region's configured opacity.
 // Controls and overlays retain their own readable fills.
 func (a *App) contentSurfaceFill(col ui.Color) ui.Color {
-	if a.hasBackground() || a.clearContent {
+	if a.hasBackground() {
 		return ui.Transparent
 	}
 	return col

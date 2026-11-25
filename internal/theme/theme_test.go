@@ -161,17 +161,11 @@ func TestTint(t *testing.T) {
 	}
 }
 
-func TestSidebarAndMaterialThemes(t *testing.T) {
+func TestSidebarTheme(t *testing.T) {
 	tk := LightTokens()
 	base := *tk.Apply(ui.Theme{})
-	if th := tk.SidebarTheme(base, false); th.Surface != tk.Sidebar || th.SurfaceHover != tk.Hover || th.Accent != Brand {
+	if th := tk.SidebarTheme(base); th.Surface != tk.Sidebar || th.SurfaceHover != tk.Hover || th.Accent != Brand {
 		t.Errorf("sidebar theme %+v", th)
-	}
-	if th := tk.SidebarTheme(base, true); th.Surface != ui.Transparent || th.Background != ui.Transparent {
-		t.Error("clear sidebar theme keeps a fill")
-	}
-	if th := tk.Material(base); th.Background != ui.Transparent || th.Text != tk.Text {
-		t.Error("material theme")
 	}
 }
 

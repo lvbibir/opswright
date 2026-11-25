@@ -26,15 +26,20 @@ func renderBackgroundFixture(a *App) {
 	a.background.bmp = ui.NewBitmap(img)
 }
 
-func TestBackgroundMainWithoutVibrancy(t *testing.T) {
-	a, tt := newTestApp(t)
+// TestBackgroundClearsSurface: a background image leaves the content
+// surface and the canvas clear so the image shows, a solid fill otherwise.
+func TestBackgroundClearsSurface(t *testing.T) {
+	a, _ := newTestApp(t)
+	col := ui.Hex("#123456")
+	if got := a.contentSurfaceFill(col); got != col {
+		t.Errorf("surface without a background = %v", got)
+	}
 	renderBackgroundFixture(a)
-	a.settings.Background.ChromeOpacity = 0
-	a.settings.Background.ContentOpacity = 0
-	tt.SetVibrancy(false)
-	tt.Frame()
-	if !a.clearContent {
-		t.Error("image did not clear default terminal fill without vibrancy")
+	if got := a.contentSurfaceFill(col); got != ui.Transparent {
+		t.Errorf("surface over a background = %v", got)
+	}
+	if got := a.contentFill(col, true); got != ui.Transparent {
+		t.Errorf("canvas over a background = %v", got)
 	}
 }
 
@@ -48,7 +53,6 @@ func TestBackgroundEditorWindow(t *testing.T) {
 	mustClick(t, tt, "background.txt")
 	mustClick(t, tt, "background.txt")
 	_, et, ec := openedWindow(t, a, tt, wins, 1)
-	et.SetVibrancy(false)
 	et.Frame()
 	ed := shown(ec)
 	if ed.st.Theme == nil || ed.st.Theme.Background.A != 0 {

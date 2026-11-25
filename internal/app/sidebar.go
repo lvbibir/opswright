@@ -189,8 +189,7 @@ func (a *App) ungroupedDrops(c *ui.Context, m locales.Messages, sec ui.Element, 
 // an IconButton giving the field the keyboard and one closing the search
 // (as Escape does), which empties it. MyGo's
 // SearchField draws its clear button's cross in the theme's background,
-// which the sidebar's clear material makes invisible: hence a field of
-// the app's own.
+// invisible on the sidebar's fill: hence a field of the app's own.
 func (a *App) searchBox(c *ui.Context, m locales.Messages, tok theme.Tokens) {
 	row := ui.Row(c.Key("hostsearch")).Grow(1).Shrink(1).MinWidth(0).Height(30).Padding(0, 3, 0, 10).Gap(6).AlignItems(ui.Center).
 		Radius(theme.RadiusControl).Background(tok.Fill)

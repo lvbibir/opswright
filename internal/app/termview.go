@@ -82,8 +82,8 @@ type termView struct {
 	// their way to the next point.
 	zoomFont          func(n int)
 	zoomAcc, pinchAcc float32
-	// clear leaves the background to the pane's translucent fill, for a
-	// content area on the window's material (settings.ContentMaterial)
+	// clear leaves the background to the pane's translucent fill, so a
+	// content area over a background image shows it through.
 	clear bool
 	// hl colors the keywords of the output (settings.Highlight), nil for
 	// none; hlOverride colors those the program colored too, and

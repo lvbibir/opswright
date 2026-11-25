@@ -8,7 +8,6 @@ import (
 	"github.com/lvbibir/sshyard/internal/assets"
 	"github.com/lvbibir/sshyard/internal/icons"
 	"github.com/lvbibir/sshyard/internal/keychain"
-	"github.com/lvbibir/sshyard/internal/settings"
 	"github.com/lvbibir/sshyard/internal/theme"
 	"github.com/lvbibir/sshyard/locales"
 )
@@ -48,9 +47,6 @@ func (p *TrayPanel) View(c *ui.Context) {
 	tok := theme.For(a.settings.Theme, base.Dark)
 	c.SetTheme(tok.Apply(base))
 	fill := tok.Sidebar
-	if c.Vibrancy() && a.settings.TrayMaterial != settings.MaterialOpaque {
-		fill = ui.Transparent
-	}
 	c.Root().Background(fill)
 	// Store edits can happen in another window; schedule only while this view lives.
 	c.After(500 * time.Millisecond)

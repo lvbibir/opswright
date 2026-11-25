@@ -124,26 +124,6 @@ func (msgs Messages) TrayClickWindow() string {
 	return Catalog.Format(msgs.locale, "trayClickWindow", nil)
 }
 
-// TrayMaterial says "Tray popup material"
-// in the language the app shows.
-func TrayMaterial() string { return In(i18n.Locale()).TrayMaterial() }
-
-// TrayMaterial says "Tray popup material"
-// in the language of msgs.
-func (msgs Messages) TrayMaterial() string {
-	return Catalog.Format(msgs.locale, "trayMaterial", nil)
-}
-
-// TrayMaterialNote says "Set the tray popup material independently of the main window."
-// in the language the app shows.
-func TrayMaterialNote() string { return In(i18n.Locale()).TrayMaterialNote() }
-
-// TrayMaterialNote says "Set the tray popup material independently of the main window."
-// in the language of msgs.
-func (msgs Messages) TrayMaterialNote() string {
-	return Catalog.Format(msgs.locale, "trayMaterialNote", nil)
-}
-
 // TrayResizeHeight says "Drag to resize popup height"
 // in the language the app shows.
 func TrayResizeHeight() string { return In(i18n.Locale()).TrayResizeHeight() }
@@ -7018,11 +6998,11 @@ func (msgs Messages) AboutSection() string {
 	return Catalog.Format(msgs.locale, "aboutSection", nil)
 }
 
-// AppearanceDesc says "How SSHYard looks: theme, zoom, background, translucency and the interface font."
+// AppearanceDesc says "How SSHYard looks: theme, zoom, background and the interface font."
 // in the language the app shows.
 func AppearanceDesc() string { return In(i18n.Locale()).AppearanceDesc() }
 
-// AppearanceDesc says "How SSHYard looks: theme, zoom, background, translucency and the interface font."
+// AppearanceDesc says "How SSHYard looks: theme, zoom, background and the interface font."
 // in the language of msgs.
 func (msgs Messages) AppearanceDesc() string {
 	return Catalog.Format(msgs.locale, "appearanceDesc", nil)
@@ -10464,76 +10444,6 @@ func MetricsMore() string { return In(i18n.Locale()).MetricsMore() }
 // in the language of msgs.
 func (msgs Messages) MetricsMore() string {
 	return Catalog.Format(msgs.locale, "metricsMore", nil)
-}
-
-// MaterialSection says "Translucency"
-// in the language the app shows.
-func MaterialSection() string { return In(i18n.Locale()).MaterialSection() }
-
-// MaterialSection says "Translucency"
-// in the language of msgs.
-func (msgs Messages) MaterialSection() string {
-	return Catalog.Format(msgs.locale, "materialSection", nil)
-}
-
-// MaterialChrome says "Sidebar & Title Bar"
-// in the language the app shows.
-func MaterialChrome() string { return In(i18n.Locale()).MaterialChrome() }
-
-// MaterialChrome says "Sidebar & Title Bar"
-// in the language of msgs.
-func (msgs Messages) MaterialChrome() string {
-	return Catalog.Format(msgs.locale, "materialChrome", nil)
-}
-
-// MaterialContent says "Content Area"
-// in the language the app shows.
-func MaterialContent() string { return In(i18n.Locale()).MaterialContent() }
-
-// MaterialContent says "Content Area"
-// in the language of msgs.
-func (msgs Messages) MaterialContent() string {
-	return Catalog.Format(msgs.locale, "materialContent", nil)
-}
-
-// MaterialContentNote says "Panes and panels show the desktop behind the window, blurred."
-// in the language the app shows.
-func MaterialContentNote() string { return In(i18n.Locale()).MaterialContentNote() }
-
-// MaterialContentNote says "Panes and panels show the desktop behind the window, blurred."
-// in the language of msgs.
-func (msgs Messages) MaterialContentNote() string {
-	return Catalog.Format(msgs.locale, "materialContentNote", nil)
-}
-
-// MaterialTranslucent says "Translucent"
-// in the language the app shows.
-func MaterialTranslucent() string { return In(i18n.Locale()).MaterialTranslucent() }
-
-// MaterialTranslucent says "Translucent"
-// in the language of msgs.
-func (msgs Messages) MaterialTranslucent() string {
-	return Catalog.Format(msgs.locale, "materialTranslucent", nil)
-}
-
-// MaterialOpaque says "Opaque"
-// in the language the app shows.
-func MaterialOpaque() string { return In(i18n.Locale()).MaterialOpaque() }
-
-// MaterialOpaque says "Opaque"
-// in the language of msgs.
-func (msgs Messages) MaterialOpaque() string {
-	return Catalog.Format(msgs.locale, "materialOpaque", nil)
-}
-
-// MaterialUnsupported says "Translucency is unavailable on this system."
-// in the language the app shows.
-func MaterialUnsupported() string { return In(i18n.Locale()).MaterialUnsupported() }
-
-// MaterialUnsupported says "Translucency is unavailable on this system."
-// in the language of msgs.
-func (msgs Messages) MaterialUnsupported() string {
-	return Catalog.Format(msgs.locale, "materialUnsupported", nil)
 }
 
 // AiCommandOutputLimit says "Command output limit exceeded; execution cancelled and output truncated"

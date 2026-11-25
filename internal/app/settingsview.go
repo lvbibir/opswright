@@ -452,9 +452,6 @@ func (a *App) prefAppearance(c *ui.Context, m locales.Messages, tok theme.Tokens
 		})
 	})
 	a.backgroundSection(c, m, tok, s, changed)
-	if !a.hasBackground() {
-		a.materialSection(c, m, tok, s, changed)
-	}
 	a.settingsSection(c, tok, icons.Edit, m.FontsSection(), func(g *settingsGroup) {
 		g.row(m.InterfaceFont(), "", func() {
 			if f, ok := a.fontPicker(c, "uifont", m.InterfaceFont(), m.SystemDefault(), &a.fonts.uiSel, s.UIFont, a.fonts.list); ok {
@@ -463,33 +460,6 @@ func (a *App) prefAppearance(c *ui.Context, m locales.Messages, tok theme.Tokens
 		})
 		g.divider()
 		a.uiFontPreview(c, m, tok)
-	})
-}
-
-// materials are the materials a part of the window may have, as the
-// segments of its choice show them.
-var materials = []string{settings.MaterialTranslucent, settings.MaterialOpaque}
-
-// materialSection chooses how the sidebar with the title bar, and the
-// content, show the window's material: translucent or opaque, each on its
-// own. Without a material the choice cannot be made.
-func (a *App) materialSection(c *ui.Context, m locales.Messages, tok theme.Tokens, s *settings.Settings, changed *bool) {
-	off := !c.Vibrancy()
-	a.settingsSection(c, tok, icons.Appearance, m.MaterialSection(), func(g *settingsGroup) {
-		choose := func(key, label, note string, idx *int, cur *string) {
-			*idx = max(slices.Index(materials, *cur), 0)
-			if off {
-				note = m.MaterialUnsupported()
-			}
-			g.row(label, note, func() {
-				seg := formSegmented(c.Key(key), idx, off, m.MaterialTranslucent(), m.MaterialOpaque()).Label(label)
-				if seg.Changed() && !off {
-					*cur, *changed = materials[*idx], true
-				}
-			})
-		}
-		choose("matchrome", m.MaterialChrome(), "", &a.chromeMat, &s.ChromeMaterial)
-		choose("matcontent", m.MaterialContent(), m.MaterialContentNote(), &a.contentMat, &s.ContentMaterial)
 	})
 }
 

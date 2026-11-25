@@ -135,7 +135,7 @@ func (a *App) tabs(c *ui.Context, m locales.Messages, tok theme.Tokens) {
 	shown := slices.Clone(a.ws.Tabs[start : start+k])
 	// Read when the tabs paint, once all have been built.
 	hovered := make([]bool, len(shown))
-	fill := a.contentFill(tok.Canvas, canvasAlpha)
+	fill := a.contentFill(tok.Canvas, true)
 	area.Children(func() {
 		if len(shown) > 0 {
 			lead := float32(tabInset)

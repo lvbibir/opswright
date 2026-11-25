@@ -4,7 +4,6 @@ import (
 	"time"
 
 	"github.com/egoist/mygo/ui"
-	"github.com/lvbibir/sshyard/internal/settings"
 	"github.com/lvbibir/sshyard/internal/theme"
 	"github.com/lvbibir/sshyard/locales"
 )
@@ -61,37 +60,23 @@ func (a *App) View(c *ui.Context) {
 	a.fontToasts(c, m)
 
 	a.shortcuts(c)
-	// The window: one title bar across the top, on the window's material
-	// (or its solid fill) as the sidebar under it, which holds the hosts,
-	// or the settings' pages while they show, beside the canvas of the
-	// content. In the workspace the content's bottom band is the status
-	// bar, and a rail of IconButtons runs down its right edge, with the
-	// panel it opens beside the panes.
-	// Each part shows the material as the appearance settings say: the
-	// sidebar and the title bar (clear), and the content (clearContent),
-	// through a lighter fill of its own.
+	// The window: one title bar across the top, on the sidebar's fill as
+	// the sidebar under it, which holds the hosts, or the settings' pages
+	// while they show, beside the canvas of the content. In the workspace
+	// the content's bottom band is the status bar, and a rail of
+	// IconButtons runs down its right edge, with the panel it opens beside
+	// the panes.
 	a.ensureBackground()
-	imageBackground := a.hasBackground()
-	vibrant := c.Vibrancy()
-	clear := vibrant && a.settings.ChromeMaterial != settings.MaterialOpaque
-	a.clearContent = imageBackground || vibrant && a.settings.ContentMaterial == settings.MaterialTranslucent
-	if vibrant {
-		c.Root().Background(ui.Transparent)
-	} else {
-		c.Root().Background(tok.Sidebar)
-	}
+	c.Root().Background(tok.Sidebar)
 	a.drawBackground(c, tok)
 	ui.Column(c).Fill().TextColor(tok.Text).Children(func() {
-		a.titleBar(c, m, tok, clear)
+		a.titleBar(c, m, tok)
 		// The sidebar and the content, split at a line the user drags to
 		// size the sidebar; hidden, the content takes the whole width.
 		sidebar := func() {
-			sb := ui.Box(c.Key("sidebar")).Fill()
-			if imageBackground || !clear {
-				sb.Background(a.chromeFill(tok.Sidebar))
-			}
+			sb := ui.Box(c.Key("sidebar")).Fill().Background(a.chromeFill(tok.Sidebar))
 			sb.Children(func() {
-				c.SetTheme(tok.SidebarTheme(base, clear))
+				c.SetTheme(tok.SidebarTheme(base))
 				if a.page == pageSettings {
 					a.settingsNav(c, m, tok)
 				} else {
@@ -99,13 +84,10 @@ func (a *App) View(c *ui.Context) {
 				}
 				c.SetTheme(tok.Apply(base))
 				a.drawBackground(c, tok)
-				if vibrant && !imageBackground {
-					c.Root().Background(ui.Transparent)
-				}
 			})
 		}
 		content := func() {
-			ui.Column(c.Key("main")).Fill().MinWidth(0).Background(a.contentFill(tok.Canvas, canvasAlpha)).Children(func() {
+			ui.Column(c.Key("main")).Fill().MinWidth(0).Background(a.contentFill(tok.Canvas, true)).Children(func() {
 				ui.Row(c.Key("body")).Grow(1).Shrink(1).MinWidth(0).FillWidth().MinHeight(0).Children(func() {
 					ui.Column(c.Key("content")).Grow(1).Shrink(1).MinWidth(0).FillHeight().Background(a.contentRegionFill(tok.Canvas)).Children(func() {
 						switch a.page {

@@ -1,8 +1,6 @@
 package app
 
 import (
-	"slices"
-
 	"github.com/egoist/mygo/ui"
 	"github.com/lvbibir/sshyard/internal/settings"
 	"github.com/lvbibir/sshyard/locales"
@@ -21,11 +19,5 @@ func (a *App) trayPreferences(c *ui.Context, m locales.Messages, g *settingsGrou
 			}
 			*changed = true
 		}
-	})
-	// The tray popup has no material without window vibrancy, so this
-	// choice is shown unavailable.
-	g.row(m.TrayMaterial(), m.MaterialUnsupported(), func() {
-		idx := max(slices.Index(materials, s.TrayMaterial), 0)
-		formSegmented(c.Key("traymaterial"), &idx, true, m.MaterialTranslucent(), m.MaterialOpaque()).Label(m.TrayMaterial())
 	})
 }

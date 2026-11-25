@@ -25,14 +25,12 @@ func (a *App) SetMaximized(on bool) { a.post(func() { a.maximized = on }) }
 // the sidebar; over the content the tabs, joining it, and at the end the
 // app's own buttons, then the window's buttons where the app draws them.
 // Every control in it centers on the band's middle (barLine).
-func (a *App) titleBar(c *ui.Context, m locales.Messages, tok theme.Tokens, clear bool) {
+func (a *App) titleBar(c *ui.Context, m locales.Messages, tok theme.Tokens) {
 	bar := c.TitleBar()
 	// Moving the window should leave keyboard input with the current pane.
 	row := ui.Row(c.Key("titlebar")).Height(bandHeight(c)).Shrink(0).FillWidth().AlignItems(ui.Center).
 		DragWindow().KeepFocus()
-	if a.hasBackground() || !clear {
-		row.Background(a.chromeFill(tok.Sidebar))
-	}
+	row.Background(a.chromeFill(tok.Sidebar))
 	// Its foot, which the active tab covers, joining the content.
 	row.Draw(func(p *ui.Painter, r ui.Rect) {
 		y := r.Y + r.H - 0.5

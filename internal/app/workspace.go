@@ -405,7 +405,7 @@ func (a *App) paneView(c *ui.Context, t *layout.Tab, n *layout.Node, tok theme.T
 	// right and at the bottom.)
 	var pane ui.Element
 	ui.Box(c.Key("pw:" + strconv.Itoa(n.ID))).Fill().Padding(paneGap / 2).Children(func() {
-		pane = ui.Column(c.Key("pane:" + strconv.Itoa(n.ID))).Grow(1).Shrink(1).MinHeight(0).Radius(theme.RadiusCard).Clip().Background(a.contentFill(bg, paneAlpha))
+		pane = ui.Column(c.Key("pane:" + strconv.Itoa(n.ID))).Grow(1).Shrink(1).MinHeight(0).Radius(theme.RadiusCard).Clip().Background(a.contentFill(bg, false))
 		a.paneBackground(c, pane, tok, bg)
 		theme.Shadow(tok.Card).On(pane)
 		// The ask names a pane by number. Outline that pane in the accent
@@ -698,7 +698,7 @@ func (a *App) termElement(c *ui.Context, t *layout.Tab, n *layout.Node, cn *conn
 	case settings.CursorUnderline:
 		tv.cursorStyle = vt.CursorUnderline
 	}
-	tv.clear = a.clearContent
+	tv.clear = a.hasBackground()
 	tv.hl, tv.hlOverride, tv.hlFullScreen = a.highlighter(), a.settings.Highlight.Override, a.settings.Highlight.FullScreen
 	a.suggestFrame(c, cn, has, tb, m)
 	term.Draw(func(p *ui.Painter, r ui.Rect) { tv.paint(p, r, pal, has) })

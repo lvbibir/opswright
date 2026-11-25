@@ -390,8 +390,8 @@ func backupIDs(snap assets.Snapshot, provs []settings.AIProvider) []string {
 }
 
 // mergeSettings are the preferences of a backup, in, over those of this
-// device, cur: what belongs to this device stays (the window's layout and
-// materials, the layout of its files panes and editor windows, the fonts
+// device, cur: what belongs to this device stays (the window's layout, the
+// layout of its files panes and editor windows, the fonts
 // installed here, the MCP endpoint, the places it backs up to, the folder
 // of its session logs, the external
 // ACP agents it starts and its default agent), AI providers are merged by
@@ -401,8 +401,7 @@ func mergeSettings(cur, in settings.Settings) settings.Settings {
 	out.Background = cur.Background
 	out.RememberLayout = cur.RememberLayout
 	out.SidebarWidth, out.SidebarHidden = cur.SidebarWidth, cur.SidebarHidden
-	out.ChromeMaterial, out.ContentMaterial = cur.ChromeMaterial, cur.ContentMaterial
-	out.TrayClick, out.TrayMaterial, out.TrayHeight = cur.TrayClick, cur.TrayMaterial, cur.TrayHeight
+	out.TrayClick, out.TrayHeight = cur.TrayClick, cur.TrayHeight
 	out.UIFont, out.TerminalFont = cur.UIFont, cur.TerminalFont
 	out.FilesDual, out.FilesSplit = cur.FilesDual, cur.FilesSplit
 	out.EditorTreeWidth, out.EditorTreeHidden = cur.EditorTreeWidth, cur.EditorTreeHidden
