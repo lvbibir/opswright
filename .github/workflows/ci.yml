@@ -1,8 +1,8 @@
 name: CI
 
 # Every push to main runs the full checks and builds, so a broken build
-# shows up before a release tag. Pushes that touch only the website, docs,
-# Markdown or the licence are skipped (path filters never apply to tags).
+# shows up before a release tag. Pushes that touch only the docs, Markdown
+# or the licence are skipped (path filters never apply to tags).
 # The repository is private and Actions minutes are billed: other branches
 # and pull requests run nothing, a newer push to main cancels the run in
 # progress, and a release tag reuses the run on main before it (see plan).
@@ -11,11 +11,9 @@ on:
     branches: [main]
     tags: ['v*']
     paths-ignore:
-      - 'website/**'
       - 'docs/**'
       - '**.md'
       - 'LICENSE'
-      - '.github/workflows/website.yml'
   workflow_dispatch:
 
 permissions:

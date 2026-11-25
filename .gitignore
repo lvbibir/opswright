@@ -5,5 +5,3 @@ mygo_windows_*.syso
 *.key
 .DS_Store
 __pycache__/
-website/_site/
-website/.cache/

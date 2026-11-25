@@ -15,7 +15,7 @@ deadline=$((SECONDS + 2400))
 # The files paths-ignore in ci.yml skips; keep both lists the same
 ignored() {
   case "$1" in
-    website/* | docs/* | *.md | LICENSE | .github/workflows/website.yml) return 0 ;;
+    docs/* | *.md | LICENSE) return 0 ;;
   esac
   return 1
 }
