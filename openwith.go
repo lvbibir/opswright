@@ -10,19 +10,12 @@ import (
 )
 
 // openWith lets the user choose the app that opens path: the system's
-// own chooser on Windows, an app picked in Applications on macOS, a
-// program in /usr/bin on Linux.
+// own chooser on Windows, a program in /usr/bin on Linux.
 func openWith(path, title string) error {
 	var cmd *exec.Cmd
 	switch runtime.GOOS {
 	case "windows":
 		cmd = exec.Command("rundll32.exe", "shell32.dll,OpenAs_RunDLL", path)
-	case "darwin":
-		apps, err := mygo.Dialog.Open(mygo.OpenDialogOptions{Title: title, DefaultPath: "/Applications", Filters: []mygo.FileFilter{{Name: title, Extensions: []string{"app"}}}})
-		if err != nil || len(apps) == 0 {
-			return err
-		}
-		cmd = exec.Command("open", "-a", apps[0], path)
 	default:
 		progs, err := mygo.Dialog.Open(mygo.OpenDialogOptions{Title: title, DefaultPath: "/usr/bin"})
 		if err != nil || len(progs) == 0 {

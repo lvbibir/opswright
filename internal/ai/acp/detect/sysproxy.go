@@ -2,7 +2,6 @@ package detect
 
 import (
 	"context"
-	"net"
 	"os/exec"
 	"strings"
 	"time"
@@ -15,12 +14,6 @@ func systemProxy(ctx context.Context, goos string) map[string]string {
 	ctx, cancel := context.WithTimeout(ctx, 3*time.Second)
 	defer cancel()
 	switch goos {
-	case "darwin":
-		out, err := exec.CommandContext(ctx, "/usr/sbin/scutil", "--proxy").Output()
-		if err != nil {
-			return nil
-		}
-		return parseScutil(string(out))
 	case "windows":
 		out, err := exec.CommandContext(ctx, "reg", "query", `HKCU\Software\Microsoft\Windows\CurrentVersion\Internet Settings`).Output()
 		if err != nil {
@@ -29,42 +22,6 @@ func systemProxy(ctx context.Context, goos string) map[string]string {
 		return parseInternetSettings(string(out))
 	}
 	return nil
-}
-
-// parseScutil reads `scutil --proxy`: the enabled HTTP, HTTPS and SOCKS
-// proxies and the exceptions list.
-func parseScutil(out string) map[string]string {
-	v := map[string]string{}
-	var exceptions []string
-	inList := false
-	for _, line := range strings.Split(out, "\n") {
-		line = strings.TrimSpace(line)
-		if inList {
-			if line == "}" {
-				inList = false
-			} else if _, item, ok := strings.Cut(line, " : "); ok {
-				exceptions = append(exceptions, strings.TrimSpace(item))
-			}
-			continue
-		}
-		key, value, ok := strings.Cut(line, " : ")
-		if !ok {
-			continue
-		}
-		key, value = strings.TrimSpace(key), strings.TrimSpace(value)
-		if key == "ExceptionsList" {
-			inList = strings.HasPrefix(value, "<array>")
-			continue
-		}
-		v[key] = value
-	}
-	proxy := func(kind, scheme string) string {
-		if v[kind+"Enable"] != "1" || v[kind+"Proxy"] == "" || v[kind+"Port"] == "" {
-			return ""
-		}
-		return scheme + "://" + net.JoinHostPort(v[kind+"Proxy"], v[kind+"Port"])
-	}
-	return proxyVars(proxy("HTTP", "http"), proxy("HTTPS", "http"), proxy("SOCKS", "socks5"), exceptions)
 }
 
 // parseInternetSettings reads the Internet Settings key `reg query`

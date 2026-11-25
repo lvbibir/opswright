@@ -2,15 +2,10 @@ package app
 
 import (
 	"fmt"
-	"runtime"
 
 	"github.com/Licoy/sshyard/internal/vt"
 	"github.com/egoist/mygo/ui"
 )
-
-// altIsMeta tells whether Alt with a key sends Esc and the key, as xterm
-// does: everywhere but macOS, where Option types accented letters.
-var altIsMeta = runtime.GOOS != "darwin"
 
 // xtermMods is xterm's modifier parameter: 1 plus Shift 1, Alt 2, Ctrl 4.
 func xtermMods(m ui.Modifiers) int {
@@ -80,7 +75,7 @@ func EncodeKey(k ui.Key, mods ui.Modifiers, m vt.Modes) ([]byte, bool) {
 		return nil, false
 	}
 	mod := xtermMods(mods)
-	alt := mods&ui.Alt != 0 && altIsMeta
+	alt := mods&ui.Alt != 0
 	esc := func(b []byte) []byte {
 		if alt {
 			return append([]byte{0x1b}, b...)
@@ -208,49 +203,23 @@ func pasteBytes(text string, m vt.Modes) []byte {
 	return b
 }
 
-// appMods are the modifiers of SSHYard's own shortcuts: Cmd on macOS, and
-// Ctrl+Shift elsewhere, leaving plain Ctrl combinations to the terminal.
-var appMods = func() ui.Modifiers {
-	if runtime.GOOS == "darwin" {
-		return ui.Super
-	}
-	return ui.Ctrl | ui.Shift
-}()
+// appMods are the modifiers of SSHYard's own shortcuts: Ctrl+Shift,
+// leaving plain Ctrl combinations to the terminal.
+var appMods = ui.Ctrl | ui.Shift
 
-// saveMods is the modifier of saving in an editor window: Cmd on macOS,
-// Ctrl elsewhere.
-var saveMods = func() ui.Modifiers {
-	if runtime.GOOS == "darwin" {
-		return ui.Super
-	}
-	return ui.Ctrl
-}()
+// saveMods is the modifier of saving in an editor window.
+var saveMods = ui.Ctrl
 
-// stopMods cancels the AI turn: ⌘. on macOS, Ctrl+. elsewhere.
-// Not appMods: on other systems that would be Ctrl+Shift+., which is
-// stop-all, and this shortcut is Ctrl+..
-var stopMods = func() ui.Modifiers {
-	if runtime.GOOS == "darwin" {
-		return ui.Super
-	}
-	return ui.Ctrl
-}()
+// stopMods cancels the AI turn: Ctrl+.
+// Not appMods: that would be Ctrl+Shift+., which is stop-all, and this
+// shortcut is Ctrl+..
+var stopMods = ui.Ctrl
 
-// stopAllMods cancels every AI turn: ⌘⇧. on macOS, Ctrl+Shift+. elsewhere.
-// ⌘⇧A / Ctrl+Shift+A is Open AI, so stop-all does not use it.
-var stopAllMods = func() ui.Modifiers {
-	if runtime.GOOS == "darwin" {
-		return ui.Super | ui.Shift
-	}
-	return ui.Ctrl | ui.Shift
-}()
+// stopAllMods cancels every AI turn: Ctrl+Shift+..
+// Ctrl+Shift+A is Open AI, so stop-all does not use it.
+var stopAllMods = ui.Ctrl | ui.Shift
 
-// aiMods opens an AI pane, the command palette and the tool panes: ⌘⇧A,
-// ⌘⇧P, ⌘⇧M and ⌘⇧L on macOS, Ctrl+Shift and the key elsewhere. Not
-// appMods: on macOS that is ⌘A, which is Select All in a text field.
-var aiMods = func() ui.Modifiers {
-	if runtime.GOOS == "darwin" {
-		return ui.Super | ui.Shift
-	}
-	return ui.Ctrl | ui.Shift
-}()
+// aiMods opens an AI pane, the command palette and the tool panes:
+// Ctrl+Shift and the key. Not appMods: that would be Ctrl+A, which is
+// Select All in a text field.
+var aiMods = ui.Ctrl | ui.Shift

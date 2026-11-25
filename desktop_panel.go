@@ -3,7 +3,6 @@ package main
 import (
 	"fmt"
 	"log"
-	"runtime"
 
 	"github.com/Licoy/sshyard/internal/app"
 	"github.com/Licoy/sshyard/internal/settings"
@@ -43,7 +42,6 @@ func (d *desktop) openPanel() {
 	defer func() { d.openingPanel = false }()
 	d.panelView = d.app.NewTrayPanel(d.trayAction)
 	d.panelView.ResizeHandle = d.panelResizeHandle
-	d.panelView.SetMaterial = d.syncPanelMaterial
 	if err := d.createPanel(); err != nil {
 		log.Printf("open tray panel: %v", err)
 		d.closePanel()
@@ -59,15 +57,10 @@ func (d *desktop) createPanel() (err error) {
 			err = fmt.Errorf("create tray flyout: %v", failure)
 		}
 	}()
-	stop, err := d.observePanel()
-	if err != nil {
-		return err
-	}
-	defer stop()
 	d.panel = mygo.NewFlyout(mygo.FlyoutOptions{
 		Tray: d.tray, Placement: mygo.PlacementBottom, Gap: 4,
 		Width: 372, Height: d.initialPanelHeight(), Focusable: true, Shadow: true, Hidden: true,
-		Popover: runtime.GOOS == "darwin", Content: ui.View(d.panelView.View),
+		Popover: false, Content: ui.View(d.panelView.View),
 	})
 	d.panel.OnShow(d.refreshPanel)
 	d.panel.OnFocus(d.refreshPanel)
@@ -75,7 +68,6 @@ func (d *desktop) createPanel() (err error) {
 		d.panelView = nil
 		d.panel = nil
 		d.panelResize = desktopPanelResize{}
-		d.releasePanel()
 	})
 	// Register lifecycle callbacks before the native popup becomes interactive.
 	d.panel.Show()
@@ -84,7 +76,7 @@ func (d *desktop) createPanel() (err error) {
 	}
 	d.syncPanelResizeEdge()
 	d.refreshPanel()
-	return d.watchPanelDismiss()
+	return nil
 }
 
 func (d *desktop) closePanel() {
@@ -92,12 +84,10 @@ func (d *desktop) closePanel() {
 		d.panel.Close()
 	} else if d.panelView != nil {
 		d.panelView = nil
-		d.releasePanel()
 	}
 }
 
 func (d *desktop) refreshPanel() {
-	d.matchPanelAppearance()
 	if d.panel != nil {
 		d.panel.Invalidate()
 	}

@@ -19,8 +19,7 @@ var trayColor []byte
 
 // TrayPNG returns native tray artwork and whether the OS should tint it.
 // The default is the rounded color logo. Monochrome artwork is white;
-// Windows uses black on a light taskbar, while macOS uses the template's
-// alpha for automatic contrast.
+// Windows uses black on a light taskbar.
 func TrayPNG(style string, dark bool) ([]byte, bool) {
 	if style != "mono" {
 		return trayColor, false

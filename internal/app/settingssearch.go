@@ -6,7 +6,6 @@ import (
 
 	"github.com/Licoy/sshyard/internal/highlight"
 	"github.com/Licoy/sshyard/internal/icons"
-	"github.com/Licoy/sshyard/internal/migration"
 	"github.com/Licoy/sshyard/internal/theme"
 	"github.com/Licoy/sshyard/locales"
 	"github.com/egoist/mygo/ui"
@@ -152,13 +151,6 @@ var settingEntries = []settingEntry{
 	{prefCredentials, locales.Messages.LocalKeysSection, nil},
 	{prefCredentials, locales.Messages.LocalKeysTry, locales.Messages.LocalKeysTryNote},
 	{prefCredentials, locales.Messages.LocalKeysMCP, locales.Messages.LocalKeysMCPNote},
-	{prefMigration, locales.Messages.MigrationGeneral, nil},
-	{prefMigration, func(locales.Messages) string { return "OpenSSH" }, nil},
-	{prefMigration, locales.Messages.MigrationText, nil},
-	{prefMigration, locales.Messages.MigrationCSV, nil},
-	{prefMigration, locales.Messages.MigrationCommon, nil},
-	{prefMigration, locales.Messages.MigrationCrossPlatform, nil},
-	{prefMigration, locales.Messages.MigrationOther, nil},
 	{prefBackup, locales.Messages.ExportBackup, locales.Messages.ExportBackupNote},
 	{prefBackup, locales.Messages.RestoreBackup, locales.Messages.RestoreBackupNote},
 	{prefBackup, locales.Messages.CloudBackupSection, nil},
@@ -174,9 +166,8 @@ var settingEntries = []settingEntry{
 }
 
 // settingsIndex is everything the search finds on the pages: the
-// settings above, with the rail's items, the highlighting presets, the
-// sources to migrate from and the actions with a shortcut, as their pages
-// list them.
+// settings above, with the rail's items, the highlighting presets and the
+// actions with a shortcut, as their pages list them.
 func settingsIndex() []settingEntry {
 	out := slices.Clone(settingEntries)
 	for _, it := range railItems {
@@ -185,9 +176,6 @@ func settingsIndex() []settingEntry {
 	for _, p := range highlight.Presets {
 		id := p.ID
 		out = append(out, settingEntry{prefTerminal, func(m locales.Messages) string { return presetName(m, id) }, nil})
-	}
-	for _, src := range migration.Sources() {
-		out = append(out, settingEntry{prefMigration, func(locales.Messages) string { return string(src) }, nil})
 	}
 	for _, ac := range actions {
 		out = append(out, settingEntry{prefShortcuts, ac.label, nil})

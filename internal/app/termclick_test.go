@@ -128,8 +128,8 @@ func TestCopyOnSelect(t *testing.T) {
 	}
 }
 
-// TestOpenLink: ⌘-click (Ctrl-click off macOS) on a web address opens it
-// in the browser; a plain click, or one off the address, does not.
+// TestOpenLink: Ctrl-click on a web address opens it in the browser; a
+// plain click, or one off the address, does not.
 func TestOpenLink(t *testing.T) {
 	srv, _ := startScript(t, "docs https://example.com/x?a=1. end")
 	a, tt := newTestApp(t)

@@ -133,16 +133,7 @@
 :root:lang(zh-Hans) {
   --font: var(--latin), "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei UI", "Microsoft YaHei", "Source Han Sans SC", "Noto Sans CJK SC", "Noto Sans SC", "WenQuanYi Micro Hei", var(--tail);
 }
-:root:lang(zh-Hant) {
-  --font: var(--latin), "PingFang TC", "PingFang HK", "Microsoft JhengHei UI", "Microsoft JhengHei", "Source Han Sans TC", "Noto Sans CJK TC", "Noto Sans TC", var(--tail);
-}
-:root:lang(ja) {
-  --font: var(--latin), "Hiragino Sans", "Hiragino Kaku Gothic ProN", "Yu Gothic UI", "Meiryo UI", "Meiryo", "Source Han Sans JP", "Noto Sans CJK JP", "Noto Sans JP", var(--tail);
-}
-:root:lang(ko) {
-  --font: var(--latin), "Apple SD Gothic Neo", "Malgun Gothic", "Source Han Sans KR", "Noto Sans CJK KR", "Noto Sans KR", var(--tail);
-}
-:root:is(:lang(zh-Hans), :lang(zh-Hant), :lang(ja), :lang(ko)) {
+:root:lang(zh-Hans) {
   --lh: 1.75;
   --lh-head: 1.28;
   --track-head: 0;
@@ -239,15 +230,12 @@ body {
   text-rendering: optimizeLegibility;
   overflow-x: clip;
 }
-:lang(zh-Hans), :lang(zh-Hant), :lang(ja), :lang(ko) {
+:lang(zh-Hans) {
   text-autospace: normal;
   text-spacing-trim: trim-start;
   line-break: strict;
 }
-:lang(ja) { word-break: auto-phrase; }
-:lang(ko) { word-break: keep-all; }
-:lang(zh) :is(h1, h2), :lang(ja) :is(h1, h2) { word-break: keep-all; overflow-wrap: anywhere; }
-:lang(ja) :is(h1, h2) { word-break: auto-phrase; }
+:lang(zh) :is(h1, h2) { word-break: keep-all; overflow-wrap: anywhere; }
 h1, h2, h3 {
   margin: 0;
   font-weight: var(--w-head);
@@ -255,7 +243,7 @@ h1, h2, h3 {
   letter-spacing: var(--track-head);
   text-wrap: balance;
 }
-:is(:lang(zh-Hans), :lang(zh-Hant), :lang(ja)) :is(h1, h2, h3) { font-feature-settings: "palt"; }
+:is(:lang(zh-Hans)) :is(h1, h2, h3) { font-feature-settings: "palt"; }
 p { margin: 0; text-wrap: pretty; }
 a { color: var(--accent-ink); text-decoration: none; }
 a:hover { text-decoration: underline; text-underline-offset: .2em; }
@@ -560,7 +548,7 @@ button { font: inherit; color: inherit; }
   letter-spacing: var(--track-title);
   line-height: 1.04;
 }
-:root:is(:lang(zh-Hans), :lang(zh-Hant), :lang(ja), :lang(ko)) .hero-title { font-size: clamp(34px, 6.2vw, 70px); line-height: 1.2; }
+:root:lang(zh-Hans) .hero-title { font-size: clamp(34px, 6.2vw, 70px); line-height: 1.2; }
 .hero-title span { display: block; }
 .hero-title span:last-child {
   background: linear-gradient(115deg, var(--accent) 0%, var(--accent-ink) 55%, var(--tint-teal) 100%);
@@ -1568,7 +1556,7 @@ html:not(.js) .ai-sugg { display: none; }
 .scheme-name { font-size: 12px; font-weight: 600; display: flex; align-items: center; justify-content: space-between; }
 .scheme-name .i { width: 13px; height: 13px; color: var(--accent); }
 
-/* Toggle switch (matching macOS / SSHYard toggle) */
+/* Toggle switch (matching the SSHYard toggle) */
 .toggle {
   position: relative; width: 38px; height: 22px; flex: none;
   border: 0; border-radius: var(--r-capsule); padding: 2px;
@@ -1972,12 +1960,8 @@ html:not(.js) .approval-replay { display: none; }
 }
 .dl-rec .i { width: 14px; height: 14px; }
 .dl-card .dl-rec { position: absolute; top: var(--s5); right: var(--s5); }
-html[data-os="macos"] [data-platform="macos"],
-html[data-os="windows"] [data-platform="windows"],
-html[data-os="linux"] [data-platform="linux"] { box-shadow: var(--shadow-card), inset 0 0 0 1.5px var(--accent-edge); }
-html[data-os="macos"] [data-platform="macos"] .dl-rec,
-html[data-os="windows"] [data-platform="windows"] .dl-rec,
-html[data-os="linux"] [data-platform="linux"] .dl-rec { display: inline-flex; }
+html[data-os="windows"] [data-platform="windows"] { box-shadow: var(--shadow-card), inset 0 0 0 1.5px var(--accent-edge); }
+html[data-os="windows"] [data-platform="windows"] .dl-rec { display: inline-flex; }
 .dl-links { display: flex; flex-wrap: wrap; justify-content: center; gap: var(--s2) var(--s6); margin-top: var(--s8); font-size: 15px; font-weight: 500; }
 .dl-links a { display: inline-flex; align-items: center; gap: 2px; }
 .dl-links .i { width: 16px; height: 16px; }

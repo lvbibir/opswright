@@ -1,7 +1,6 @@
 package app
 
 import (
-	"runtime"
 	"strconv"
 	"strings"
 
@@ -388,7 +387,7 @@ func (a *App) menuRow(c *ui.Context, tok theme.Tokens, e menuEntry, i, level int
 			ui.Text(c, e.InlineNote).FontSize(theme.Caption).TextColor(tok.TextMuted).SingleLine().Shrink(0)
 		}
 		if e.Key != 0 {
-			ui.Text(c, shortcutText(runtime.GOOS, e.Mods, e.Key)).FontSize(theme.Footnote).TextColor(muted).SingleLine().
+			ui.Text(c, shortcutText(e.Mods, e.Key)).FontSize(theme.Footnote).TextColor(muted).SingleLine().
 				Shrink(0).MarginStart(theme.Space(4))
 		}
 		if e.Checked {
@@ -431,14 +430,9 @@ func (a *App) menuRow(c *ui.Context, tok theme.Tokens, e menuEntry, i, level int
 	return row
 }
 
-// shortcutText is a shortcut as a menu shows it on goos: "⌘K" on macOS,
-// "Ctrl+Shift+K" elsewhere.
-func shortcutText(goos string, mods ui.Modifiers, key ui.Key) string {
-	sep := "+"
-	if goos == "darwin" {
-		sep = ""
-	}
-	return strings.Join(keyCaps(goos, mods, key), sep)
+// shortcutText is a shortcut as a menu shows it: "Ctrl+Shift+K".
+func shortcutText(mods ui.Modifiers, key ui.Key) string {
+	return strings.Join(keyCaps(mods, key), "+")
 }
 
 // chip is a capsule button showing a choice, its icon and label in tint

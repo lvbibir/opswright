@@ -73,8 +73,8 @@ type Platform struct {
 	// CacheDir is where files opened in another app are copied, the
 	// user's cache folder when "".
 	CacheDir string
-	// Storage is where the data may move, nil where it cannot (macOS,
-	// installed copies, a data folder set from outside).
+	// Storage is where the data may move, nil where it cannot (installed
+	// copies, a data folder set from outside).
 	Storage *Storage
 	// DataDir holds application metadata and encrypted credentials; it is required
 	// unless ResolveStorage supplies the persistent storage paths.
@@ -534,22 +534,16 @@ type App struct {
 	dropPreview *dropTarget
 	// temps are the temporary hosts of quick connect, by ID, kept while a
 	// pane uses them and never saved; nextTemp numbers them
-	temps         map[string]assets.Host
-	nextTemp      int
-	quick         *quickForm
-	quicking      bool
-	quickHold     focusHold
-	migration     *migrationForm
-	migrationOpen bool
-	migrationHold focusHold
+	temps     map[string]assets.Host
+	nextTemp  int
+	quick     *quickForm
+	quicking  bool
+	quickHold focusHold
 	// palette is the command palette, open while palette.open
 	palette paletteState
 	// recording is the action whose shortcut is being recorded, and
 	// recordErr why the last key pressed for it could not be its shortcut
 	recording, recordErr string
-	imp                  *importForm
-	importing            bool
-	impHold              focusHold
 	// fwds are the port forwards running, by forward ID
 	fwds       map[string]*fwdRun
 	fwdForm    *fwdForm
@@ -907,7 +901,6 @@ func (a *App) ApplySettings(s settings.Settings) error {
 func (a *App) Start() {
 	a.reportStorageMove()
 	a.loadFonts()
-	a.probeDesktop()
 	if a.p.SetTheme != nil {
 		a.p.SetTheme(a.settings.Theme)
 	}
@@ -1468,7 +1461,7 @@ func localKeyPrompt(id string) string { return "localkey/" + id }
 // key opens with the passphrase typed this run, else the one remembered;
 // typed is nil where nothing is typed (MCP).
 func (a *App) localKeyCredentials(out *session.Credentials, h assets.Host, typed func(string) string) {
-	f := localkeys.Find(a.homeDir(), a.localUser(), h.Name, h.Address)
+	f := localkeys.Find(a.localHome(), a.localUser(), h.Name, h.Address)
 	out.TryAgent, out.IdentitiesOnly, out.Prefer = true, f.IdentitiesOnly, a.lk.Last(h.ID)
 	a.mu.Lock()
 	for id := range a.skipKeys {

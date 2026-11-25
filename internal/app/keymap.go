@@ -2,7 +2,6 @@ package app
 
 import (
 	"maps"
-	"runtime"
 	"slices"
 	"strconv"
 	"strings"
@@ -150,7 +149,7 @@ func actionOf(id string) (action, bool) {
 func shortcutOf(custom map[string]string, id string) keymap.Combo {
 	ac, _ := actionOf(id)
 	if s, ok := custom[id]; ok {
-		if k, ok := keymap.Parse(s); ok && shortcutRule(runtime.GOOS, ac, k) == ruleOK {
+		if k, ok := keymap.Parse(s); ok && shortcutRule(ac, k) == ruleOK {
 			return k
 		}
 	}
@@ -189,42 +188,28 @@ const (
 	ruleReserved      // the system's, or editing text's
 )
 
-// shortcutMods are the modifiers a shortcut of the main window must hold
-// on goos, so the keys without them reach the shell, and those of the
-// editor's.
-func shortcutMods(goos string, editor bool) ui.Modifiers {
-	switch {
-	case goos == "darwin":
-		return ui.Super
-	case editor:
+// shortcutMods are the modifiers a shortcut of the main window must hold,
+// so the keys without them reach the shell, and those of the editor's.
+func shortcutMods(editor bool) ui.Modifiers {
+	if editor {
 		return ui.Ctrl
 	}
 	return ui.Ctrl | ui.Shift
 }
 
 // altDigit reports a shortcut of a tab action that may go without the
-// window's modifiers: Alt (⌥ on macOS) and a digit alone, as other
-// terminals switch tabs. Recording it gives the shell's Alt and that digit
-// (readline's digit argument, the ⌥ character on macOS) to the app.
+// window's modifiers: Alt and a digit alone, as other terminals switch
+// tabs. Recording it gives the shell's Alt and that digit (readline's
+// digit argument) to the app.
 func altDigit(ac action, k keymap.Combo) bool {
 	return tabNumber(ac.id) > 0 && k.Mods == ui.Alt && k.Key >= ui.Key0 && k.Key <= ui.Key9
 }
 
-// reserved are the shortcuts no action may take on goos: editing text
-// (Select All, Copy, Paste, Cut, Undo, Redo), the system's and the menu
-// bar's (Close Window), and the terminal's copy and paste; for the editor,
-// also closing its tab.
-func reserved(goos string, editor bool) []keymap.Combo {
+// reserved are the shortcuts no action may take: editing text (Select
+// All, Copy, Paste, Cut, Undo, Redo) and the terminal's copy and paste;
+// for the editor, also closing its tab.
+func reserved(editor bool) []keymap.Combo {
 	k := func(m ui.Modifiers, key ui.Key) keymap.Combo { return keymap.Combo{Mods: m, Key: key} }
-	if goos == "darwin" {
-		out := []keymap.Combo{k(ui.Super, ui.KeyA), k(ui.Super, ui.KeyC), k(ui.Super, ui.KeyV), k(ui.Super, ui.KeyX),
-			k(ui.Super, ui.KeyZ), k(ui.Super|ui.Shift, ui.KeyZ), k(ui.Super, ui.KeyQ), k(ui.Super, ui.KeyH),
-			k(ui.Super, ui.KeyM), k(ui.Super, ui.KeyBackquote), k(ui.Super|ui.Shift, ui.KeyW)}
-		if editor {
-			out = append(out, k(ui.Super, ui.KeyW))
-		}
-		return out
-	}
 	cs := ui.Ctrl | ui.Shift
 	out := []keymap.Combo{k(cs, ui.KeyC), k(cs, ui.KeyV), k(cs, ui.KeyZ), k(cs, ui.KeyI)}
 	if editor {
@@ -234,9 +219,9 @@ func reserved(goos string, editor bool) []keymap.Combo {
 	return out
 }
 
-// shortcutRule says whether k may be the shortcut of ac on goos. Its own
-// default always may.
-func shortcutRule(goos string, ac action, k keymap.Combo) rule {
+// shortcutRule says whether k may be the shortcut of ac. Its own default
+// always may.
+func shortcutRule(ac action, k keymap.Combo) rule {
 	switch {
 	case k == ac.def:
 		return ruleOK
@@ -244,9 +229,9 @@ func shortcutRule(goos string, ac action, k keymap.Combo) rule {
 		return ruleKey
 	case altDigit(ac, k):
 		return ruleOK
-	case k.Mods&shortcutMods(goos, ac.editor) != shortcutMods(goos, ac.editor):
+	case k.Mods&shortcutMods(ac.editor) != shortcutMods(ac.editor):
 		return ruleMods
-	case slices.Contains(reserved(goos, ac.editor), k):
+	case slices.Contains(reserved(ac.editor), k):
 		return ruleReserved
 	}
 	return ruleOK
@@ -255,21 +240,21 @@ func shortcutRule(goos string, ac action, k keymap.Combo) rule {
 // shortcutProblem is why k cannot be the shortcut of action id, or "".
 func (a *App) shortcutProblem(m locales.Messages, id string, k keymap.Combo) string {
 	ac, _ := actionOf(id)
-	switch shortcutRule(runtime.GOOS, ac, k) {
+	switch shortcutRule(ac, k) {
 	case ruleKey:
 		return m.ShortcutKeyInvalid()
 	case ruleMods:
-		mods := shortcutText(runtime.GOOS, shortcutMods(runtime.GOOS, ac.editor), 0)
+		mods := shortcutText(shortcutMods(ac.editor), 0)
 		if tabNumber(id) > 0 {
-			return m.ShortcutNeedsModsOrAlt(mods, shortcutText(runtime.GOOS, ui.Alt, 0))
+			return m.ShortcutNeedsModsOrAlt(mods, shortcutText(ui.Alt, 0))
 		}
 		return m.ShortcutNeedsMods(mods)
 	case ruleReserved:
-		return m.ShortcutReserved(shortcutText(runtime.GOOS, k.Mods, k.Key))
+		return m.ShortcutReserved(shortcutText(k.Mods, k.Key))
 	}
 	for _, other := range actions {
 		if other.id != id && a.keyOf(other.id) == k {
-			return m.ShortcutTaken(shortcutText(runtime.GOOS, k.Mods, k.Key), other.label(m))
+			return m.ShortcutTaken(shortcutText(k.Mods, k.Key), other.label(m))
 		}
 	}
 	return ""
@@ -310,11 +295,11 @@ func (a *App) shortcuts(c *ui.Context) {
 	}
 }
 
-// altTabKey runs the tab action recorded as Alt (⌥ on macOS) and the
-// digit of ev, a key down the terminal got, and reports whether there was
-// one. The terminal takes such a key as it comes rather than leave it to
-// the window's shortcuts: Windows looks for a menu of an Alt and a
-// character no one took, and sounds its alert for none.
+// altTabKey runs the tab action recorded as Alt and the digit of ev, a
+// key down the terminal got, and reports whether there was one. The
+// terminal takes such a key as it comes rather than leave it to the
+// window's shortcuts: Windows looks for a menu of an Alt and a character
+// no one took, and sounds its alert for none.
 func (a *App) altTabKey(ev ui.InputEvent) bool {
 	if ev.Kind != ui.InputKeyDown || ev.Mods != ui.Alt {
 		return false

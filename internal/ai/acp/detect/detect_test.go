@@ -216,38 +216,10 @@ func TestNvmDirsNewestFirst(t *testing.T) {
 }
 
 func TestSystemProxySettings(t *testing.T) {
-	scutil := `<dictionary> {
-  ExceptionsList : <array> {
-    0 : 127.0.0.1
-    1 : *.local
-    2 : 47.*
-  }
-  HTTPEnable : 1
-  HTTPPort : 7890
-  HTTPProxy : 127.0.0.1
-  HTTPSEnable : 1
-  HTTPSPort : 7890
-  HTTPSProxy : 127.0.0.1
-  SOCKSEnable : 1
-  SOCKSPort : 7891
-  SOCKSProxy : 127.0.0.1
-}`
-	got := parseScutil(scutil)
-	for name, want := range map[string]string{
-		"HTTP_PROXY": "http://127.0.0.1:7890", "https_proxy": "http://127.0.0.1:7890",
-		"ALL_PROXY": "socks5://127.0.0.1:7891", "NO_PROXY": "127.0.0.1,.local",
-	} {
-		if got[name] != want {
-			t.Errorf("scutil %s = %q, want %q", name, got[name], want)
-		}
-	}
-	if parseScutil("<dictionary> {\n  HTTPEnable : 0\n  HTTPProxy : h\n  HTTPPort : 1\n}") != nil {
-		t.Error("disabled proxy used")
-	}
 	reg := "\r\nHKEY_CURRENT_USER\\Software\\Microsoft\\Windows\\CurrentVersion\\Internet Settings\r\n" +
 		"    ProxyEnable    REG_DWORD    0x1\r\n    ProxyServer    REG_SZ    http=10.0.0.1:8080;https=10.0.0.1:8443\r\n" +
 		"    ProxyOverride    REG_SZ    *.corp;<local>\r\n"
-	got = parseInternetSettings(reg)
+	got := parseInternetSettings(reg)
 	for name, want := range map[string]string{
 		"HTTP_PROXY": "http://10.0.0.1:8080", "HTTPS_PROXY": "http://10.0.0.1:8443",
 		"ALL_PROXY": "http://10.0.0.1:8443", "NO_PROXY": ".corp,localhost,127.0.0.1",

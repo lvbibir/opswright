@@ -4,7 +4,7 @@
 // Pango), which knows what text can actually draw with; where that lists
 // nothing, it reads the system itself, without cgo: fontconfig's fc-list
 // on Linux when present, else the font files in the platform's font
-// directories (macOS's, %WINDIR%\Fonts and the per-user fonts on Windows,
+// directories (%WINDIR%\Fonts and the per-user fonts on Windows,
 // fontconfig's on Linux), whose names and pitch it parses from their
 // OpenType tables.
 package fonts
@@ -114,11 +114,6 @@ func firstFamily(list string) string {
 func Dirs(goos string, getenv func(string) string, home string) []string {
 	var ds []string
 	switch goos {
-	case "darwin":
-		ds = []string{"/System/Library/Fonts", "/Library/Fonts", "/Network/Library/Fonts"}
-		if home != "" {
-			ds = append(ds, filepath.Join(home, "Library", "Fonts"))
-		}
 	case "windows":
 		win := getenv("WINDIR")
 		if win == "" {
@@ -180,9 +175,8 @@ func ScanDirs(dirs []string) []Family {
 	return fs
 }
 
-// Normalize drops empty and hidden names (".SF NS", as macOS keeps for
-// itself) and lists each family once, monospaced if any of its fonts
-// is, sorted without regard to case.
+// Normalize drops empty and hidden names and lists each family once,
+// monospaced if any of its fonts is, sorted without regard to case.
 func Normalize(fs []Family) []Family {
 	idx := map[string]int{}
 	var out []Family

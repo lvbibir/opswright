@@ -504,7 +504,7 @@ func (a *App) ExportBackup(m locales.Messages) bool {
 		return false
 	}
 	title := m.ExportBackup()
-	def := filepath.Join(a.homeDir(), "SSHYard-"+time.Now().Format("2006-01-02")+backupExt)
+	def := filepath.Join(a.localHome(), "SSHYard-"+time.Now().Format("2006-01-02")+backupExt)
 	f.busy = true
 	go func() {
 		defer key.Clear()

@@ -22,8 +22,6 @@ func (a *App) addEntries(m locales.Messages) []menuEntry {
 		a.bound(actQuickConnect, menuEntry{Icon: icons.Quick, Label: m.QuickConnectMenu(), Do: a.OpenQuickConnect}),
 		{Icon: icons.Forward, Label: m.NewForwardMenu(), Disabled: a.store.Len() == 0, Do: func() { a.openFwdForm(m, nil, a.selectedHost()) }},
 		a.localEntry(m),
-		menuSep,
-		{Icon: icons.Import, Label: m.ImportSSHConfigMenu(), Do: func() { a.OpenImport(m, "") }},
 	}
 }
 

@@ -11,11 +11,7 @@ func (a *App) drawBackground(c *ui.Context, tok theme.Tokens) {
 	if !a.hasBackground() {
 		return
 	}
-	z := c.Zoom()
 	c.Root().Background(tok.Canvas).Draw(func(p *ui.Painter, r ui.Rect) {
-		if a.zoom.desktop > 0 {
-			a.zoom.device = p.Scale() / z
-		}
 		a.paintBackground(p, r, tok)
 	})
 }

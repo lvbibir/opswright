@@ -557,8 +557,8 @@ func TestToolbarTrail(t *testing.T) {
 		bar  ui.TitleBar
 		want float32
 	}{
-		{ui.TitleBar{Height: 52, Left: 80}, 12},    // macOS: traffic lights on the left
-		{ui.TitleBar{Height: 52, Right: 138}, 144}, // Windows: three 46px caption buttons
+		{ui.TitleBar{Height: 52, Left: 80}, 12},    // no buttons on the right
+		{ui.TitleBar{Height: 52, Right: 138}, 144}, // three 46px caption buttons
 		{ui.TitleBar{}, 12},                        // no title bar room
 	} {
 		if got := toolbarTrail(tc.bar); got != tc.want {

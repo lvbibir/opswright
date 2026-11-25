@@ -21,7 +21,7 @@ func destinationRoot(dst string) (localDestination, error) {
 	if err != nil {
 		return localDestination{}, err
 	}
-	// macOS's standard temporary directory uses the system /var alias.
+	// Resolve a temporary directory that is itself a symlink.
 	temp := filepath.Clean(os.TempDir())
 	if real, err := filepath.EvalSymlinks(temp); err == nil && strings.HasPrefix(abs, temp+string(filepath.Separator)) {
 		abs = filepath.Join(real, strings.TrimPrefix(abs, temp+string(filepath.Separator)))

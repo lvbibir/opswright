@@ -9,7 +9,6 @@ import (
 	"sync/atomic"
 	"testing"
 
-	"github.com/Licoy/sshyard/internal/assets"
 	"github.com/Licoy/sshyard/internal/keychain"
 	"github.com/Licoy/sshyard/internal/keys"
 	"github.com/Licoy/sshyard/internal/vault"
@@ -106,29 +105,6 @@ func TestCostlyKeyWrongPassphrase(t *testing.T) {
 	waitFor(t, tt, "derivation", func() bool { return a.cost == nil })
 	if n.Load() != 1 || f.err != en.ErrKeyPassphraseWrong() || len(a.store.Credentials()) != 0 {
 		t.Fatalf("derived %d, err %q", n.Load(), f.err)
-	}
-}
-
-// TestCostlyMigrationKey: a migrated PuTTY key past the usual cost stops
-// the batch, nothing saved, until the user agrees.
-func TestCostlyMigrationKey(t *testing.T) {
-	a, tt := newTestApp(t)
-	data, k, n := costlyPPK(t)
-	e := migrationEntry("costly", "costly.example")
-	e.PrivateKey, e.Passphrase = data, []byte("pw")
-	f := migrationDraft(a, e)
-	f.saveSecrets = true
-	a.migration, a.migrationOpen = f, true
-	a.startMigrationSave(en)
-	waitFor(t, tt, "asked", func() bool { return a.cost != nil })
-	if n.Load() != 0 || a.store.Len() != 0 {
-		t.Fatalf("derived %d, saved %d hosts before agreeing", n.Load(), a.store.Len())
-	}
-	a.cost.run()
-	waitFor(t, tt, "saved", func() bool { return a.store.Len() == 1 && !f.saving })
-	h := a.store.List()[0]
-	if pem, err := a.kc.Get(keychain.Host(h.ID, keychain.PrivateKey)); n.Load() != 1 || h.Auth != assets.AuthKey || err != nil || string(pem) != string(k.PEM) {
-		t.Fatalf("derived %d, host %+v, key %v", n.Load(), h, err)
 	}
 }
 

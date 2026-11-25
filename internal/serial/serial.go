@@ -171,14 +171,12 @@ func normalizeDevice(goos, d string) string {
 	return d
 }
 
-// listPorts drops blanks, duplicates and, on macOS, the /dev/tty.* call-in
-// devices (opening one blocks waiting for carrier; /dev/cu.* is the same
-// port), then sorts naturally.
+// listPorts drops blanks and duplicates, then sorts naturally.
 func listPorts(goos string, names []string) []string {
 	out := []string{}
 	for _, n := range names {
 		n = normalizeDevice(goos, strings.TrimSpace(n))
-		if n == "" || slices.Contains(out, n) || goos == "darwin" && !strings.HasPrefix(n, "/dev/cu.") {
+		if n == "" || slices.Contains(out, n) {
 			continue
 		}
 		out = append(out, n)

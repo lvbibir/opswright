@@ -205,11 +205,8 @@ func (a *App) streamTermFields(c *ui.Context, m locales.Messages, tok theme.Toke
 
 // devicePlaceholder is how a serial port is named on this system.
 func devicePlaceholder() string {
-	switch runtime.GOOS {
-	case "windows":
+	if runtime.GOOS == "windows" {
 		return "COM3"
-	case "darwin":
-		return "/dev/cu.usbserial-0001"
 	}
 	return "/dev/ttyUSB0"
 }

@@ -46,22 +46,18 @@ func TestSettingsNav(t *testing.T) {
 
 func TestKeyCaps(t *testing.T) {
 	for _, tc := range []struct {
-		goos string
 		mods ui.Modifiers
 		key  ui.Key
 		want []string
 	}{
-		{"darwin", ui.Super, ui.KeyK, []string{"⌘", "K"}},
-		{"darwin", ui.Super | ui.Shift, ui.KeyA, []string{"⇧", "⌘", "A"}},
-		{"linux", ui.Ctrl | ui.Shift, ui.KeyT, []string{"Ctrl", "Shift", "T"}},
-		{"windows", ui.Ctrl, ui.KeyPeriod, []string{"Ctrl", "."}},
-		{"darwin", ui.Super | ui.Alt, ui.Key7, []string{"⌥", "⌘", "7"}},
-		{"linux", ui.Ctrl | ui.Shift, ui.KeyF11, []string{"Ctrl", "Shift", "F11"}},
-		{"darwin", ui.Super, ui.KeyBracketLeft, []string{"⌘", "["}},
-		{"windows", ui.Ctrl | ui.Shift, ui.KeySlash, []string{"Ctrl", "Shift", "/"}},
+		{ui.Ctrl | ui.Shift, ui.KeyT, []string{"Ctrl", "Shift", "T"}},
+		{ui.Ctrl, ui.KeyPeriod, []string{"Ctrl", "."}},
+		{ui.Ctrl | ui.Shift, ui.KeyF11, []string{"Ctrl", "Shift", "F11"}},
+		{ui.Ctrl | ui.Shift, ui.KeySlash, []string{"Ctrl", "Shift", "/"}},
+		{ui.Alt, ui.KeyBackspace, []string{"Alt", "Backspace"}},
 	} {
-		if got := keyCaps(tc.goos, tc.mods, tc.key); !reflect.DeepEqual(got, tc.want) {
-			t.Errorf("%s %v %v: %q, want %q", tc.goos, tc.mods, tc.key, got, tc.want)
+		if got := keyCaps(tc.mods, tc.key); !reflect.DeepEqual(got, tc.want) {
+			t.Errorf("%v %v: %q, want %q", tc.mods, tc.key, got, tc.want)
 		}
 	}
 }

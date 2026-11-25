@@ -74,7 +74,7 @@ type Settings struct {
 	// or a recording. What is typed in a form is shown as it is.
 	Privacy bool `json:"privacy,omitempty"`
 	// ChromeMaterial is how the sidebar and the title bar show the
-	// window's material (macOS): MaterialTranslucent, the default, or
+	// window's material: MaterialTranslucent, the default, or
 	// MaterialOpaque. ContentMaterial is that of the content beside them,
 	// opaque by default.
 	ChromeMaterial  string `json:"chromeMaterial,omitempty"`
@@ -688,7 +688,7 @@ func (s Settings) FilesScale() float32 {
 }
 
 // Languages are the languages SSHYard ships, besides following the system.
-var Languages = []string{"en", "zh-Hans", "zh-Hant", "ko", "ja"}
+var Languages = []string{"en", "zh-Hans"}
 
 // Main-window close behaviors.
 const (

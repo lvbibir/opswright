@@ -3,7 +3,6 @@ package main
 import (
 	"errors"
 	"log"
-	"runtime"
 
 	"github.com/Licoy/sshyard/icon"
 	"github.com/Licoy/sshyard/internal/app"
@@ -27,7 +26,6 @@ type desktop struct {
 	changingVisibility bool
 	panel              *mygo.Window
 	panelView          *app.TrayPanel
-	panelNative        desktopPanelNative
 	openingPanel       bool
 	panelResize        desktopPanelResize
 }
@@ -45,21 +43,17 @@ func newDesktop(a *app.App, w *mygo.Window) *desktop {
 		}
 		return d
 	}
-	d.updateMenu()
 	mygo.App.OnLocaleChanged(func(string) {
-		d.updateMenu()
 		d.refreshPanel()
 	})
 	mygo.Theme.OnUpdated(d.refreshPanel)
-	if runtime.GOOS != "linux" {
-		d.tray.OnClick(d.clickTray)
-		d.tray.OnRightClick(func() {
-			d.closePanel()
-			d.tray.SetMenu(d.menu())
-			defer d.tray.SetMenu(nil)
-			d.tray.PopUpMenu()
-		})
-	}
+	d.tray.OnClick(d.clickTray)
+	d.tray.OnRightClick(func() {
+		d.closePanel()
+		d.tray.SetMenu(d.menu())
+		defer d.tray.SetMenu(nil)
+		d.tray.PopUpMenu()
+	})
 	mygo.App.OnQuit(d.tray.Destroy)
 	d.tray.OnAppearanceChange(d.refreshTrayIcon)
 	d.refreshTrayIcon()
@@ -94,9 +88,6 @@ func (d *desktop) refreshTrayIcon() {
 
 func (d *desktop) menu() *mygo.Menu {
 	items := []*mygo.MenuItem{}
-	if runtime.GOOS == "linux" {
-		items = append(items, &mygo.MenuItem{Label: locales.TrayOpenHosts(), Click: func(*mygo.MenuItem, *mygo.Window) { d.openPanel() }})
-	}
 	for _, item := range []struct {
 		label  string
 		action app.TrayAction
@@ -114,13 +105,6 @@ func (d *desktop) menu() *mygo.Menu {
 	return mygo.NewMenu(items)
 }
 
-func (d *desktop) updateMenu() {
-	// AppIndicator has no direct click event; its menu is the primary action.
-	if runtime.GOOS == "linux" {
-		d.tray.SetMenu(d.menu())
-	}
-}
-
 // activate handles an explicit reopen (for example a Dock click), not focus.
 func (d *desktop) activate() {
 	if d.changingVisibility || d.openingPanel {
@@ -135,11 +119,7 @@ func (d *desktop) show() {
 	d.closePanel()
 	d.changingVisibility = true
 	defer func() { d.changingVisibility = false }()
-	if runtime.GOOS == "darwin" {
-		mygo.App.Dock.Show()
-	} else {
-		d.window.SetSkipTaskbar(false)
-	}
+	d.window.SetSkipTaskbar(false)
 	d.window.Restore()
 	d.window.Show()
 	d.app.SetMinimized(false)
@@ -170,11 +150,7 @@ func (d *desktop) hide() {
 	d.changingVisibility = true
 	defer func() { d.changingVisibility = false }()
 	d.window.Hide()
-	if runtime.GOOS == "darwin" {
-		mygo.App.Dock.Hide()
-	} else {
-		d.window.SetSkipTaskbar(true)
-	}
+	d.window.SetSkipTaskbar(true)
 }
 
 func (d *desktop) beforeQuit(e *mygo.QuitEvent) {

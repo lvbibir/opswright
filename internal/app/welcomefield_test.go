@@ -21,8 +21,8 @@ func TestWelcomeFieldFollowsPointer(t *testing.T) {
 	if a.field.trail[1].force <= a.field.trail[0].force {
 		t.Fatalf("a quick move should mark stronger than the first: %v", a.field.trail)
 	}
-	pill := mustFind(t, tt, "Quick Migration")
-	if len(a.field.controls) != 3 || !a.field.content.Contains(pill.X+pill.W/2, pill.Y+pill.H/2) ||
+	pill := mustFind(t, tt, "Quick Connect")
+	if len(a.field.controls) != 2 || !a.field.content.Contains(pill.X+pill.W/2, pill.Y+pill.H/2) ||
 		a.field.content.Contains(x, y) {
 		t.Fatalf("content %+v, controls %v", a.field.content, a.field.controls)
 	}
@@ -32,9 +32,9 @@ func TestWelcomeFieldFollowsPointer(t *testing.T) {
 	}
 
 	// A press on a button is the button's: no ring, and it still works.
-	mustClick(t, tt, "Quick Migration")
-	if len(a.field.rings) != 1 || a.page != pageSettings {
-		t.Fatalf("button press: rings=%d page=%v", len(a.field.rings), a.page)
+	mustClick(t, tt, "Quick Connect")
+	if len(a.field.rings) != 1 || !a.quicking {
+		t.Fatalf("button press: rings=%d quicking=%v", len(a.field.rings), a.quicking)
 	}
 }
 
@@ -43,9 +43,9 @@ func TestWelcomeFieldFollowsPointer(t *testing.T) {
 func TestWelcomeFieldLeavesButtonPresses(t *testing.T) {
 	a, tt := newTestApp(t)
 	a.field.controls = nil
-	mustClick(t, tt, "Quick Migration")
-	if a.page != pageSettings {
-		t.Fatalf("button press taken by the field: page=%v", a.page)
+	mustClick(t, tt, "Quick Connect")
+	if !a.quicking {
+		t.Fatalf("button press taken by the field: quicking=%v", a.quicking)
 	}
 }
 

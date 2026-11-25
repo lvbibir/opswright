@@ -65,7 +65,7 @@ SHA-256 and caches them in `website/.cache/fonts`.
 
 ## Languages
 
-`en` (served at `/`, also `x-default`), `zh-Hans`, `zh-Hant`, `ja` and `ko`.
+`en` (served at `/`, also `x-default`) and `zh-Hans`.
 
 A visitor arriving from outside the site on an English page is sent, before
 anything paints, to the same page in the language they picked before

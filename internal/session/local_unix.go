@@ -6,8 +6,6 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
-	"runtime"
-	"strings"
 	"time"
 
 	"github.com/creack/pty"
@@ -25,9 +23,6 @@ func localShells() []Shell {
 	sh := os.Getenv("SHELL")
 	if !filepath.IsAbs(sh) {
 		sh = "/bin/sh"
-		if runtime.GOOS == "darwin" {
-			sh = "/bin/zsh"
-		}
 	}
 	return []Shell{{ID: sh, Name: filepath.Base(sh), Path: sh, Args: []string{"-l"}}}
 }
@@ -52,29 +47,7 @@ func startLocal(sh Shell, cols, rows int, term string) (localPTY, error) {
 }
 
 func localEnv(sh Shell, term string) []string {
-	env := append(append(os.Environ(), termEnv(term)...), sh.Env...)
-	if runtime.GOOS != "darwin" {
-		return env
-	}
-	env = mergeEnv(env, false)
-	ctype := -1
-	for i, entry := range env {
-		key, value, _ := strings.Cut(entry, "=")
-		if key == "LC_CTYPE" {
-			ctype = i
-		}
-		if (key == "LANG" || key == "LC_CTYPE" || key == "LC_ALL") && value != "" {
-			return env
-		}
-	}
-	// macOS GUI launches may supply no locale; zsh then cannot echo UTF-8
-	// input correctly. Default only the child's character locale, preserving
-	// every explicit locale choice, including C and non-UTF-8 locales.
-	if ctype >= 0 {
-		env[ctype] = "LC_CTYPE=en_US.UTF-8"
-		return env
-	}
-	return append(env, "LC_CTYPE=en_US.UTF-8")
+	return append(append(os.Environ(), termEnv(term)...), sh.Env...)
 }
 
 func (p *unixPTY) Read(b []byte) (int, error)  { return p.f.Read(b) }

@@ -10,8 +10,7 @@ import (
 )
 
 // ErrAgentUnavailable reports that no SSH agent answers: SSH_AUTH_SOCK is
-// unset or dead (macOS, Linux), or the OpenSSH agent service is not
-// running (Windows).
+// unset or dead, or the OpenSSH agent service is not running.
 var ErrAgentUnavailable = errors.New("session: no SSH agent is running")
 
 // ErrAgentEmpty reports an agent that holds no keys.

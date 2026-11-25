@@ -1,7 +1,6 @@
 package app
 
 import (
-	"runtime"
 	"slices"
 	"strings"
 
@@ -84,7 +83,6 @@ func (a *App) paletteItems(m locales.Messages, tok theme.Tokens) []paletteItem {
 	if a.store.Len() > 0 {
 		cmd("newfwd", icons.Forward, locales.Messages.NewForwardMenu, func() { a.openFwdForm(m, nil, a.selectedHost()) })
 	}
-	cmd("import", icons.Import, locales.Messages.ImportSSHConfigMenu, func() { a.OpenImport(m, "") })
 	add(paletteItem{key: "privacy", icon: icons.Privacy, title: m.PrivacyMode(), sub: m.PaletteCommand(), also: en.PrivacyMode(),
 		on: a.settings.Privacy, run: func() {
 			if err := a.TogglePrivacy(); err != nil {
@@ -335,7 +333,7 @@ func (a *App) paletteRow(c *ui.Context, tok theme.Tokens, it paletteItem, chosen
 		}
 		if it.combo.Key != 0 {
 			ui.Row(c).Gap(4).Shrink(0).Children(func() {
-				for _, cap := range keyCaps(runtime.GOOS, it.combo.Mods, it.combo.Key) {
+				for _, cap := range keyCaps(it.combo.Mods, it.combo.Key) {
 					keyCap(c, tok, cap)
 				}
 			})

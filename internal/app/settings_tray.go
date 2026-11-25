@@ -1,7 +1,6 @@
 package app
 
 import (
-	"runtime"
 	"slices"
 
 	"github.com/Licoy/sshyard/internal/settings"
@@ -23,16 +22,10 @@ func (a *App) trayPreferences(c *ui.Context, m locales.Messages, g *settingsGrou
 			*changed = true
 		}
 	})
-	// The tray's native material support does not depend on main-window vibrancy.
-	off := runtime.GOOS != "darwin"
-	note := m.TrayMaterialNote()
-	if off {
-		note = m.MaterialUnsupported()
-	}
-	g.row(m.TrayMaterial(), note, func() {
+	// The tray popup has no material without window vibrancy, so this
+	// choice is shown unavailable.
+	g.row(m.TrayMaterial(), m.MaterialUnsupported(), func() {
 		idx := max(slices.Index(materials, s.TrayMaterial), 0)
-		if formSegmented(c.Key("traymaterial"), &idx, off, m.MaterialTranslucent(), m.MaterialOpaque()).Label(m.TrayMaterial()).Changed() && !off {
-			s.TrayMaterial, *changed = materials[idx], true
-		}
+		formSegmented(c.Key("traymaterial"), &idx, true, m.MaterialTranslucent(), m.MaterialOpaque()).Label(m.TrayMaterial())
 	})
 }

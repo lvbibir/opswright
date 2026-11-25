@@ -55,7 +55,6 @@ var railItems = []railItem{
 	{"broadcast", 2, icons.Broadcast, locales.Messages.Broadcast},
 	{"logs", 2, icons.FileText, locales.Messages.SessionLogs},
 	{"quick", railBottom, icons.Quick, locales.Messages.QuickConnect},
-	{"import", railBottom, icons.Import, locales.Messages.ImportSSHConfig},
 }
 
 // railSep stands for a separator in railRows.
@@ -173,8 +172,6 @@ func (a *App) railButton(c *ui.Context, m locales.Messages, cn *conn, id string)
 		}
 	case "quick":
 		b, do = IconButton{Icon: icons.Quick, Label: m.QuickConnect()}, a.OpenQuickConnect
-	case "import":
-		b, do = IconButton{Icon: icons.Import, Label: m.ImportSSHConfig()}, func() { a.OpenImport(m, "") }
 	default:
 		return
 	}

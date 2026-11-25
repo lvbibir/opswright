@@ -231,8 +231,8 @@ func scpBadge(c *ui.Context, m locales.Messages, tok theme.Tokens, chosen bool) 
 }
 
 // toolbarTrail is the toolbar's right padding: a small gap before the
-// window buttons where they sit on the right (Windows, Linux), and the
-// toolbar's own margin where they do not (macOS, on the left).
+// window buttons where they sit on the right, and the toolbar's own
+// margin where they do not.
 func toolbarTrail(bar ui.TitleBar) float32 {
 	if bar.Right > 0 {
 		return bar.Right + 6
@@ -294,10 +294,7 @@ func (a *App) terminalPage(c *ui.Context, m locales.Messages, tok theme.Tokens) 
 					f.hold(el, true)
 					return ok
 				}
-				if start(m.QuickMigration(), true) {
-					a.openSettings(prefMigration)
-				}
-				if start(m.QuickConnect(), false) {
+				if start(m.QuickConnect(), true) {
 					a.OpenQuickConnect()
 				}
 				if start(m.NewHost(), false) {
@@ -618,9 +615,8 @@ func (a *App) termElement(c *ui.Context, t *layout.Tab, n *layout.Node, cn *conn
 		a.focusReq = 0
 	}
 	tv.local = isLocal(cn.host.ID)
-	// Files dropped on a local terminal type their paths at its prompt,
-	// as macOS Terminal does; on a remote one they are sent with rz or
-	// trz, as the user chooses.
+	// Files dropped on a local terminal type their paths at its prompt;
+	// on a remote one they are sent with rz or trz, as the user chooses.
 	if tv.local {
 		if files := term.DroppedFiles(); len(files) > 0 {
 			// pasteNow writes to this terminal alone, never to those typed

@@ -12,15 +12,15 @@ func TestDropText(t *testing.T) {
 		paths             []string
 		want              string
 	}{
-		{"plain", "darwin", "/bin/zsh", []string{"/Users/me/a.txt"}, "/Users/me/a.txt "},
+		{"plain", "linux", "/bin/bash", []string{"/Users/me/a.txt"}, "/Users/me/a.txt "},
 		{"several", "linux", "/bin/bash", []string{"/a", "/b/c"}, "/a /b/c "},
-		{"space and quote", "darwin", "/bin/zsh", []string{"/Users/me/My File's.txt"}, `/Users/me/My\ File\'s.txt `},
+		{"space and quote", "linux", "/bin/bash", []string{"/Users/me/My File's.txt"}, `/Users/me/My\ File\'s.txt `},
 		{"shell specials", "linux", "/usr/bin/fish", []string{`/t/$x;(a)&b|c*?[d]~!#=%^"\e`},
 			`/t/\$x\;\(a\)\&b\|c\*\?\[d\]\~\!\#\=\%\^\"\\e `},
-		{"utf-8 kept", "darwin", "/bin/zsh", []string{"/文件/报告 1.pdf"}, `/文件/报告\ 1.pdf `},
+		{"utf-8 kept", "linux", "/bin/bash", []string{"/文件/报告 1.pdf"}, `/文件/报告\ 1.pdf `},
 		{"control char left out", "linux", "/bin/sh", []string{"/a\nrm -rf ~", "/b"}, "/b "},
 		{"none left", "linux", "/bin/sh", []string{"/a\r"}, ""},
-		{"empty", "darwin", "/bin/zsh", nil, ""},
+		{"empty", "linux", "/bin/bash", nil, ""},
 
 		{"cmd plain", "windows", "cmd", []string{`C:\a\b.txt`}, `C:\a\b.txt `},
 		{"cmd space", "windows", "cmd", []string{`C:\My Docs\b.txt`, `D:\x&y`}, `"C:\My Docs\b.txt" "D:\x&y" `},
@@ -45,7 +45,7 @@ func TestDropText(t *testing.T) {
 // TestDropTextPasted checks what the terminal gets: a paste, bracketed
 // when the program asked, and never an Enter.
 func TestDropTextPasted(t *testing.T) {
-	text := dropText([]string{"/a b", "/c"}, "darwin", "/bin/zsh")
+	text := dropText([]string{"/a b", "/c"}, "linux", "/bin/bash")
 	if got := string(pasteBytes(text, vt.Modes{})); got != `/a\ b /c ` {
 		t.Errorf("plain = %q", got)
 	}

@@ -7,9 +7,8 @@ name: Release
 # releases/latest/download/. The notes come from cliff.toml: the release
 # gets them with download links, the update window without.
 #
-# Required signing and notarization secrets: see .github/RELEASING.md
-# Installed apps reject unsigned updates; production macOS builds require
-# Developer ID signing and successful Apple notarization before upload.
+# Required signing secret: see .github/RELEASING.md
+# Installed apps reject unsigned updates.
 
 # Internal beta tags (v<version>-beta-<yyyymmddhhmmss>) never make a
 # release: they are excluded here, and only ci.yml builds them (as
@@ -38,11 +37,6 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
           MYGO_UPDATER_PRIVATE_KEY: ${{ secrets.MYGO_UPDATER_PRIVATE_KEY }}
-          MACOS_CERTIFICATE_P12_BASE64: ${{ secrets.MACOS_CERTIFICATE_P12_BASE64 }}
-          MACOS_CERTIFICATE_PASSWORD: ${{ secrets.MACOS_CERTIFICATE_PASSWORD }}
-          APPLE_API_KEY_P8: ${{ secrets.APPLE_API_KEY_P8 }}
-          APPLE_API_KEY_ID: ${{ secrets.APPLE_API_KEY_ID }}
-          APPLE_API_ISSUER_ID: ${{ secrets.APPLE_API_ISSUER_ID }}
         run: |
           version="$(jq -r .version mygo.json)"
           tag="v$version"
@@ -54,7 +48,7 @@ jobs:
             echo "::error::$GITHUB_REF_NAME does not match mygo.json version $version (expected tag $tag)."
             exit 1
           fi
-          for name in MYGO_UPDATER_PRIVATE_KEY MACOS_CERTIFICATE_P12_BASE64 MACOS_CERTIFICATE_PASSWORD APPLE_API_KEY_P8 APPLE_API_KEY_ID APPLE_API_ISSUER_ID; do
+          for name in MYGO_UPDATER_PRIVATE_KEY; do
             if [ -z "${!name}" ]; then
               echo "::error::Required secret $name is not set; see .github/RELEASING.md"
               exit 1
@@ -95,7 +89,7 @@ jobs:
           mkdir -p release-notes
           printf '%s\n' "$RELEASE_NOTES" > release-notes/release-notes.md
           if ! grep -q '[^[:space:]]' release-notes/release-notes.md; then
-            printf 'Builds for macOS, Windows and Linux.\n' > release-notes/release-notes.md
+            printf 'Builds for Windows.\n' > release-notes/release-notes.md
           fi
           { printf '## %s\n\n' "$VERSION"; cat release-notes/release-notes.md; } > release-notes/CHANGELOG.md
           cat release-notes/release-notes.md
@@ -151,12 +145,8 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - { os: ubuntu-latest, goos: linux, goarch: amd64 }
-          - { os: ubuntu-24.04-arm, goos: linux, goarch: arm64 }
           - { os: windows-latest, goos: windows, goarch: amd64 }
           - { os: windows-11-arm, goos: windows, goarch: arm64 }
-          - { os: macos-latest, goos: darwin, goarch: arm64 }
-          - { os: macos-latest, goos: darwin, goarch: amd64 }
     defaults:
       run:
         shell: bash
@@ -175,20 +165,10 @@ jobs:
         with:
           name: release-notes
           path: release-notes
-      # Only in the runner's checkout, as macos-release.sh does
       - name: Use the release notes for the update window
         run: |
           jq '.updates.changelog = "release-notes/CHANGELOG.md"' mygo.json > mygo.json.notes
           mv mygo.json.notes mygo.json
-      - name: Prepare macOS signing and notarization
-        if: runner.os == 'macOS'
-        env:
-          MACOS_CERTIFICATE_P12_BASE64: ${{ secrets.MACOS_CERTIFICATE_P12_BASE64 }}
-          MACOS_CERTIFICATE_PASSWORD: ${{ secrets.MACOS_CERTIFICATE_PASSWORD }}
-          APPLE_API_KEY_P8: ${{ secrets.APPLE_API_KEY_P8 }}
-          APPLE_API_KEY_ID: ${{ secrets.APPLE_API_KEY_ID }}
-          APPLE_API_ISSUER_ID: ${{ secrets.APPLE_API_ISSUER_ID }}
-        run: bash .github/macos-release.sh prepare
       - name: Build and sign updates
         env:
           GH_TOKEN: ${{ github.token }}
@@ -202,19 +182,12 @@ jobs:
       - name: Package Windows portable ZIP
         if: runner.os == 'Windows'
         run: python .github/windows-portable.py "build/${{ matrix.goos }}-${{ matrix.goarch }}" "${{ matrix.goarch }}"
-      - name: Verify macOS signature and notarization tickets
-        if: runner.os == 'macOS'
-        run: bash .github/macos-release.sh verify "${{ matrix.goarch }}"
       - name: Collect release assets
         run: |
           shopt -s nullglob
           dir="build/${{ matrix.goos }}-${{ matrix.goarch }}"
           mkdir -p dist
-          files=("$dir"/*.tar.gz "$dir"/*.deb "$dir"/*.dmg "$dir"/*-setup-*.exe "$dir"/*-portable.zip "$dir"/*.delta "$dir"/update-*.json)
-          # install.sh is the same script for every target (it picks the
-          # archive by uname -m; macOS makes one too): the release takes
-          # linux/amd64's, so merged assets never clash
-          if [ "${{ matrix.goos }}/${{ matrix.goarch }}" = linux/amd64 ]; then files+=("$dir"/install.sh); fi
+          files=("$dir"/*-setup-*.exe "$dir"/*-portable.zip "$dir"/*.delta "$dir"/update-*.json)
           [ "${#files[@]}" -gt 0 ] || { echo "::error::No release assets found"; exit 1; }
           cp "${files[@]}" dist/
           ls -la dist
@@ -223,9 +196,6 @@ jobs:
           name: assets-${{ matrix.goos }}-${{ matrix.goarch }}
           path: dist/*
           if-no-files-found: error
-      - name: Remove macOS signing credentials
-        if: always() && runner.os == 'macOS'
-        run: bash .github/macos-release.sh cleanup
 
   # Every asset is built, signed and verified, and CI passed: the release
   # is made as a draft with all of them, then published as latest.

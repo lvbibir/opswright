@@ -51,9 +51,6 @@ func TestFindCommandPrunes(t *testing.T) {
 	if got := prunedUnder("/proc"); len(got) != 0 {
 		t.Errorf("prunedUnder(/proc) = %v, want none: the folder searched is not pruned", got)
 	}
-	if got := prunedUnder("/System"); !slices.Equal(got, []string{"/System/Volumes"}) {
-		t.Errorf("prunedUnder(/System) = %v", got)
-	}
 }
 
 // TestFindCommandRuns runs the command in this computer's sh, over names

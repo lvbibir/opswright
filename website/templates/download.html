@@ -57,11 +57,6 @@
         <li>{{ s }}</li>
         {% endfor %}
       </ol>
-      {% if p == 'linux' %}
-      <div class="code"><code>sudo apt install ./{{ release.assets.linux_deb.name }}</code><button type="button" class="icon-btn copy" data-copy="sudo apt install ./{{ release.assets.linux_deb.name }}" aria-label="{{ t["copy"].copy }}" title="{{ t["copy"].copy }}">{{ icon('file-copy-line') }}{{ icon('check-line') }}</button></div>
-      <div class="code"><code>sh install.sh</code><button type="button" class="icon-btn copy" data-copy="sh install.sh" aria-label="{{ t["copy"].copy }}" title="{{ t["copy"].copy }}">{{ icon('file-copy-line') }}{{ icon('check-line') }}</button></div>
-      <p class="muted small"><a href="{{ release.assets.install_sh.url }}" rel="noopener">install.sh</a></p>
-      {% endif %}
     </article>
     {% endfor %}
 

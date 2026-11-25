@@ -48,9 +48,6 @@ func TestNormalizeAndTerminalOrder(t *testing.T) {
 
 func TestDirs(t *testing.T) {
 	env := func(m map[string]string) func(string) string { return func(k string) string { return m[k] } }
-	if got := Dirs("darwin", env(nil), "/Users/me"); !reflect.DeepEqual(got, []string{"/System/Library/Fonts", "/Library/Fonts", "/Network/Library/Fonts", filepath.Join("/Users/me", "Library", "Fonts")}) {
-		t.Errorf("darwin %v", got)
-	}
 	if got := Dirs("windows", env(map[string]string{"WINDIR": `D:\Win`, "LOCALAPPDATA": `C:\Users\me\AppData\Local`}), ""); !reflect.DeepEqual(got, []string{`D:\Win\Fonts`, `C:\Users\me\AppData\Local\Microsoft\Windows\Fonts`}) {
 		t.Errorf("windows %v", got)
 	}

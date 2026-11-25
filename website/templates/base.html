@@ -61,8 +61,7 @@
 (function (d) {
   function match(l) {
     l = String(l).toLowerCase();
-    return /^zh-(tw|hk|mo|hant)/.test(l) ? "zh-Hant" : /^zh/.test(l) ? "zh-Hans"
-      : /^ja/.test(l) ? "ja" : /^ko/.test(l) ? "ko" : /^en/.test(l) ? "en" : "";
+    return /^zh/.test(l) ? "zh-Hans" : /^en/.test(l) ? "en" : "";
   }
   var list = navigator.languages && navigator.languages.length ? navigator.languages : [navigator.language || ""];
   var pref = "en";

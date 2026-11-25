@@ -56,9 +56,8 @@ func findName(pattern string) string {
 }
 
 // searchPruned are the folders of a whole disk a search does not go
-// into: the kernel's, the devices', the runtime's, and the system's
-// second view of the disk on macOS.
-var searchPruned = []string{"/proc", "/sys", "/dev", "/run", "/System/Volumes"}
+// into: the kernel's, the devices' and the runtime's.
+var searchPruned = []string{"/proc", "/sys", "/dev", "/run"}
 
 // prunedUnder are the searchPruned folders inside root, a POSIX path.
 func prunedUnder(root string) []string {

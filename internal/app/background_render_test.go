@@ -36,14 +36,6 @@ func TestBackgroundMainWithoutVibrancy(t *testing.T) {
 	if !a.clearContent {
 		t.Error("image did not clear default terminal fill without vibrancy")
 	}
-	// Image rendering retains the root painter's device scale observation.
-	a.zoom.desktop = 1.5
-	a.settings.UIZoom = 100
-	tt.SetScale(2)
-	tt.Frame()
-	if a.zoom.device != 2 {
-		t.Fatalf("device scale observation lost: %v", a.zoom.device)
-	}
 }
 
 func TestBackgroundEditorWindow(t *testing.T) {

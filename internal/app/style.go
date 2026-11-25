@@ -45,8 +45,7 @@ func (a *App) contentFill(col ui.Color, alpha float32) ui.Color {
 	return col.Alpha(alpha)
 }
 
-// tile is a rounded square of tint holding a white icon, like the macOS
-// sidebar's colored icons.
+// tile is a rounded square of tint holding a white icon.
 func tile(c *ui.Context, ic *icons.Icon, tint ui.Color, size float32) ui.Element {
 	return ui.Box(c).Size(size, size).Shrink(0).Radius(size * 0.28).Background(tint).Center().Children(func() {
 		ui.Icon(c, ic.SVG).Size(size*0.58, size*0.58).TextColor(ui.Hex("#FFFFFF"))

@@ -45,8 +45,8 @@ func hasControl(s string) bool {
 }
 
 // quotePOSIX escapes with a backslash every ASCII character but letters,
-// digits and -_./,:@+, as macOS Terminal does: it holds in sh, bash, zsh
-// and fish alike (a backslash before a letter would not, in fish).
+// digits and -_./,:@+, as a terminal does: it holds in sh, bash, zsh and
+// fish alike (a backslash before a letter would not, in fish).
 // Other bytes, of UTF-8 names, go as they are.
 func quotePOSIX(p string) string {
 	var b strings.Builder

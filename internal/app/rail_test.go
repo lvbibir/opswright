@@ -27,18 +27,18 @@ func TestRailRows(t *testing.T) {
 		hidden      []string
 		top, bottom []string
 	}{
-		{"none", nil, all, []string{"quick", "import"}},
-		{"unknown", []string{"later", ""}, all, []string{"quick", "import"}},
-		{"some", []string{"usage", "tmux", "import"},
+		{"none", nil, all, []string{"quick"}},
+		{"unknown", []string{"later", ""}, all, []string{"quick"}},
+		{"some", []string{"usage", "tmux"},
 			[]string{"monitor", "host", railSep, "files", "docker", "ai", "forward", railSep, "snippets", "history", "broadcast", "logs"}, []string{"quick"}},
 		{"first group", []string{"monitor", "usage", "host"},
-			[]string{"files", "docker", "tmux", "ai", "forward", railSep, "snippets", "history", "broadcast", "logs"}, []string{"quick", "import"}},
+			[]string{"files", "docker", "tmux", "ai", "forward", railSep, "snippets", "history", "broadcast", "logs"}, []string{"quick"}},
 		{"middle group", []string{"files", "docker", "tmux", "ai", "forward"},
-			[]string{"monitor", "usage", "host", railSep, "snippets", "history", "broadcast", "logs"}, []string{"quick", "import"}},
-		{"last group", []string{"snippets", "history", "broadcast", "logs", "quick", "import"},
+			[]string{"monitor", "usage", "host", railSep, "snippets", "history", "broadcast", "logs"}, []string{"quick"}},
+		{"last group", []string{"snippets", "history", "broadcast", "logs", "quick"},
 			[]string{"monitor", "usage", "host", railSep, "files", "docker", "tmux", "ai", "forward"}, nil},
 		{"one left", []string{"monitor", "usage", "host", "files", "docker", "tmux", "ai", "snippets", "history", "broadcast", "logs"},
-			[]string{"forward"}, []string{"quick", "import"}},
+			[]string{"forward"}, []string{"quick"}},
 	} {
 		top, bottom := railRows(tc.hidden)
 		if !slices.Equal(top, tc.top) || !slices.Equal(bottom, tc.bottom) {

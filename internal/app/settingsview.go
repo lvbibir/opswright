@@ -15,7 +15,7 @@ import (
 )
 
 // languageNames are the languages offered, by their own names.
-var languageNames = map[string]string{"en": "English", "zh-Hans": "简体中文", "zh-Hant": "繁體中文", "ko": "한국어", "ja": "日本語"}
+var languageNames = map[string]string{"en": "English", "zh-Hans": "简体中文"}
 
 // repoURL is where SSHYard's source and issues live.
 const repoURL = "https://github.com/Licoy/sshyard"
@@ -41,7 +41,6 @@ const (
 	prefCredentials prefPage = "credentials"
 	prefProxies     prefPage = "proxies"
 	prefKnownHosts  prefPage = "knownhosts"
-	prefMigration   prefPage = "migration"
 	prefBackup      prefPage = "backup"
 	prefShortcuts   prefPage = "shortcuts"
 	prefAbout       prefPage = "about"
@@ -77,7 +76,6 @@ func prefGroups(m locales.Messages) []prefGroup {
 			{prefCredentials, icons.Key, m.Credentials(), m.CredentialsDesc()},
 			{prefProxies, icons.Proxy, m.Proxies(), m.ProxiesDesc()},
 			{prefKnownHosts, icons.HostKey, m.KnownHosts(), m.KnownHostsDesc()},
-			{prefMigration, icons.Import, m.Migration(), m.MigrationDesc()},
 			{prefBackup, icons.Backup, m.BackupSection(), m.BackupDesc()},
 		}},
 		{m.SettingsGroupHelp(), []prefItem{
@@ -293,8 +291,6 @@ func (a *App) settingsPage(c *ui.Context, m locales.Messages, tok theme.Tokens) 
 				a.proxiesSection(c, m, tok)
 			case prefKnownHosts:
 				a.knownHostsPage(c, m, tok)
-			case prefMigration:
-				a.migrationSection(c, m, tok)
 			case prefBackup:
 				a.backupSection(c, m, tok)
 			case prefShortcuts:
@@ -479,7 +475,7 @@ var materials = []string{settings.MaterialTranslucent, settings.MaterialOpaque}
 
 // materialSection chooses how the sidebar with the title bar, and the
 // content, show the window's material: translucent or opaque, each on its
-// own. Without a material (Linux, Windows) the choice cannot be made.
+// own. Without a material the choice cannot be made.
 func (a *App) materialSection(c *ui.Context, m locales.Messages, tok theme.Tokens, s *settings.Settings, changed *bool) {
 	off := !c.Vibrancy()
 	a.settingsSection(c, tok, icons.Appearance, m.MaterialSection(), func(g *settingsGroup) {
@@ -767,23 +763,17 @@ func (a *App) prefFiles(c *ui.Context, m locales.Messages, tok theme.Tokens, s *
 	})
 }
 
-// keyCaps are the caps of a shortcut: the modifiers as macOS draws them
-// there, by name elsewhere, then the key.
-func keyCaps(goos string, mods ui.Modifiers, key ui.Key) []string {
+// keyCaps are the caps of a shortcut: the modifiers by name, then the key.
+func keyCaps(mods ui.Modifiers, key ui.Key) []string {
 	var out []string
-	mac := goos == "darwin"
 	for _, md := range []struct {
-		mod       ui.Modifiers
-		mac, name string
-	}{{ui.Ctrl, "⌃", "Ctrl"}, {ui.Alt, "⌥", "Alt"}, {ui.Shift, "⇧", "Shift"}, {ui.Super, "⌘", "Super"}} {
+		mod  ui.Modifiers
+		name string
+	}{{ui.Ctrl, "Ctrl"}, {ui.Alt, "Alt"}, {ui.Shift, "Shift"}, {ui.Super, "Super"}} {
 		if mods&md.mod == 0 {
 			continue
 		}
-		if mac {
-			out = append(out, md.mac)
-		} else {
-			out = append(out, md.name)
-		}
+		out = append(out, md.name)
 	}
 	switch {
 	case key >= ui.KeyA && key <= ui.KeyZ:
@@ -796,12 +786,8 @@ func keyCaps(goos string, mods ui.Modifiers, key ui.Key) []string {
 		out = append(out, "Space")
 	case printable[key][0] != 0:
 		out = append(out, string(printable[key][0]))
-	case key == ui.KeyDelete && mac:
-		out = append(out, "⌦")
 	case key == ui.KeyDelete:
 		out = append(out, "Del")
-	case key == ui.KeyBackspace && mac:
-		out = append(out, "⌫")
 	case key == ui.KeyBackspace:
 		out = append(out, "Backspace")
 	}
@@ -827,7 +813,7 @@ func (a *App) shortcutsPage(c *ui.Context, m locales.Messages, tok theme.Tokens)
 					a.shortcutRecorder(c, m, tok, label)
 					return
 				}
-				for _, cap := range keyCaps(runtime.GOOS, k.Mods, k.Key) {
+				for _, cap := range keyCaps(k.Mods, k.Key) {
 					keyCap(c, tok, cap)
 				}
 				if (IconButton{Icon: icons.Record, Label: m.ShortcutRecord(label), Size: Small}).Clicked(c, "sc:rec:"+ac.id) {

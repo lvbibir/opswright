@@ -980,22 +980,11 @@ func sidePath(remote bool, dir, name string) string {
 }
 
 // toggleMods add a row to the rows chosen or take it out with a click, as
-// lists do: Cmd on macOS, Ctrl elsewhere.
-var toggleMods = func() ui.Modifiers {
-	if runtime.GOOS == "darwin" {
-		return ui.Super
-	}
-	return ui.Ctrl
-}()
+// lists do: Ctrl.
+var toggleMods = ui.Ctrl
 
-// deleteMods and deleteKey delete the entries chosen: Cmd+Backspace on
-// macOS, as the system does, Delete elsewhere.
-var deleteMods, deleteKey = func() (ui.Modifiers, ui.Key) {
-	if runtime.GOOS == "darwin" {
-		return ui.Super, ui.KeyBackspace
-	}
-	return 0, ui.KeyDelete
-}()
+// deleteMods and deleteKey delete the entries chosen: Delete.
+var deleteMods, deleteKey = ui.Modifiers(0), ui.KeyDelete
 
 // fileTable is one side's entries, several of which are chosen by clicks
 // (with Shift or toggleMods), the keys or a drag over the rows. The name
@@ -1282,10 +1271,9 @@ func (a *App) calcSize(cn *conn, remote bool, name string) {
 }
 
 // fileKeys are the keys of a side's table while it has the focus: Delete
-// (Cmd+Backspace on macOS), Cmd+I (Ctrl+I elsewhere) for the entries'
-// information, Space to preview an image, F2 to rename, Cmd+C and Cmd+V
-// (Ctrl elsewhere) to copy entries and paste them, as a file list does,
-// Escape to choose none and Shift+F10 for the menu.
+// for the entries' information, Ctrl+I, Space to preview an image, F2 to
+// rename, Ctrl+C and Ctrl+V to copy entries and paste them, as a file list
+// does, Escape to choose none and Shift+F10 for the menu.
 func (a *App) fileKeys(c *ui.Context, cn *conn, remote bool, tb ui.Element, entries func() []menuEntry) {
 	fs := cn.fs
 	sd := fs.side(remote)
@@ -1649,7 +1637,8 @@ func (a *App) downloadTo(cn *conn, paths []string, m locales.Messages) {
 	}()
 }
 
-// localHome is where the local side of a files pane starts.
+// localHome is this computer's user home directory, where the local side
+// of a files pane starts.
 func (a *App) localHome() string {
 	if a.p.HomeDir != "" {
 		return a.p.HomeDir

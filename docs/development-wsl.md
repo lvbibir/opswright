@@ -88,4 +88,4 @@ git merge upstream/main   # 或 git rebase upstream/main
 
 **CI.** 上游是私有仓库, 在 fork 上运行 Actions 消耗自己的分钟数; 纯文档改动会跳过 CI, 想彻底不跑可在 fork 的 Settings → Actions 禁用 (个人自用不需要 CI; 上游 `release.yml` 依赖作者签名密钥, 本 fork 用不了).
 
-**安全与文案.** 不提交任何密钥 (`*.key` 已在 .gitignore); 用户可见文案必须五语言齐全并重新生成 catalog (见 AGENTS.md). 构建产物 (`/build/`, `/dist/`, `.mygo/` 等) 已在 .gitignore, 输出到仓库外或用 `-o` 指定即可, 不会弄脏工作区.
+**安全与文案.** 不提交任何密钥 (`*.key` 已在 .gitignore); 用户可见文案必须中英双语齐全 (仅 `en` 与 `zh-Hans`) 并重新生成 catalog (见 AGENTS.md). 构建产物 (`/build/`, `/dist/`, `.mygo/` 等) 已在 .gitignore, 输出到仓库外或用 `-o` 指定即可, 不会弄脏工作区.

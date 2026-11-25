@@ -438,7 +438,7 @@ func TestWriteRefusesWhenChanged(t *testing.T) {
 }
 
 // shellBin is bash when the host has it, otherwise sh. Paths come from
-// LookPath: macOS has no /usr/bin/setsid, and /bin/bash is not universal.
+// LookPath: /bin/bash is not universal.
 func shellBin(t *testing.T) string {
 	t.Helper()
 	for _, name := range []string{"bash", "sh"} {

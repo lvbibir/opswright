@@ -69,7 +69,7 @@ func TestStorageResolutionRecovers(t *testing.T) {
 // TestUnlockErrorWhitelist: only known reasons and stages reach the
 // interface, never raw backend text.
 func TestUnlockErrorWhitelist(t *testing.T) {
-	for _, lang := range []string{"en", "zh-Hans", "zh-Hant", "ko", "ja"} {
+	for _, lang := range []string{"en", "zh-Hans"} {
 		m := locales.In(lang)
 		for _, err := range []error{
 			&keychain.OpError{Op: "master-password", Err: errors.New("private raw diagnostic")},

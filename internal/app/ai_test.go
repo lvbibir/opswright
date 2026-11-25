@@ -9,7 +9,6 @@ import (
 	"net/http/httptest"
 	"os"
 	"path/filepath"
-	"runtime"
 	"strings"
 	"sync/atomic"
 	"testing"
@@ -91,24 +90,6 @@ func TestAIShortcutMods(t *testing.T) {
 	}
 	if isAppShortcut(nil, ui.KeyC, ui.Ctrl|ui.Shift) || isAppShortcut(nil, ui.KeyI, ui.Ctrl|ui.Shift) {
 		t.Fatal("Ctrl+Shift+C and Ctrl+Shift+I belong to copy or the inspector")
-	}
-	if runtime.GOOS == "darwin" {
-		if aiMods != ui.Super|ui.Shift {
-			t.Fatalf("aiMods = %v, want ⌘⇧", aiMods)
-		}
-		if stopAllMods != ui.Super|ui.Shift {
-			t.Fatalf("stopAllMods = %v, want ⌘⇧", stopAllMods)
-		}
-		if isAppShortcut(nil, ui.KeyA, ui.Super) {
-			t.Fatal("⌘A is Select All and must reach the text field")
-		}
-		if !isAppShortcut(nil, ui.KeyA, ui.Super|ui.Shift) {
-			t.Fatal("⌘⇧A must reach the app")
-		}
-		if !isAppShortcut(nil, ui.KeyPeriod, ui.Super) || !isAppShortcut(nil, ui.KeyPeriod, ui.Super|ui.Shift) {
-			t.Fatal("⌘. and ⌘⇧. must reach the app")
-		}
-		return
 	}
 	if aiMods != ui.Ctrl|ui.Shift {
 		t.Fatalf("aiMods = %v, want Ctrl+Shift", aiMods)

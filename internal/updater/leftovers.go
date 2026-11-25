@@ -4,7 +4,6 @@ import (
 	"io/fs"
 	"os"
 	"path/filepath"
-	"runtime"
 	"strings"
 	"time"
 
@@ -25,10 +24,9 @@ var leftoverEntries = map[string]bool{"app": true, "update.tar.gz": true, "updat
 // behind when it cannot remove them: Windows keeps a file just written
 // open while it scans it, and an install cut short by the app exiting
 // keeps its directory too. MyGo only cleans what it leaves inside the app
-// directory. macOS is left out: there a helper removes the directory
-// once the app has exited, and its staged update waits in it until then.
+// directory.
 func CleanLeftovers() {
-	if runtime.GOOS == "darwin" || !mygo.Updater.Enabled() {
+	if !mygo.Updater.Enabled() {
 		return
 	}
 	exe, err := os.Executable()

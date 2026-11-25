@@ -20,7 +20,7 @@ func connect(t *testing.T) (*Client, string) {
 	if runtime.GOOS == "windows" {
 		// The test server is pkg/sftp serving this machine's disk, and on
 		// Windows it mangles absolute paths ("/C:/..."). Real remotes are
-		// POSIX servers; the client code is covered on Linux and macOS.
+		// POSIX servers; the client code is covered on Linux.
 		t.Skip("sftp test server does not support Windows paths")
 	}
 	root := t.TempDir()

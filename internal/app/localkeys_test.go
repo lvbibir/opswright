@@ -31,7 +31,7 @@ func homeKey(t *testing.T, a *App, name, passphrase string) ssh.PublicKey {
 	if err != nil {
 		t.Fatal(err)
 	}
-	dir := filepath.Join(a.homeDir(), ".ssh")
+	dir := filepath.Join(a.localHome(), ".ssh")
 	if err := os.MkdirAll(dir, 0o700); err != nil {
 		t.Fatal(err)
 	}

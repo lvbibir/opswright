@@ -12,15 +12,14 @@ import (
 // It exceeds 50 lines to keep popup opening, background MCP and main-window
 // restoration in visible sequence rather than scattering the scenario steps.
 func driveNativePanel(d *desktop, draft *string, base, token string) {
-	// A real tray click cannot precede AppKit realizing the newly created
-	// status item; the helper invokes its handler directly, so let that happen.
+	// A real tray click cannot precede the status item being realized; the
+	// helper invokes its handler directly, so let that happen.
 	time.Sleep(300 * time.Millisecond)
 	mygo.RunOnMain(func() {
 		d.togglePanel()
 		nativeCheck(d.panel != nil && d.panel.IsVisible() && d.panel.IsFlyout(), "tray toggle did not open a native flyout")
 		nativeCheck(!d.window.IsVisible(), "opening popup restored hidden main window")
 		nativeCheck(len(mygo.Windows()) == 2, "popup duplicated main window")
-		nativeDock(false)
 	})
 	// Return to the native event loop so the visible panel executes its View.
 	time.Sleep(50 * time.Millisecond)

@@ -157,7 +157,6 @@ func driveNativeDesktop(mode string, d *desktop, draft *string, base, token stri
 		d.window.Close()
 		nativeCheck(!d.window.IsDestroyed() && !d.window.IsVisible(), "close must hide same native window")
 		nativeCheck(len(mygo.Windows()) == 1, "hide must not create another window")
-		nativeDock(false)
 	})
 	deadline := time.Now().Add(10 * time.Second)
 	for {
@@ -170,7 +169,6 @@ func driveNativeDesktop(mode string, d *desktop, draft *string, base, token stri
 	}
 	mygo.RunOnMain(func() {
 		nativeCheck(!d.window.IsVisible(), "silent unlock unexpectedly restored the window")
-		nativeDock(false)
 		for _, style := range []string{settings.TrayIconMono, settings.TrayIconColor} {
 			s := d.app.Settings()
 			s.TrayIcon = style
@@ -189,7 +187,6 @@ func driveNativeDesktop(mode string, d *desktop, draft *string, base, token stri
 		d.show()
 		nativeCheck(d.window.IsVisible() && !d.window.IsDestroyed(), "restore lost original window")
 		nativeCheck(len(mygo.Windows()) == 1 && *draft == "retained native draft", "restore duplicated window or lost draft")
-		nativeDock(true)
 	})
 	nativeCheck(nativeMCP(base, token) == nil, "restore blocked MCP")
 	var editor *mygo.Window
@@ -208,13 +205,11 @@ func driveNativeDesktop(mode string, d *desktop, draft *string, base, token stri
 	})
 	mygo.RunOnMain(func() {
 		nativeCheck(!d.window.IsDestroyed() && d.window.IsVisible() && !editor.IsDestroyed(), "editor veto lost main window")
-		nativeDock(true)
 		s := d.app.Settings()
 		s.CloseBehavior = settings.CloseToTray
 		nativeCheck(d.app.ApplySettings(s) == nil, "restore tray behavior live")
 		d.window.Close()
 		nativeCheck(!d.window.IsVisible() && !d.window.IsDestroyed(), "editor veto left permanent quit flag")
-		nativeDock(false)
 		d.show()
 		if mode == "panel" {
 			d.openPanel()
@@ -226,13 +221,11 @@ func driveNativeDesktop(mode string, d *desktop, draft *string, base, token stri
 	mygo.RunOnMain(func() {
 		nativeCheck(!d.window.IsDestroyed() && !editor.IsDestroyed(), "tray quit ignored editor veto")
 		nativeCheck(d.panel == nil && d.panelView == nil, "cancelled quit retained popup state")
-		nativeDock(true)
 		allowEditor = true
 		if mode == "unavailable" {
 			d.trayErr = errors.New("injected native tray creation failure")
 			d.window.Close()
 			nativeCheck(d.window.IsVisible() && !d.window.IsDestroyed(), "tray unavailable hid the app")
-			nativeDock(true)
 		}
 		if mode == "quit" {
 			s := d.app.Settings()
@@ -247,15 +240,4 @@ func driveNativeDesktop(mode string, d *desktop, draft *string, base, token stri
 			d.menu().Items()[len(d.menu().Items())-1].Click(nil, nil)
 		}
 	})
-}
-
-func nativeDock(visible bool) {
-	if runtime.GOOS != "darwin" {
-		return // Windows/Linux taskbar state requires acceptance on those desktops.
-	}
-	want := mygo.ActivationPolicyAccessory
-	if visible {
-		want = mygo.ActivationPolicyRegular
-	}
-	nativeCheck(mygo.App.ActivationPolicy() == want, "native Dock activation policy did not follow window visibility")
 }

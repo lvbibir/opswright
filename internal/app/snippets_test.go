@@ -275,15 +275,9 @@ func TestSnippetUIWelcomeActions(t *testing.T) {
 	m := locales.In("en")
 	tt.SetSize(820, 520)
 	tt.Frame()
-	for _, label := range []string{m.QuickMigration(), m.QuickConnect(), m.NewHost()} {
+	for _, label := range []string{m.QuickConnect(), m.NewHost()} {
 		mustClick(t, tt, label)
 		tt.Frame()
-		if label == m.QuickMigration() {
-			if a.page != pageSettings || a.prefNow() != prefMigration || a.importing {
-				t.Fatal("migration settings unavailable")
-			}
-			mustClick(t, tt, m.Back())
-		}
 		if label == m.QuickConnect() {
 			if !a.quicking {
 				t.Fatal("quick connect unavailable")

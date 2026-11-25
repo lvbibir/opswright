@@ -148,7 +148,7 @@ var (
 	TelnetHost   = load("terminal-line")
 	SerialHost   = load("usb-line")
 	SendBreak    = load("pause-circle-line")
-	// The window's own buttons, where the view draws them (Linux, Windows).
+	// The window's own buttons, where the view draws them.
 	WinMinimize = load("subtract-line")
 	WinMaximize = load("checkbox-blank-line")
 	WinRestore  = load("checkbox-multiple-blank-line")

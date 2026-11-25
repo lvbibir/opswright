@@ -90,8 +90,8 @@ func TestSupportedLanguages(t *testing.T) {
 		}
 	}
 	slices.Sort(langs)
-	if !slices.Equal(langs, []string{"en", "ja", "ko", "zh-Hans", "zh-Hant"}) {
-		t.Errorf("languages %v, want all five supported languages", langs)
+	if !slices.Equal(langs, []string{"en", "zh-Hans"}) {
+		t.Errorf("languages %v, want en and zh-Hans", langs)
 	}
 }
 
@@ -111,7 +111,7 @@ func TestGeneratedAccessors(t *testing.T) {
 }
 
 func TestRegionalLanguages(t *testing.T) {
-	for _, tc := range []struct{ region, language string }{{"zh-TW", "zh-Hant"}, {"zh-HK", "zh-Hant"}, {"zh-CN", "zh-Hans"}, {"ja-JP", "ja"}, {"ko-KR", "ko"}} {
+	for _, tc := range []struct{ region, language string }{{"zh-CN", "zh-Hans"}, {"zh-SG", "zh-Hans"}} {
 		t.Run(tc.region, func(t *testing.T) {
 			if got, want := In(tc.region).Settings(), In(tc.language).Settings(); got != want || got == In("en").Settings() {
 				t.Errorf("Settings = %q, want %q", got, want)

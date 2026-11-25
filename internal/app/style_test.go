@@ -17,7 +17,6 @@ func TestStickySheets(t *testing.T) {
 		view  func(*ui.Context, locales.Messages)
 		shown *bool
 	}{
-		{"text import", a.openTextMigration, a.migrationView, &a.migrationOpen},
 		{"backup", a.openExport, a.backupView, &a.backingUp},
 		{"master password", a.openMasterPassword, a.masterPasswordView, &a.masterPwOpen},
 		{"backup location", func() { a.openTargetForm(nil) }, a.targetView, &a.targetEditing},
@@ -31,17 +30,10 @@ func TestStickySheets(t *testing.T) {
 		for range 3 {
 			tt.Frame()
 		}
-		if s.name == "text import" {
-			tt.Type("host=10.0.0.1")
-			tt.Frame()
-		}
 		tt.ClickAt(8, 8)
 		tt.Frame()
 		if !*s.shown {
 			t.Fatalf("%s closed on a click outside it", s.name)
-		}
-		if s.name == "text import" && (a.migration == nil || a.migration.text != "host=10.0.0.1") {
-			t.Fatalf("text import lost its text: %+v", a.migration)
 		}
 		tt.Key(0, ui.KeyEscape)
 		tt.Frame()
@@ -49,7 +41,7 @@ func TestStickySheets(t *testing.T) {
 			t.Fatalf("%s stays open on Escape", s.name)
 		}
 	}
-	if a.migration != nil || a.backup != nil || a.masterPw != nil || a.target != nil || a.remotes != nil {
+	if a.backup != nil || a.masterPw != nil || a.target != nil || a.remotes != nil {
 		t.Fatal("a sheet closed on Escape kept its form")
 	}
 }

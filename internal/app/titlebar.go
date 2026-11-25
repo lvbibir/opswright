@@ -8,9 +8,8 @@ import (
 )
 
 // WindowControls are the window's buttons, for a window whose view draws
-// them itself (Linux, Windows, where the system's are hidden): main hands
-// them over once the window is made. On macOS the traffic lights stay and
-// there are none.
+// them itself (the system's are hidden): main hands them over once the
+// window is made.
 type WindowControls struct {
 	Minimize, Maximize, Unmaximize, Close func()
 }
@@ -23,10 +22,9 @@ func (a *App) SetWindow(w WindowControls) { a.post(func() { a.win = &w }) }
 func (a *App) SetMaximized(on bool) { a.post(func() { a.maximized = on }) }
 
 // titleBar is the window's one band across the top, which drags it: over
-// the sidebar room for the traffic lights (macOS); over the content the
-// tabs, joining it, and at the end the app's own buttons, then the
-// window's buttons where the app draws them. Every control in it centers
-// on the band's middle, the traffic lights' line (barLine).
+// the sidebar; over the content the tabs, joining it, and at the end the
+// app's own buttons, then the window's buttons where the app draws them.
+// Every control in it centers on the band's middle (barLine).
 func (a *App) titleBar(c *ui.Context, m locales.Messages, tok theme.Tokens, clear bool) {
 	bar := c.TitleBar()
 	// Moving the window should leave keyboard input with the current pane.

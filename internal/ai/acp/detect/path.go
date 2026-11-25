@@ -82,9 +82,6 @@ func loginEnv(ctx context.Context) map[string]string {
 	shell := os.Getenv("SHELL")
 	if !filepath.IsAbs(shell) {
 		shell = "/bin/sh"
-		if runtime.GOOS == "darwin" {
-			shell = "/bin/zsh"
-		}
 	}
 	ctx, cancel := context.WithTimeout(ctx, loginTimeout)
 	defer cancel()
@@ -155,13 +152,13 @@ func knownDirs(goos, home string, getenv func(string) string) string {
 	} else {
 		if home != "" {
 			for _, sub := range []string{".local/bin", "bin", ".npm-global/bin", ".bun/bin", ".volta/bin",
-				".cargo/bin", ".deno/bin", ".yarn/bin", ".local/share/pnpm", "Library/pnpm",
+				".cargo/bin", ".deno/bin", ".yarn/bin", ".local/share/pnpm",
 				".grok/bin", ".opencode/bin", ".claude/local"} {
 				dirs = append(dirs, filepath.Join(home, sub))
 			}
 			dirs = append(dirs, nvmDirs(filepath.Join(home, ".nvm", "versions", "node"))...)
 		}
-		dirs = append(dirs, "/opt/homebrew/bin", "/usr/local/bin", "/home/linuxbrew/.linuxbrew/bin", "/snap/bin")
+		dirs = append(dirs, "/usr/local/bin", "/home/linuxbrew/.linuxbrew/bin", "/snap/bin")
 	}
 	var out []string
 	for _, d := range dirs {

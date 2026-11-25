@@ -1,16 +1,16 @@
 {
   "name": "简体中文",
   "meta": {
-    "title": "SSHYard — 免费开源的 SSH / SFTP 客户端，内置 AI 助手｜Mac、Windows、Linux",
-    "description": "SSHYard 是一款免费开源的原生 SSH / SFTP 客户端，支持 macOS、Windows 和 Linux，集多标签分屏终端、SFTP 文件管理与可执行命令的 AI 助手于一体。",
-    "keywords": "SSH 客户端, SSH 工具, SSH 连接工具, SSH 远程连接工具, 免费 SSH 客户端, 开源 SSH 客户端, Mac SSH 客户端, Windows SSH 工具, Linux SSH 客户端, SFTP 客户端, AI SSH 客户端, AI 运维助手, 服务器监控, 跳板机, 端口转发, Telnet 客户端, 串口工具, tmux 会话管理, Docker 管理, MCP",
+    "title": "SSHYard — 免费开源的 SSH / SFTP 客户端，内置 AI 助手｜Windows",
+    "description": "SSHYard 是一款免费开源的原生 SSH / SFTP 客户端，支持 Windows，集多标签分屏终端、SFTP 文件管理与可执行命令的 AI 助手于一体。",
+    "keywords": "SSH 客户端, SSH 工具, SSH 连接工具, SSH 远程连接工具, 免费 SSH 客户端, 开源 SSH 客户端, Windows SSH 工具, SFTP 客户端, AI SSH 客户端, AI 运维助手, 服务器监控, 跳板机, 端口转发, Telnet 客户端, 串口工具, tmux 会话管理, Docker 管理, MCP",
     "og_alt": "SSHYard：内置 AI 助手的原生 SSH / SFTP 客户端",
     "og_title": [
       "SSH、SFTP 与 AI",
       "尽在一个原生应用"
     ],
-    "download_title": "下载 SSHYard：支持 macOS、Windows 和 Linux",
-    "download_description": "下载 SSHYard {version}，免费的 SSH / SFTP 客户端：Apple 芯片与 Intel Mac 的 DMG、Windows 安装程序或绿色版 ZIP、Linux 的 .deb 与 .tar.gz。",
+    "download_title": "下载 SSHYard：支持 Windows",
+    "download_description": "下载 SSHYard {version}，免费的 SSH / SFTP 客户端：Windows 安装程序（支持应用内更新）或绿色版 ZIP，x64 与 Arm64 均可。",
     "notfound_title": "页面不存在 — SSHYard"
   },
   "nav": {
@@ -48,15 +48,13 @@
       "SSH、SFTP 与 AI",
       "尽在一个原生应用"
     ],
-    "lead": "SSHYard 是一款免费开源的 SSH / SFTP 客户端，支持 macOS、Windows 和 Linux。在终端里操作、管理远程文件，再让 AI 助手直接在主机上执行命令，一个窗口全部搞定。",
+    "lead": "SSHYard 是一款免费开源的 SSH / SFTP 客户端，支持 Windows。在终端里操作、管理远程文件，再让 AI 助手直接在主机上执行命令，一个窗口全部搞定。",
     "cta": "免费下载",
     "cta_for": {
-      "macos": "下载 macOS 版",
-      "windows": "下载 Windows 版",
-      "linux": "下载 Linux 版"
+      "windows": "下载 Windows 版"
     },
-    "cta_other": "其他平台",
-    "note": "免费开源 · 无需注册账号 · 支持 macOS、Windows 和 Linux"
+    "cta_other": "全部下载",
+    "note": "免费开源 · 无需注册账号 · 支持 Windows"
   },
   "demo": {
     "aria": "一个可以操作的 SSHYard 窗口：在标签页中打开主机、在终端中输入命令，并从右侧打开系统监控、文件、AI 助手和快捷指令。",
@@ -366,7 +364,7 @@
       ],
       [
         "平台",
-        "macOS 12 及以上（Apple 芯片与 Intel）、Windows 与 Linux（x64 与 Arm64）"
+        "Windows（x64 与 Arm64）"
       ],
       [
         "界面",
@@ -382,7 +380,7 @@
       ],
       [
         "语言",
-        "English、简体中文、繁體中文、日本語、한국어"
+        "English、简体中文"
       ],
       [
         "账号",
@@ -391,10 +389,6 @@
       [
         "凭据",
         "加密保存在本机"
-      ],
-      [
-        "迁移",
-        "SSH 配置、十种常见客户端与文本批量导入"
       ],
       [
         "AI 服务",
@@ -467,22 +461,12 @@
       {
         "icon": "key-2-line",
         "title": "主机与凭据",
-        "text": "从 SSH 配置导入，或输入 user@host:port 直接连接。",
+        "text": "手动添加并分组主机，或输入 user@host:port 直接连接。",
         "points": [
           "密码、OpenSSH / PEM / PuTTY 密钥、OpenSSH 证书与 SSH Agent",
           "不限层级的分组，支持拖动整理、多选和测速",
           "记录服务商与续费日期，续费前提醒",
           "主机密钥变化时先核对指纹再信任"
-        ]
-      },
-      {
-        "icon": "import-line",
-        "title": "从其他客户端迁移",
-        "text": "带上你在其他 SSH 客户端里保存的会话。",
-        "points": [
-          "支持 Xshell、MobaXterm、PuTTY 等十种客户端",
-          "粘贴文本批量导入主机",
-          "导入前在表格中逐项预览和修改"
         ]
       },
       {
@@ -709,7 +693,7 @@
   },
   "download": {
     "title": "下载 SSHYard",
-    "lead": "免费提供 macOS、Windows 和 Linux 版本。",
+    "lead": "免费提供 Windows 版本。",
     "version_date": "版本 {version}，发布于 {date}",
     "version": "版本 {version}",
     "recommended": "推荐用于此设备",
@@ -721,26 +705,12 @@
     "get": "下载",
     "install": "安装说明",
     "for_platform": "下载 {platform} 版 SSHYard",
-    "other_platforms": "其他平台",
+    "other_platforms": "全部下载",
     "verify_title": "校验下载文件",
     "verify_text": "每个版本都会发布 SHA256SUMS。计算所下载文件的校验值，并与其中对应的一行比对。",
     "checksums": "SHA256SUMS",
     "requirements": "系统要求",
     "platforms": {
-      "macos": {
-        "name": "macOS",
-        "req": "macOS 12 及以上 · 已签名并通过公证",
-        "description": "下载 macOS 版 SSHYard {version}：适用于 Apple 芯片和 Intel Mac 的已签名、已公证 DMG。内置 AI 助手的免费 SSH / SFTP 客户端。",
-        "files": {
-          "mac_arm64": "Apple 芯片",
-          "mac_amd64": "Intel"
-        },
-        "steps": [
-          "打开 DMG，把 SSHYard 拖进“应用程序”文件夹。",
-          "之后的更新可以在应用内直接下载并安装。"
-        ],
-        "verify": "shasum -a 256 sshyard-{version}-arm64.dmg"
-      },
       "windows": {
         "name": "Windows",
         "req": "Windows x64 或 Arm64 · 无需管理员权限",
@@ -756,22 +726,6 @@
           "绿色版请把 ZIP 解压到可写入的文件夹，运行 SSHYard.exe 即可；应用数据保存在 %APPDATA%\\SSHYard。"
         ],
         "verify": "Get-FileHash .\\sshyard-setup-{version}-amd64.exe -Algorithm SHA256"
-      },
-      "linux": {
-        "name": "Linux",
-        "req": "x64（amd64）或 Arm64（aarch64）· .deb 安装包或 .tar.gz 压缩包",
-        "description": "下载 Linux x64 与 Arm64 版 SSHYard {version}，提供 .deb 安装包和 .tar.gz 压缩包。内置 AI 助手的免费 SSH / SFTP 客户端。",
-        "files": {
-          "linux_deb": "x64 .deb 安装包",
-          "linux_tar": "x64 .tar.gz 压缩包",
-          "linux_deb_arm64": "Arm64 .deb 安装包",
-          "linux_tar_arm64": "Arm64 .tar.gz 压缩包"
-        },
-        "steps": [
-          "用系统的包管理器安装 .deb。",
-          "或者把 install.sh 放在 .tar.gz 旁边并运行它，安装到 ~/.local。"
-        ],
-        "verify": "sha256sum -c --ignore-missing SHA256SUMS"
       }
     }
   },
@@ -780,7 +734,7 @@
     "items": [
       {
         "q": "SSHYard 是什么？",
-        "a": "SSHYard 是一款免费开源的原生桌面 SSH / SFTP 客户端，支持 macOS、Windows 和 Linux。它集多标签分屏终端、SFTP 文件管理、端口转发，以及能在主机上执行命令的 AI 助手于一体。"
+        "a": "SSHYard 是一款免费开源的原生桌面 SSH / SFTP 客户端，支持 Windows。它集多标签分屏终端、SFTP 文件管理、端口转发，以及能在主机上执行命令的 AI 助手于一体。"
       },
       {
         "q": "SSHYard 免费吗？",
@@ -788,7 +742,7 @@
       },
       {
         "q": "SSHYard 支持哪些系统？",
-        "a": "支持 macOS 12 及以上（Apple 芯片和 Intel Mac）、Windows x64 与 Arm64，以及 Linux x64 与 Arm64（提供 .deb 安装包和 .tar.gz 压缩包）。"
+        "a": "支持 Windows（x64 与 Arm64），可用安装程序安装或直接运行绿色版 ZIP。"
       },
       {
         "q": "SSHYard 是用 Electron 或 WebView 做的吗？",
@@ -824,7 +778,7 @@
       },
       {
         "q": "能从其他 SSH 客户端迁移过来吗？",
-        "a": "能。SSHYard 可以从 SSH 配置文件导入主机，也能读取 Xshell、MobaXterm、PuTTY 等十种客户端的导出文件，或把粘贴的文本批量转为主机；导入前可以在表格中逐项预览和修改，凭据只写入本地加密存储。你也可以直接输入 user@host:port 快速连接。"
+        "a": "不提供。SSHYard 是全新开发的客户端，不会导入其他客户端的数据；请手动添加主机，或输入 user@host:port 快速连接。"
       },
       {
         "q": "SSHYard 支持哪些语言？",
@@ -834,10 +788,10 @@
   },
   "cta": {
     "title": "你的服务器，​只隔​一个窗口",
-    "text": "SSHYard 免费提供 macOS、Windows 和 Linux 版本。"
+    "text": "SSHYard 免费提供 Windows 版本。"
   },
   "footer": {
-    "tagline": "内置 AI 助手的原生 SSH / SFTP 客户端，支持 macOS、Windows 和 Linux。",
+    "tagline": "内置 AI 助手的原生 SSH / SFTP 客户端，支持 Windows。",
     "product": "产品",
     "project": "项目",
     "release_notes": "更新日志",

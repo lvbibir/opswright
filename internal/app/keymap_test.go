@@ -2,7 +2,6 @@ package app
 
 import (
 	"path/filepath"
-	"runtime"
 	"slices"
 	"testing"
 
@@ -20,40 +19,29 @@ func TestShortcutRule(t *testing.T) {
 	tab1, _ := actionOf(actTab + "1")
 	k := func(m ui.Modifiers, key ui.Key) keymap.Combo { return keymap.Combo{Mods: m, Key: key} }
 	for _, tc := range []struct {
-		goos string
 		ac   action
 		k    keymap.Combo
 		want rule
 	}{
-		{"darwin", quick, k(ui.Super|ui.Alt, ui.KeyJ), ruleOK},
-		{"darwin", quick, k(ui.Super, ui.KeyW), ruleOK},
-		{"darwin", quick, k(ui.Ctrl, ui.KeyJ), ruleMods},
-		{"darwin", quick, k(ui.Super, ui.KeyC), ruleReserved},
-		{"darwin", quick, k(ui.Super|ui.Shift, ui.KeyZ), ruleReserved},
-		{"darwin", quick, k(ui.Super, ui.KeyEnter), ruleKey},
-		{"darwin", save, k(ui.Super, ui.KeyW), ruleReserved},
-		// The menu bar's Close Window, which takes it before the window.
-		{"darwin", quick, k(ui.Super|ui.Shift, ui.KeyW), ruleReserved},
-		{"linux", quick, k(ui.Ctrl, ui.KeyJ), ruleMods},
-		{"linux", quick, k(ui.Ctrl|ui.Shift, ui.KeyF5), ruleOK},
-		{"linux", quick, k(ui.Ctrl|ui.Shift, ui.KeyC), ruleReserved},
-		{"windows", quick, k(ui.Ctrl|ui.Shift, ui.KeyI), ruleReserved},
-		{"windows", save, k(ui.Ctrl, ui.KeyJ), ruleOK},
-		{"windows", save, k(ui.Ctrl, ui.KeyV), ruleReserved},
-		// Its own default always may, as Ctrl+. stops the AI elsewhere.
-		{runtime.GOOS, stop, stop.def, ruleOK},
+		{quick, k(ui.Ctrl, ui.KeyJ), ruleMods},
+		{quick, k(ui.Ctrl|ui.Shift, ui.KeyF5), ruleOK},
+		{quick, k(ui.Ctrl|ui.Shift, ui.KeyC), ruleReserved},
+		{quick, k(ui.Ctrl|ui.Shift, ui.KeyI), ruleReserved},
+		{quick, k(ui.Ctrl|ui.Shift, ui.KeyEnter), ruleKey},
+		{save, k(ui.Ctrl, ui.KeyJ), ruleOK},
+		{save, k(ui.Ctrl, ui.KeyV), ruleReserved},
+		// Its own default always may, as Ctrl+. stops the AI.
+		{stop, stop.def, ruleOK},
 		// A tab's may be Alt and a digit alone, as other terminals have it.
-		{"darwin", tab1, k(ui.Alt, ui.Key1), ruleOK},
-		{"linux", tab1, k(ui.Alt, ui.Key1), ruleOK},
-		{"windows", tab1, k(ui.Alt, ui.Key9), ruleOK},
-		{"windows", tab1, k(ui.Alt|ui.Shift, ui.Key1), ruleMods},
-		{"windows", tab1, k(ui.Alt, ui.KeyA), ruleMods},
-		{"darwin", tab1, k(ui.Ctrl, ui.Key1), ruleMods},
-		{"linux", quick, k(ui.Alt, ui.Key1), ruleMods},
-		{"darwin", quick, k(ui.Alt, ui.Key1), ruleMods},
+		{tab1, k(ui.Alt, ui.Key1), ruleOK},
+		{tab1, k(ui.Alt, ui.Key9), ruleOK},
+		{tab1, k(ui.Alt|ui.Shift, ui.Key1), ruleMods},
+		{tab1, k(ui.Alt, ui.KeyA), ruleMods},
+		{tab1, k(ui.Ctrl, ui.Key1), ruleMods},
+		{quick, k(ui.Alt, ui.Key1), ruleMods},
 	} {
-		if got := shortcutRule(tc.goos, tc.ac, tc.k); got != tc.want {
-			t.Errorf("%s %s %s: %v, want %v", tc.goos, tc.ac.id, tc.k, got, tc.want)
+		if got := shortcutRule(tc.ac, tc.k); got != tc.want {
+			t.Errorf("%s %s: %v, want %v", tc.ac.id, tc.k, got, tc.want)
 		}
 	}
 }
@@ -61,7 +49,7 @@ func TestShortcutRule(t *testing.T) {
 // TestRecordedAppShortcut leaves a recorded shortcut to the app, not the
 // one it replaced, and ignores one that may not be.
 func TestRecordedAppShortcut(t *testing.T) {
-	rec := keymap.Combo{Mods: shortcutMods(runtime.GOOS, false) | ui.Alt, Key: ui.KeyJ}
+	rec := keymap.Combo{Mods: shortcutMods(false) | ui.Alt, Key: ui.KeyJ}
 	custom := map[string]string{actQuickConnect: rec.String()}
 	if !isAppShortcut(custom, rec.Key, rec.Mods) {
 		t.Error("the recorded shortcut must reach the app")
@@ -82,8 +70,8 @@ func TestRecordedAppShortcut(t *testing.T) {
 }
 
 // TestAltDigitTab leaves a tab's recorded Alt and digit to the app, and
-// drops the text the key types after it (⌥1 is ¡ on macOS), while the
-// shell keeps Alt and the other digits.
+// drops the text the key types after it, while the shell keeps Alt and
+// the other digits.
 func TestAltDigitTab(t *testing.T) {
 	custom := map[string]string{actTab + "1": "alt+1"}
 	if shortcutOf(custom, actTab+"1") != (keymap.Combo{Mods: ui.Alt, Key: ui.Key1}) || !isAppShortcut(custom, ui.Key1, ui.Alt) {
@@ -140,25 +128,25 @@ func TestRecordShortcut(t *testing.T) {
 	// still recording.
 	tt.Key(appMods, ui.KeyT)
 	tt.Frame()
-	if want := m.ShortcutTaken(shortcutText(runtime.GOOS, appMods, ui.KeyT), m.NewTab()); !tt.HasText(want) {
+	if want := m.ShortcutTaken(shortcutText(appMods, ui.KeyT), m.NewTab()); !tt.HasText(want) {
 		t.Errorf("no %q in %q", want, tt.Texts())
 	}
 	tt.Key(0, ui.KeyJ)
 	tt.Frame()
-	if want := m.ShortcutNeedsMods(shortcutText(runtime.GOOS, shortcutMods(runtime.GOOS, false), 0)); !tt.HasText(want) {
+	if want := m.ShortcutNeedsMods(shortcutText(shortcutMods(false), 0)); !tt.HasText(want) {
 		t.Errorf("no %q in %q", want, tt.Texts())
 	}
 	if a.recording != actQuickConnect || a.quicking || len(a.settings.Shortcuts) != 0 {
 		t.Fatalf("recording %q, quick connect %v, shortcuts %v", a.recording, a.quicking, a.settings.Shortcuts)
 	}
 
-	rec := keymap.Combo{Mods: shortcutMods(runtime.GOOS, false) | ui.Alt, Key: ui.KeyJ}
+	rec := keymap.Combo{Mods: shortcutMods(false) | ui.Alt, Key: ui.KeyJ}
 	tt.Key(rec.Mods, rec.Key)
 	tt.Frame()
 	if a.recording != "" || a.settings.Shortcuts[actQuickConnect] != rec.String() {
 		t.Fatalf("recording %q, shortcuts %v", a.recording, a.settings.Shortcuts)
 	}
-	for _, k := range keyCaps(runtime.GOOS, rec.Mods, rec.Key) {
+	for _, k := range keyCaps(rec.Mods, rec.Key) {
 		if !hasExact(tt, k) {
 			t.Errorf("no key %q", k)
 		}
@@ -209,7 +197,7 @@ func TestRecordShortcut(t *testing.T) {
 func TestRecordShortcutWaitsForKey(t *testing.T) {
 	a, _ := newTestApp(t)
 	m := locales.In("en")
-	mods := shortcutMods(runtime.GOOS, false)
+	mods := shortcutMods(false)
 	a.recording = actQuickConnect
 	for _, code := range []ui.KeyCode{ui.CodeSuperLeft, ui.CodeShiftLeft, ui.CodeCapsLock} {
 		a.recordKey(m, ui.InputEvent{Kind: ui.InputKeyDown, Key: ui.KeyUnknown, Code: code, Mods: mods})
@@ -267,7 +255,7 @@ func TestDefaultShortcutsDistinct(t *testing.T) {
 			t.Errorf("%s and %s share %s", ac.id, other, ac.def)
 		}
 		seen[ac.def] = ac.id
-		if slices.Contains(reserved(runtime.GOOS, false), ac.def) {
+		if slices.Contains(reserved(false), ac.def) {
 			t.Errorf("%s defaults to the reserved %s", ac.id, ac.def)
 		}
 	}

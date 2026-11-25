@@ -33,7 +33,6 @@ type TrayPanel struct {
 	search, selected string
 	sections         map[string]*bool
 	ResizeHandle     func(*ui.Context)
-	SetMaterial      func(ui.Color)
 }
 
 func (a *App) NewTrayPanel(dispatch func(TrayAction)) *TrayPanel {
@@ -53,9 +52,6 @@ func (p *TrayPanel) View(c *ui.Context) {
 		fill = ui.Transparent
 	}
 	c.Root().Background(fill)
-	if p.SetMaterial != nil {
-		p.SetMaterial(fill)
-	}
 	// Store edits can happen in another window; schedule only while this view lives.
 	c.After(500 * time.Millisecond)
 	m := locales.In(c.Locale())

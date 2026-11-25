@@ -59,7 +59,7 @@ func (d *desktop) beginPanelResize(pointerY int) {
 	}
 	s := &d.panelResize
 	bounds := d.panel.Bounds()
-	width, height := d.panelContentSize()
+	width, height := d.panel.ContentSize()
 	display := mygo.Screen.DisplayMatching(bounds)
 	area := display.WorkArea
 	*s = desktopPanelResize{
@@ -74,7 +74,7 @@ func (d *desktop) beginPanelResize(pointerY int) {
 	}
 }
 
-// Pick the edge opposite the tray; Linux has no icon bounds and uses bottom.
+// Pick the edge opposite the tray; with no icon bounds it uses bottom.
 func (d *desktop) syncPanelResizeEdge() {
 	if d.panel == nil {
 		return

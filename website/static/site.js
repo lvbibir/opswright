@@ -353,24 +353,8 @@
 
   // ---------------------------------------------------------------- downloads
 
-  function detectOS() {
-    var ua = navigator.userAgent || "";
-    var p = (navigator.userAgentData && navigator.userAgentData.platform) || navigator.platform || "";
-    if (/iPhone|iPad|iPod|Android/i.test(ua) || (/Mac/i.test(p) && navigator.maxTouchPoints > 1)) return "";
-    if (/Mac/i.test(p) || /Mac OS X/.test(ua)) return "macos";
-    if (/Win/i.test(p) || /Windows/.test(ua)) return "windows";
-    if (/Linux|X11|CrOS/i.test(p + " " + ua)) return "linux";
-    return "";
-  }
-  function arch(os) {
-    var guess = os === "macos" ? function () {
-      try {
-        var gl = document.createElement("canvas").getContext("webgl");
-        var ext = gl && gl.getExtension("WEBGL_debug_renderer_info");
-        var r = ext ? gl.getParameter(ext.UNMASKED_RENDERER_WEBGL) : "";
-        return /Intel|AMD|Radeon|NVIDIA/i.test(r) ? "amd64" : "arm64";
-      } catch (e) { return "arm64"; }
-    } : function () {
+  function arch() {
+    var guess = function () {
       return /aarch64|arm64|armv8/i.test(navigator.userAgent || "") ? "arm64" : "amd64";
     };
     var hints = navigator.userAgentData && navigator.userAgentData.getHighEntropyValues;
@@ -382,23 +366,21 @@
     }, guess);
   }
   (function downloads() {
-    var os = detectOS();
-    if (!os || !data.downloads) return;
+    var os = "windows";
+    if (!data.downloads) return;
     doc.setAttribute("data-os", os);
-    arch(os).then(function (a) {
+    arch().then(function (a) {
       var arm = a === "arm64";
-      var key = os === "linux" ? "linux"
-        : os === "windows" ? (arm && data.downloads.win_setup_arm64 ? "win_setup_arm64" : "win_setup")
-        : arm ? "mac_arm64" : "mac_amd64";
+      var pick = arm && data.downloads.win_setup_arm64 ? "win_setup_arm64" : "win_setup";
       $$("[data-dl-cta]").forEach(function (el) {
         var label = el.querySelector("[data-dl-label]");
         if (label && data.cta[os]) label.textContent = data.cta[os];
-        if (key !== "linux") el.href = data.downloads[key].url; else el.href = data.linuxPage;
+        if (data.downloads[pick]) el.href = data.downloads[pick].url;
       });
       var meta = document.querySelector("[data-dl-meta]");
-      if (meta && key !== "linux") {
-        var d = data.downloads[key];
-        meta.textContent = [data.labels[key], d.size].filter(Boolean).join(" · ");
+      if (meta && data.downloads[pick]) {
+        var d = data.downloads[pick];
+        meta.textContent = [data.labels[pick], d.size].filter(Boolean).join(" · ");
       }
       $$('[data-platform="' + os + '"] .dl-files').forEach(function (list) {
         var chips = $$("[data-asset]", list);
@@ -681,8 +663,7 @@
     var input = dlg.querySelector("[data-pal-input]");
     var list = dlg.querySelector("[data-pal-list]");
     var empty = dlg.querySelector("[data-pal-empty]");
-    var mac = /Mac|iPhone|iPad/i.test((navigator.userAgentData && navigator.userAgentData.platform) || navigator.platform || navigator.userAgent);
-    $$("[data-pal-kbd]").forEach(function (k) { k.textContent = mac ? "⌘K" : "Ctrl K"; });
+    $$("[data-pal-kbd]").forEach(function (k) { k.textContent = "Ctrl K"; });
     var active = -1, uid = 0;
 
     function options() { return $$('[role="option"]', list).filter(function (o) { return !o.hidden; }); }

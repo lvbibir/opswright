@@ -42,7 +42,6 @@ func TestNormalizeDevice(t *testing.T) {
 		{"windows", "CNCA0", "CNCA0"},
 		{"windows", "com", "com"},
 		{"linux", "com3", "com3"},
-		{"darwin", "/dev/cu.usbserial-1", "/dev/cu.usbserial-1"},
 	} {
 		if got := normalizeDevice(tc.goos, tc.in); got != tc.want {
 			t.Errorf("normalizeDevice(%q, %q) = %q, want %q", tc.goos, tc.in, got, tc.want)
@@ -109,8 +108,6 @@ func TestListPorts(t *testing.T) {
 		in   []string
 		want []string
 	}{
-		{"darwin", []string{"/dev/tty.usbserial-2", "/dev/cu.usbserial-10", "/dev/cu.usbserial-2", "/dev/tty.Bluetooth"},
-			[]string{"/dev/cu.usbserial-2", "/dev/cu.usbserial-10"}},
 		{"windows", []string{"COM10", "COM3", "", "com3"}, []string{"COM3", "COM10"}},
 		{"linux", []string{"/dev/ttyUSB10", "/dev/ttyS0", "/dev/ttyUSB2", "/dev/ttyACM0"},
 			[]string{"/dev/ttyACM0", "/dev/ttyS0", "/dev/ttyUSB2", "/dev/ttyUSB10"}},

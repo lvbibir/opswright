@@ -1,4 +1,4 @@
-<p align="left"><strong>English</strong> · <a href="README_ZH.md">简体中文</a> · <a href="README_ZH_TW.md">繁體中文</a> · <a href="README_KO.md">한국어</a> · <a href="README_JA.md">日本語</a></p>
+<p align="left"><strong>English</strong> · <a href="README_ZH.md">简体中文</a></p>
 
 <p align="center">
   <img src="resources/icon.png" alt="SSHYard logo" width="128" height="128">
@@ -6,7 +6,7 @@
 
 <h1 align="center">SSHYard</h1>
 
-SSHYard is a native desktop SSH / SFTP client for macOS, Windows and Linux, bringing terminals, file management and AI assistance into one app.
+SSHYard is a native desktop SSH / SFTP client for Windows, bringing terminals, file management and AI assistance into one app.
 
 ## Screenshots
 
@@ -39,7 +39,7 @@ SSHYard is a native desktop SSH / SFTP client for macOS, Windows and Linux, brin
   - Tabs, split panes and terminal search, with tabs you can reorder and rename
   - True colour, wide characters, input methods and mouse support for tmux, vim and htop
   - Ten built-in colour schemes plus `.itermcolors` import, keyword highlighting, line numbers and timestamps, and adjustable cursor, line height and character width
-  - Many output encodings, set per host; ⌘ / Ctrl-click to open links in the terminal, ⌥ / Alt-drag for block selection
+  - Many output encodings, set per host; Ctrl-click to open links in the terminal, Alt-drag for block selection
   - Command suggestions from the host's shell history as you type, accepted with → or End, and a list of the folder's files to complete paths from
   - Telnet, serial ports and local terminals besides SSH (PowerShell, CMD, Git Bash and WSL on Windows)
   - Shared connections across panes on the same host, with automatic reconnection that acts at once on a network change or wake from sleep and returns the shell to its folder
@@ -71,7 +71,7 @@ SSHYard is a native desktop SSH / SFTP client for macOS, Windows and Linux, brin
   - One-click Skill setup for Claude Code and Codex; agent access is off by default
 
 - **Hosts and credentials**
-  - Import from SSH config, migrate from ten clients such as Xshell, MobaXterm and PuTTY, or paste a list of hosts as text; or connect quickly with `user@host:port`
+  - Add and group hosts by hand, or connect quickly with `user@host:port`
   - Passwords, OpenSSH / PEM / PuTTY keys, OpenSSH certificates, SSH agent and password-less login support
   - Nested groups you can rearrange by dragging, with multi-select and latency tests
   - Provider, renewal schedule and notes for each host, with a reminder before renewal
@@ -88,17 +88,17 @@ SSHYard is a native desktop SSH / SFTP client for macOS, Windows and Linux, brin
 
 - **Everyday use**
   - Server metrics at a glance
-  - Light and dark themes, with background images, translucency and interface scaling
+  - Light and dark themes, with background images and interface scaling
   - Close to the tray and connect to hosts from the tray popover
-  - English, Simplified Chinese, Traditional Chinese, Korean and Japanese
+  - English and Simplified Chinese
 
 ## Secrets and the master password
 
 Run SSHYard as your normal desktop user, without root or `sudo`. Saving and unlocking credentials needs no setup of its own: a single **master password** seals a random master key in `master.enc`, and that key encrypts everything SSHYard saves in `secrets.enc`.
 
-The first time you use SSHYard it asks you to set the master password. That computer then remembers the key in its own keychain (Windows Credential Manager, the macOS keychain, or libsecret on Linux, through the operating system itself), so later launches open without asking. A lock you ask for by hand — the shortcut, the tray, the settings — needs the password again for the rest of that run; the next launch is remembered again. Idle time, screen lock and sleep only hide the windows and never ask.
+The first time you use SSHYard it asks you to set the master password. That computer then remembers the key in the Windows Credential Manager, through the operating system itself, so later launches open without asking. A lock you ask for by hand — the shortcut, the tray, the settings — needs the password again for the rest of that run; the next launch is remembered again. Idle time, screen lock and sleep only hide the windows and never ask.
 
-Copying your data folder to another computer, or to another OS user, carries `master.enc`, so that computer asks for the password once and then remembers it too. SSHYard never stores the password: if you forget it, saved secrets can only be recovered from a backup, and the lock screen's reset deletes them. **Settings → About → Secret storage** changes the password, and forgets the key on this computer if you want to be asked again. Linux packages need no libsecret for SSHYard's own use, and SSHYard uses native UI without WebKitGTK.
+Copying your data folder to another computer, or to another OS user, carries `master.enc`, so that computer asks for the password once and then remembers it too. SSHYard never stores the password: if you forget it, saved secrets can only be recovered from a backup, and the lock screen's reset deletes them. **Settings → About → Secret storage** changes the password, and forgets the key on this computer if you want to be asked again.
 
 ## Development
 
@@ -108,14 +108,13 @@ Built with [mygo](https://github.com/egoist/mygo). Requires Go 1.27.3 (`GOTOOLCH
 # run
 go run .
 
-# run the development app; on macOS prefer an "Apple Development" identity
-# stable signing keeps the app's own permissions across rebuilds
+# run the development app
 scripts/run-dev-app.sh
 
 # keep data in a separate directory
 SSHYARD_DATA_DIR=/tmp/demo go run .
 
-# a local SSH server for testing (macOS / Linux)
+# a local SSH server for testing
 go run ./cmd/devsshd -addr 127.0.0.1:2222 -user demo -password demo -root /tmp/remote
 
 # a local HTTP / SOCKS proxy for testing
@@ -130,7 +129,7 @@ gofmt -l .
 GOFLAGS=-mod=mod go run github.com/egoist/mygo/cmd/mygo generate
 
 # package into dist/
-go tool mygo build -platform linux/amd64,linux/arm64,windows/amd64,windows/arm64,darwin/arm64,darwin/amd64 -o dist
+go tool mygo build -platform windows/amd64 -o dist
 ```
 
 To try it against devsshd, add a host `127.0.0.1`, port `2222`, user `demo`, password `demo`.

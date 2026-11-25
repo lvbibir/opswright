@@ -1,16 +1,16 @@
 {
   "name": "English",
   "meta": {
-    "title": "SSHYard — Free SSH & SFTP Client with AI for Mac, Windows, Linux",
-    "description": "SSHYard is a free, open-source native SSH and SFTP client for macOS, Windows and Linux, with split terminals, a file manager and an AI assistant built in.",
-    "keywords": "SSH client, SFTP client, free SSH client, open source SSH client, SSH client for Mac, SSH client for Windows, SSH client for Linux, AI SSH client, terminal, Telnet client, serial terminal, tmux, Docker, MCP, port forwarding, jump host",
+    "title": "SSHYard — Free SSH & SFTP Client with AI for Windows",
+    "description": "SSHYard is a free, open-source native SSH and SFTP client for Windows, with split terminals, a file manager and an AI assistant built in.",
+    "keywords": "SSH client, SFTP client, free SSH client, open source SSH client, SSH client for Windows, AI SSH client, terminal, Telnet client, serial terminal, tmux, Docker, MCP, port forwarding, jump host",
     "og_alt": "SSHYard, a native SSH and SFTP client with an AI assistant",
     "og_title": [
       "SSH, SFTP and AI,",
       "in one native app"
     ],
-    "download_title": "Download SSHYard for macOS, Windows and Linux",
-    "download_description": "Download SSHYard {version}, the free SSH and SFTP client: DMG for Apple Silicon and Intel Macs, installer or portable ZIP for Windows, .deb or .tar.gz for Linux.",
+    "download_title": "Download SSHYard for Windows",
+    "download_description": "Download SSHYard {version}, the free SSH and SFTP client: an installer with in-app updates, or a portable ZIP, for Windows x64 and Arm64.",
     "notfound_title": "Page not found — SSHYard"
   },
   "nav": {
@@ -48,15 +48,13 @@
       "SSH, SFTP and AI,",
       "in one native app"
     ],
-    "lead": "SSHYard is a free, open-source SSH and SFTP client for macOS, Windows and Linux. Work in the terminal, move files and let an AI assistant run commands on the host, all in the same window.",
+    "lead": "SSHYard is a free, open-source SSH and SFTP client for Windows. Work in the terminal, move files and let an AI assistant run commands on the host, all in one window.",
     "cta": "Download free",
     "cta_for": {
-      "macos": "Download for macOS",
-      "windows": "Download for Windows",
-      "linux": "Download for Linux"
+      "windows": "Download for Windows"
     },
-    "cta_other": "Other platforms",
-    "note": "Free and open source · No account needed · macOS, Windows and Linux"
+    "cta_other": "All downloads",
+    "note": "Free and open source · No account needed · Windows"
   },
   "demo": {
     "aria": "A working SSHYard window: open hosts in tabs, type in the terminal, and open the system monitor, files, AI assistant and snippets from the right edge.",
@@ -366,7 +364,7 @@
       ],
       [
         "Platforms",
-        "macOS 12 or later (Apple Silicon and Intel), Windows and Linux (x64 and Arm64)"
+        "Windows (x64 and Arm64)"
       ],
       [
         "Interface",
@@ -382,7 +380,7 @@
       ],
       [
         "Languages",
-        "English, 简体中文, 繁體中文, 日本語, 한국어"
+        "English, Simplified Chinese"
       ],
       [
         "Account",
@@ -391,10 +389,6 @@
       [
         "Credentials",
         "Encrypted and stored on your device"
-      ],
-      [
-        "Migration",
-        "SSH config, ten popular clients or a pasted list"
       ],
       [
         "AI providers",
@@ -467,22 +461,12 @@
       {
         "icon": "key-2-line",
         "title": "Hosts and credentials",
-        "text": "Import your SSH config, or connect straight away with user@host:port.",
+        "text": "Add and group hosts by hand, or connect straight away with user@host:port.",
         "points": [
           "Passwords, OpenSSH, PEM and PuTTY keys, OpenSSH certificates, SSH agent",
           "Nested groups you drag to rearrange, with multi-select and latency tests",
           "Provider and renewal dates, with a reminder before renewal",
           "Changed host keys are checked by fingerprint before you trust them"
-        ]
-      },
-      {
-        "icon": "import-line",
-        "title": "Migrate from other clients",
-        "text": "Bring along the sessions you saved in another SSH client.",
-        "points": [
-          "Ten clients, including Xshell, MobaXterm and PuTTY",
-          "Paste a list of hosts as text",
-          "Preview and edit every entry in a table first"
         ]
       },
       {
@@ -709,7 +693,7 @@
   },
   "download": {
     "title": "Download SSHYard",
-    "lead": "Free for macOS, Windows and Linux.",
+    "lead": "Free for Windows.",
     "version_date": "Version {version}, released {date}",
     "version": "Version {version}",
     "recommended": "Recommended for this device",
@@ -721,26 +705,12 @@
     "get": "Download",
     "install": "Install",
     "for_platform": "Download SSHYard for {platform}",
-    "other_platforms": "Other platforms",
+    "other_platforms": "All downloads",
     "verify_title": "Verify your download",
     "verify_text": "Each release publishes SHA256SUMS. Compute the checksum of the file you downloaded and compare it with the matching line.",
     "checksums": "SHA256SUMS",
     "requirements": "System requirements",
     "platforms": {
-      "macos": {
-        "name": "macOS",
-        "req": "macOS 12 or later · signed and notarized",
-        "description": "Download SSHYard {version} for macOS: a signed and notarized DMG for Apple Silicon and Intel Macs. Free SSH and SFTP client with an AI assistant.",
-        "files": {
-          "mac_arm64": "Apple Silicon",
-          "mac_amd64": "Intel"
-        },
-        "steps": [
-          "Open the DMG and drag SSHYard into Applications.",
-          "Updates download and install from inside the app."
-        ],
-        "verify": "shasum -a 256 sshyard-{version}-arm64.dmg"
-      },
       "windows": {
         "name": "Windows",
         "req": "Windows x64 or Arm64 · no administrator rights needed",
@@ -756,22 +726,6 @@
           "For the portable version, extract the ZIP into a writable folder and run SSHYard.exe. App data is kept in %APPDATA%\\SSHYard."
         ],
         "verify": "Get-FileHash .\\sshyard-setup-{version}-amd64.exe -Algorithm SHA256"
-      },
-      "linux": {
-        "name": "Linux",
-        "req": "x64 (amd64) or Arm64 (aarch64) · .deb package or .tar.gz archive",
-        "description": "Download SSHYard {version} for Linux x64 and Arm64 as a .deb package or a .tar.gz archive. Free SSH and SFTP client with an AI assistant.",
-        "files": {
-          "linux_deb": "x64 .deb package",
-          "linux_tar": "x64 .tar.gz archive",
-          "linux_deb_arm64": "Arm64 .deb package",
-          "linux_tar_arm64": "Arm64 .tar.gz archive"
-        },
-        "steps": [
-          "Install the .deb with your package manager.",
-          "Or put install.sh next to the .tar.gz and run it to install into ~/.local."
-        ],
-        "verify": "sha256sum -c --ignore-missing SHA256SUMS"
       }
     }
   },
@@ -780,7 +734,7 @@
     "items": [
       {
         "q": "What is SSHYard?",
-        "a": "SSHYard is a free, open-source native desktop SSH and SFTP client for macOS, Windows and Linux. It combines tabbed and split terminals, an SFTP file manager, port forwarding and an AI assistant that can run commands on the host."
+        "a": "SSHYard is a free, open-source native desktop SSH and SFTP client for Windows. It combines tabbed and split terminals, an SFTP file manager, port forwarding and an AI assistant that can run commands on the host."
       },
       {
         "q": "Is SSHYard free?",
@@ -788,7 +742,7 @@
       },
       {
         "q": "Which systems does SSHYard run on?",
-        "a": "macOS 12 or later on Apple Silicon and Intel Macs, Windows on x64 and Arm64, and Linux on x64 and Arm64 as a .deb package or a .tar.gz archive."
+        "a": "Windows on x64 and Arm64, installed with the installer or run from the portable ZIP."
       },
       {
         "q": "Is SSHYard built with Electron or a web view?",
@@ -824,7 +778,7 @@
       },
       {
         "q": "Can I move over from another SSH client?",
-        "a": "Yes. SSHYard imports hosts from your SSH config file, reads the exports of ten clients including Xshell, MobaXterm and PuTTY, and turns a pasted list into hosts. You can preview and edit every entry in a table before importing, and credentials go only into the local encrypted store. You can also connect straight away by typing user@host:port."
+        "a": "No. SSHYard is a fresh client and does not import other clients' data: add hosts by hand, or connect straight away by typing user@host:port."
       },
       {
         "q": "Which languages does SSHYard support?",
@@ -834,10 +788,10 @@
   },
   "cta": {
     "title": "Your servers, one window away",
-    "text": "SSHYard is free for macOS, Windows and Linux."
+    "text": "SSHYard is free for Windows."
   },
   "footer": {
-    "tagline": "A native SSH and SFTP client with an AI assistant, for macOS, Windows and Linux.",
+    "tagline": "A native SSH and SFTP client with an AI assistant, for Windows.",
     "product": "Product",
     "project": "Project",
     "release_notes": "Release notes",

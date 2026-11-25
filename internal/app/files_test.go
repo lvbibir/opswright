@@ -73,7 +73,7 @@ func showLocal(a *App) {
 // skipWindowsSFTP skips a test that moves files through the test server's
 // remote side: pkg/sftp serving this machine's disk, which on Windows
 // mangles absolute paths ("/C:/...") and reports every folder as writable
-// by others. Real remotes are POSIX servers; Linux and macOS cover these.
+// by others. Real remotes are POSIX servers; Linux covers these.
 func skipWindowsSFTP(t *testing.T) {
 	t.Helper()
 	if runtime.GOOS == "windows" {

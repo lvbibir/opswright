@@ -860,13 +860,13 @@ func (v *termView) send(b []byte) {
 }
 
 // reports says whether the program gets the mouse: it asked, the view is
-// at the bottom, and the user is not holding the key that keeps the mouse
-// for selecting text (Shift, or ⌥ too on macOS).
+// at the bottom, and the user is not holding Shift to keep the mouse for
+// selecting text.
 func (v *termView) reports(m vt.Modes, mods ui.Modifiers) bool {
 	if m.Mouse == vt.MouseOff || v.offset != 0 {
 		return false
 	}
-	if mods&ui.Shift != 0 || runtime.GOOS == "darwin" && mods&ui.Alt != 0 {
+	if mods&ui.Shift != 0 {
 		return false
 	}
 	return true
@@ -875,7 +875,7 @@ func (v *termView) reports(m vt.Modes, mods ui.Modifiers) bool {
 // report sends a mouse event at cell p of the view to the program.
 func (v *termView) report(m vt.Modes, btn vt.MouseBtn, act vt.MouseAction, p vt.Pos, mods ui.Modifiers) {
 	ev := vt.MouseEvent{Button: btn, Action: act, Col: p.Col, Row: p.Line - v.first,
-		Shift: mods&ui.Shift != 0, Alt: mods&ui.Alt != 0 && runtime.GOOS != "darwin", Ctrl: mods&ui.Ctrl != 0}
+		Shift: mods&ui.Shift != 0, Alt: mods&ui.Alt != 0, Ctrl: mods&ui.Ctrl != 0}
 	if b := vt.EncodeMouse(m, ev); b != nil {
 		v.target.Write(b)
 	}
@@ -992,7 +992,7 @@ type clipboard interface {
 
 // appKey sees a key down before the window's shortcuts take it, which
 // they do before input gets it: the text that follows an app shortcut
-// with Alt, as ⌥1 types ¡ on macOS, goes nowhere.
+// with Alt goes nowhere.
 func (v *termView) appKey(ev ui.InputEvent) {
 	if ev.Kind == ui.InputKeyDown && ev.Mods&ui.Alt != 0 && typesText(ev.Key) && isAppShortcut(v.shortcuts, ev.Key, ev.Mods) {
 		v.swallow = true
@@ -1012,7 +1012,7 @@ func (v *termView) input(ev ui.InputEvent, cb clipboard) bool {
 		}
 		// Windows also uses Ctrl+V to paste and Ctrl+C to copy a selection.
 		windowsCtrl := runtime.GOOS == "windows" && mods == ui.Ctrl
-		shiftedClipboard := runtime.GOOS != "darwin" && mods&(ui.Ctrl|ui.Shift) == ui.Ctrl|ui.Shift && mods&ui.Alt == 0
+		shiftedClipboard := mods&(ui.Ctrl|ui.Shift) == ui.Ctrl|ui.Shift && mods&ui.Alt == 0
 		if windowsCtrl || shiftedClipboard {
 			switch ev.Key {
 			case ui.KeyC:
@@ -1309,7 +1309,7 @@ func (v *termView) input(ev ui.InputEvent, cb clipboard) bool {
 }
 
 // fontMods are the modifiers the wheel changes the terminal's font size
-// with: Ctrl, or ⌘ too on macOS.
+// with: Ctrl.
 func fontMods() ui.Modifiers { return ui.Ctrl | linkMods() }
 
 // How far a touchpad scrolls (DIPs) or pinches (the log of its scale)
@@ -1346,12 +1346,8 @@ type linkSpan struct {
 	on   bool
 }
 
-// linkMods are the modifiers a click opens a link with: ⌘ on macOS,
-// Ctrl elsewhere.
+// linkMods are the modifiers a click opens a link with: Ctrl.
 func linkMods() ui.Modifiers {
-	if runtime.GOOS == "darwin" {
-		return ui.Super
-	}
 	return ui.Ctrl
 }
 
