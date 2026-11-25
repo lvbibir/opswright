@@ -12,8 +12,8 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/Licoy/sshyard/internal/session"
-	"github.com/Licoy/sshyard/internal/sshtest"
+	"github.com/lvbibir/sshyard/internal/session"
+	"github.com/lvbibir/sshyard/internal/sshtest"
 	"golang.org/x/crypto/ssh"
 )
 

@@ -1,8 +1,8 @@
 package app
 
 import (
-	"github.com/Licoy/sshyard/locales"
 	"github.com/egoist/mygo/ui"
+	"github.com/lvbibir/sshyard/locales"
 )
 
 // ReportError displays an already localized platform error without blocking

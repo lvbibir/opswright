@@ -3,10 +3,10 @@ package app
 import (
 	"errors"
 
-	"github.com/Licoy/sshyard/internal/assets"
-	"github.com/Licoy/sshyard/internal/keychain"
-	"github.com/Licoy/sshyard/internal/session"
-	"github.com/Licoy/sshyard/locales"
+	"github.com/lvbibir/sshyard/internal/assets"
+	"github.com/lvbibir/sshyard/internal/keychain"
+	"github.com/lvbibir/sshyard/internal/session"
+	"github.com/lvbibir/sshyard/locales"
 )
 
 func (a *App) canSavePromptPassword(p *credPrompt) bool {

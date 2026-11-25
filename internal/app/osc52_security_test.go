@@ -1,7 +1,7 @@
 package app
 
 import (
-	"github.com/Licoy/sshyard/internal/settings"
+	"github.com/lvbibir/sshyard/internal/settings"
 	"testing"
 )
 

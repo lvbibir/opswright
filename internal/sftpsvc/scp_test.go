@@ -13,9 +13,9 @@ import (
 	"runtime"
 	"testing"
 
-	"github.com/Licoy/sshyard/internal/scpfs"
-	"github.com/Licoy/sshyard/internal/session"
-	"github.com/Licoy/sshyard/internal/sshtest"
+	"github.com/lvbibir/sshyard/internal/scpfs"
+	"github.com/lvbibir/sshyard/internal/session"
+	"github.com/lvbibir/sshyard/internal/sshtest"
 	"golang.org/x/crypto/ssh"
 )
 

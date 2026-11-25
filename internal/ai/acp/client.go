@@ -6,10 +6,10 @@ import (
 	"io/fs"
 	"time"
 
-	"github.com/Licoy/sshyard/internal/ai/agent"
-	"github.com/Licoy/sshyard/internal/ai/policy"
-	"github.com/Licoy/sshyard/internal/sftpsvc"
 	sdk "github.com/coder/acp-go-sdk"
+	"github.com/lvbibir/sshyard/internal/ai/agent"
+	"github.com/lvbibir/sshyard/internal/ai/policy"
+	"github.com/lvbibir/sshyard/internal/sftpsvc"
 )
 
 func (s *Session) ReadTextFile(ctx context.Context, p sdk.ReadTextFileRequest) (sdk.ReadTextFileResponse, error) {

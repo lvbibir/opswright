@@ -11,10 +11,10 @@ import (
 	"sync"
 	"time"
 
-	"github.com/Licoy/sshyard/internal/ai/remote"
-	"github.com/Licoy/sshyard/internal/assets"
-	"github.com/Licoy/sshyard/internal/session"
-	"github.com/Licoy/sshyard/internal/sftpsvc"
+	"github.com/lvbibir/sshyard/internal/ai/remote"
+	"github.com/lvbibir/sshyard/internal/assets"
+	"github.com/lvbibir/sshyard/internal/session"
+	"github.com/lvbibir/sshyard/internal/sftpsvc"
 )
 
 // hostTools runs one pane's tools on the host's pooled SSH connection.

@@ -14,15 +14,15 @@ import (
 	"sync"
 	"time"
 
-	"github.com/Licoy/sshyard/internal/awake"
-	"github.com/Licoy/sshyard/internal/icons"
-	"github.com/Licoy/sshyard/internal/sftpsvc"
-	"github.com/Licoy/sshyard/internal/theme"
-	"github.com/Licoy/sshyard/internal/trzsz"
-	"github.com/Licoy/sshyard/internal/xfer"
-	"github.com/Licoy/sshyard/internal/zmodem"
-	"github.com/Licoy/sshyard/locales"
 	"github.com/egoist/mygo/ui"
+	"github.com/lvbibir/sshyard/internal/awake"
+	"github.com/lvbibir/sshyard/internal/icons"
+	"github.com/lvbibir/sshyard/internal/sftpsvc"
+	"github.com/lvbibir/sshyard/internal/theme"
+	"github.com/lvbibir/sshyard/internal/trzsz"
+	"github.com/lvbibir/sshyard/internal/xfer"
+	"github.com/lvbibir/sshyard/internal/zmodem"
+	"github.com/lvbibir/sshyard/locales"
 )
 
 // A terminal's shell can start a transfer over its own byte stream:

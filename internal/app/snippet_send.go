@@ -5,11 +5,11 @@ import (
 	"io"
 	"strings"
 
-	"github.com/Licoy/sshyard/internal/assets"
-	"github.com/Licoy/sshyard/internal/layout"
-	"github.com/Licoy/sshyard/internal/session"
-	"github.com/Licoy/sshyard/internal/vt"
 	"github.com/egoist/mygo/ui"
+	"github.com/lvbibir/sshyard/internal/assets"
+	"github.com/lvbibir/sshyard/internal/layout"
+	"github.com/lvbibir/sshyard/internal/session"
+	"github.com/lvbibir/sshyard/internal/vt"
 )
 
 var (

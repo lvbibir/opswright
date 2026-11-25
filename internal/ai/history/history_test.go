@@ -10,10 +10,10 @@ import (
 	"testing"
 	"time"
 
-	"github.com/Licoy/sshyard/internal/ai/agent"
-	"github.com/Licoy/sshyard/internal/ai/llm"
-	"github.com/Licoy/sshyard/internal/keychain"
-	"github.com/Licoy/sshyard/internal/vault"
+	"github.com/lvbibir/sshyard/internal/ai/agent"
+	"github.com/lvbibir/sshyard/internal/ai/llm"
+	"github.com/lvbibir/sshyard/internal/keychain"
+	"github.com/lvbibir/sshyard/internal/vault"
 )
 
 func store(t *testing.T) (*Store, string) {

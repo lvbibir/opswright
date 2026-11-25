@@ -9,14 +9,14 @@ import (
 	"strings"
 	"time"
 
-	"github.com/Licoy/sshyard/internal/ai/acp"
-	"github.com/Licoy/sshyard/internal/ai/acp/detect"
-	"github.com/Licoy/sshyard/internal/aibrands"
-	"github.com/Licoy/sshyard/internal/icons"
-	"github.com/Licoy/sshyard/internal/settings"
-	"github.com/Licoy/sshyard/internal/theme"
-	"github.com/Licoy/sshyard/locales"
 	"github.com/egoist/mygo/ui"
+	"github.com/lvbibir/sshyard/internal/ai/acp"
+	"github.com/lvbibir/sshyard/internal/ai/acp/detect"
+	"github.com/lvbibir/sshyard/internal/aibrands"
+	"github.com/lvbibir/sshyard/internal/icons"
+	"github.com/lvbibir/sshyard/internal/settings"
+	"github.com/lvbibir/sshyard/internal/theme"
+	"github.com/lvbibir/sshyard/locales"
 )
 
 // scanACPAgents finds the ACP agents on this computer; tests replace it.

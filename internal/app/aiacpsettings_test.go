@@ -8,11 +8,11 @@ import (
 	"testing"
 	"time"
 
-	"github.com/Licoy/sshyard/internal/ai/acp"
-	"github.com/Licoy/sshyard/internal/ai/acp/detect"
-	"github.com/Licoy/sshyard/internal/ai/policy"
-	"github.com/Licoy/sshyard/internal/settings"
-	"github.com/Licoy/sshyard/locales"
+	"github.com/lvbibir/sshyard/internal/ai/acp"
+	"github.com/lvbibir/sshyard/internal/ai/acp/detect"
+	"github.com/lvbibir/sshyard/internal/ai/policy"
+	"github.com/lvbibir/sshyard/internal/settings"
+	"github.com/lvbibir/sshyard/locales"
 )
 
 // fakeACPScan replaces detection with agents for one test and counts the

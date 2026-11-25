@@ -14,7 +14,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/Licoy/sshyard/internal/backup"
+	"github.com/lvbibir/sshyard/internal/backup"
 )
 
 const token = "ghp_secretTOKEN123"

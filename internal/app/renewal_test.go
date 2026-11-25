@@ -7,9 +7,9 @@ import (
 	"testing"
 	"time"
 
-	"github.com/Licoy/sshyard/internal/assets"
-	"github.com/Licoy/sshyard/internal/layout"
-	"github.com/Licoy/sshyard/locales"
+	"github.com/lvbibir/sshyard/internal/assets"
+	"github.com/lvbibir/sshyard/internal/layout"
+	"github.com/lvbibir/sshyard/locales"
 )
 
 // soonRenewal is a yearly subscription renewing in about two days from

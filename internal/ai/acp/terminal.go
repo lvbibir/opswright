@@ -8,8 +8,8 @@ import (
 	"sync"
 	"time"
 
-	"github.com/Licoy/sshyard/internal/ai/policy"
 	sdk "github.com/coder/acp-go-sdk"
+	"github.com/lvbibir/sshyard/internal/ai/policy"
 )
 
 // termProc is one remote command started for the agent.

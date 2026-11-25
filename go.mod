@@ -1,4 +1,4 @@
-module github.com/Licoy/sshyard
+module github.com/lvbibir/sshyard
 
 go 1.27.3
 

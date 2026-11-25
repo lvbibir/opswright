@@ -9,15 +9,15 @@ import (
 	"strings"
 	"time"
 
-	"github.com/Licoy/sshyard/internal/assets"
-	"github.com/Licoy/sshyard/internal/forward"
-	"github.com/Licoy/sshyard/internal/icons"
-	"github.com/Licoy/sshyard/internal/keychain"
-	"github.com/Licoy/sshyard/internal/netproxy"
-	"github.com/Licoy/sshyard/internal/session"
-	"github.com/Licoy/sshyard/internal/theme"
-	"github.com/Licoy/sshyard/locales"
 	"github.com/egoist/mygo/ui"
+	"github.com/lvbibir/sshyard/internal/assets"
+	"github.com/lvbibir/sshyard/internal/forward"
+	"github.com/lvbibir/sshyard/internal/icons"
+	"github.com/lvbibir/sshyard/internal/keychain"
+	"github.com/lvbibir/sshyard/internal/netproxy"
+	"github.com/lvbibir/sshyard/internal/session"
+	"github.com/lvbibir/sshyard/internal/theme"
+	"github.com/lvbibir/sshyard/locales"
 )
 
 // fwdRun is a port forward started this run. Its connection is in

@@ -1,8 +1,8 @@
 package app
 
 import (
-	"github.com/Licoy/sshyard/internal/vt"
 	"github.com/egoist/mygo/ui"
+	"github.com/lvbibir/sshyard/internal/vt"
 )
 
 // A selection dragged with ⌥ (Alt elsewhere) held is a block: the same

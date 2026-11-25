@@ -14,7 +14,7 @@ import (
 	"slices"
 	"time"
 
-	"github.com/Licoy/sshyard/internal/settings"
+	"github.com/lvbibir/sshyard/internal/settings"
 )
 
 // File is the name of the lock's file in the data folder.

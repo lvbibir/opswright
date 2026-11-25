@@ -8,7 +8,7 @@ import (
 	"io"
 	"path"
 
-	"github.com/Licoy/sshyard/internal/xfer"
+	"github.com/lvbibir/sshyard/internal/xfer"
 )
 
 var errNoSeek = errors.New("zmodem: the receiver asked for part of a file again, which cannot be read again")

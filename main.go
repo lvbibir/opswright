@@ -11,16 +11,16 @@ import (
 	"runtime"
 	"time"
 
-	"github.com/Licoy/sshyard/internal/app"
-	"github.com/Licoy/sshyard/internal/awake"
-	"github.com/Licoy/sshyard/internal/netwatch"
-	"github.com/Licoy/sshyard/internal/portable"
-	"github.com/Licoy/sshyard/internal/settings"
-	"github.com/Licoy/sshyard/internal/theme"
-	"github.com/Licoy/sshyard/internal/updater"
 	"github.com/egoist/mygo"
 	"github.com/egoist/mygo/transfer"
 	"github.com/egoist/mygo/ui"
+	"github.com/lvbibir/sshyard/internal/app"
+	"github.com/lvbibir/sshyard/internal/awake"
+	"github.com/lvbibir/sshyard/internal/netwatch"
+	"github.com/lvbibir/sshyard/internal/portable"
+	"github.com/lvbibir/sshyard/internal/settings"
+	"github.com/lvbibir/sshyard/internal/theme"
+	"github.com/lvbibir/sshyard/internal/updater"
 )
 
 func themeSource(m theme.Mode) mygo.ThemeSource {

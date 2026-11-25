@@ -16,9 +16,9 @@ import (
 	"strings"
 	"sync"
 
-	"github.com/Licoy/sshyard/internal/session"
-	"github.com/Licoy/sshyard/internal/settings"
-	"github.com/Licoy/sshyard/internal/sshconfig"
+	"github.com/lvbibir/sshyard/internal/session"
+	"github.com/lvbibir/sshyard/internal/settings"
+	"github.com/lvbibir/sshyard/internal/sshconfig"
 	"golang.org/x/crypto/ssh"
 )
 

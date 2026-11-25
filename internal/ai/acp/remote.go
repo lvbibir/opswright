@@ -11,8 +11,8 @@ import (
 	"strings"
 	"time"
 
-	"github.com/Licoy/sshyard/internal/ai/policy"
-	"github.com/Licoy/sshyard/internal/mcp"
+	"github.com/lvbibir/sshyard/internal/ai/policy"
+	"github.com/lvbibir/sshyard/internal/mcp"
 )
 
 // RemoteServer is the name of the MCP server that gives the agent the

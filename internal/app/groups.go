@@ -6,10 +6,10 @@ import (
 	"slices"
 	"strings"
 
-	"github.com/Licoy/sshyard/internal/assets"
-	"github.com/Licoy/sshyard/internal/theme"
-	"github.com/Licoy/sshyard/locales"
 	"github.com/egoist/mygo/ui"
+	"github.com/lvbibir/sshyard/internal/assets"
+	"github.com/lvbibir/sshyard/internal/theme"
+	"github.com/lvbibir/sshyard/locales"
 )
 
 // groupForm is the group sheet: a new group or subgroup, or a group

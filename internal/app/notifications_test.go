@@ -7,10 +7,10 @@ import (
 	"testing"
 	"time"
 
-	"github.com/Licoy/sshyard/internal/ai/policy"
-	"github.com/Licoy/sshyard/internal/keychain"
-	"github.com/Licoy/sshyard/locales"
 	"github.com/egoist/mygo/i18n"
+	"github.com/lvbibir/sshyard/internal/ai/policy"
+	"github.com/lvbibir/sshyard/internal/keychain"
+	"github.com/lvbibir/sshyard/locales"
 )
 
 func receiveNoticeTest[T any](t *testing.T, ch <-chan T) T {

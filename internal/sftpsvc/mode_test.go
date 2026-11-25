@@ -10,7 +10,7 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/Licoy/sshyard/internal/sshtest"
+	"github.com/lvbibir/sshyard/internal/sshtest"
 )
 
 func TestLocalMode(t *testing.T) {

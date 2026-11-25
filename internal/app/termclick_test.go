@@ -4,9 +4,9 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/Licoy/sshyard/internal/settings"
-	"github.com/Licoy/sshyard/internal/vt"
 	"github.com/egoist/mygo/ui"
+	"github.com/lvbibir/sshyard/internal/settings"
+	"github.com/lvbibir/sshyard/internal/vt"
 )
 
 // keptClipboard is a clipboard that keeps what is copied.

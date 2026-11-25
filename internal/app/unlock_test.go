@@ -7,9 +7,9 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/Licoy/sshyard/internal/keychain"
-	"github.com/Licoy/sshyard/locales"
 	"github.com/egoist/mygo/ui"
+	"github.com/lvbibir/sshyard/internal/keychain"
+	"github.com/lvbibir/sshyard/locales"
 )
 
 // authorizationBackend is an explicitly injected store, as newTestApp's.

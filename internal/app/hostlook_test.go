@@ -4,12 +4,12 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/Licoy/sshyard/internal/assets"
-	"github.com/Licoy/sshyard/internal/icons"
-	"github.com/Licoy/sshyard/internal/layout"
-	"github.com/Licoy/sshyard/internal/session"
-	"github.com/Licoy/sshyard/internal/theme"
-	"github.com/Licoy/sshyard/locales"
+	"github.com/lvbibir/sshyard/internal/assets"
+	"github.com/lvbibir/sshyard/internal/icons"
+	"github.com/lvbibir/sshyard/internal/layout"
+	"github.com/lvbibir/sshyard/internal/session"
+	"github.com/lvbibir/sshyard/internal/theme"
+	"github.com/lvbibir/sshyard/locales"
 )
 
 // TestPrivacyMode masks the addresses the app shows, from the status

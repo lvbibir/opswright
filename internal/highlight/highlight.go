@@ -13,7 +13,7 @@ import (
 	"unicode"
 	"unicode/utf8"
 
-	"github.com/Licoy/sshyard/internal/vt"
+	"github.com/lvbibir/sshyard/internal/vt"
 )
 
 // Style is how a match shows: Color is an index of the terminal's 16

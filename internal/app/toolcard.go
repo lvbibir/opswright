@@ -3,12 +3,12 @@ package app
 import (
 	"strconv"
 
-	"github.com/Licoy/sshyard/internal/ai/agent"
-	"github.com/Licoy/sshyard/internal/ai/policy"
-	"github.com/Licoy/sshyard/internal/icons"
-	"github.com/Licoy/sshyard/internal/theme"
-	"github.com/Licoy/sshyard/locales"
 	"github.com/egoist/mygo/ui"
+	"github.com/lvbibir/sshyard/internal/ai/agent"
+	"github.com/lvbibir/sshyard/internal/ai/policy"
+	"github.com/lvbibir/sshyard/internal/icons"
+	"github.com/lvbibir/sshyard/internal/theme"
+	"github.com/lvbibir/sshyard/locales"
 )
 
 // toolCard keeps the operation, approval and execution status visible while

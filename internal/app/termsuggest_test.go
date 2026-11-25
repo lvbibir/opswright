@@ -5,12 +5,12 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/Licoy/sshyard/internal/assets"
-	"github.com/Licoy/sshyard/internal/cmdline"
-	"github.com/Licoy/sshyard/internal/settings"
-	"github.com/Licoy/sshyard/internal/shellhist"
-	"github.com/Licoy/sshyard/internal/vt"
 	"github.com/egoist/mygo/ui"
+	"github.com/lvbibir/sshyard/internal/assets"
+	"github.com/lvbibir/sshyard/internal/cmdline"
+	"github.com/lvbibir/sshyard/internal/settings"
+	"github.com/lvbibir/sshyard/internal/shellhist"
+	"github.com/lvbibir/sshyard/internal/vt"
 )
 
 // echoTarget is a shell's line editor as far as completing goes: what is

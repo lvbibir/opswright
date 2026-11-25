@@ -3,7 +3,7 @@ package app
 import (
 	"testing"
 
-	"github.com/Licoy/sshyard/locales"
+	"github.com/lvbibir/sshyard/locales"
 )
 
 func TestSettingsExitNavigation(t *testing.T) {

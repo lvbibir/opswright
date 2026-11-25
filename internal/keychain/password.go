@@ -7,7 +7,7 @@ import (
 	"errors"
 	"os"
 
-	"github.com/Licoy/sshyard/internal/vault"
+	"github.com/lvbibir/sshyard/internal/vault"
 	"golang.org/x/crypto/chacha20poly1305"
 )
 

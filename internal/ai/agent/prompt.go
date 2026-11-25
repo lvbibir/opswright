@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/Licoy/sshyard/internal/ai/llm"
+	"github.com/lvbibir/sshyard/internal/ai/llm"
 )
 
 // SystemPrompt is the built-in assistant's instruction. It names one host

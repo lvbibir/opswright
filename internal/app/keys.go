@@ -3,8 +3,8 @@ package app
 import (
 	"fmt"
 
-	"github.com/Licoy/sshyard/internal/vt"
 	"github.com/egoist/mygo/ui"
+	"github.com/lvbibir/sshyard/internal/vt"
 )
 
 // xtermMods is xterm's modifier parameter: 1 plus Shift 1, Alt 2, Ctrl 4.

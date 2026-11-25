@@ -3,9 +3,9 @@ package app
 import (
 	"errors"
 
-	"github.com/Licoy/sshyard/internal/portable"
-	"github.com/Licoy/sshyard/locales"
 	"github.com/egoist/mygo/ui"
+	"github.com/lvbibir/sshyard/internal/portable"
+	"github.com/lvbibir/sshyard/locales"
 )
 
 // Storage is where the data of a portable copy may live: beside its

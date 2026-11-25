@@ -10,7 +10,7 @@ import (
 	"slices"
 	"strings"
 
-	"github.com/Licoy/sshyard/internal/mcp"
+	"github.com/lvbibir/sshyard/internal/mcp"
 )
 
 // skillName is the skill's name and its folder under an agent's skills.

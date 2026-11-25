@@ -10,7 +10,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/Licoy/sshyard/internal/sshtest"
+	"github.com/lvbibir/sshyard/internal/sshtest"
 )
 
 func TestDownloadDoesNotFollowPlantedPartOrAncestor(t *testing.T) {

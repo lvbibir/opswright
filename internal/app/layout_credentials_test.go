@@ -8,11 +8,11 @@ import (
 	"sync/atomic"
 	"testing"
 
-	"github.com/Licoy/sshyard/internal/keychain"
-	"github.com/Licoy/sshyard/internal/layout"
-	"github.com/Licoy/sshyard/internal/localkeys"
-	"github.com/Licoy/sshyard/internal/session"
 	"github.com/egoist/mygo/ui"
+	"github.com/lvbibir/sshyard/internal/keychain"
+	"github.com/lvbibir/sshyard/internal/layout"
+	"github.com/lvbibir/sshyard/internal/localkeys"
+	"github.com/lvbibir/sshyard/internal/session"
 )
 
 func TestLayoutRememberedLocalCredentialsWaitForUnlock(t *testing.T) {

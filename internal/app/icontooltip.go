@@ -1,8 +1,8 @@
 package app
 
 import (
-	"github.com/Licoy/sshyard/internal/theme"
 	"github.com/egoist/mygo/ui"
+	"github.com/lvbibir/sshyard/internal/theme"
 )
 
 // instantIconTooltip uses an overlay instead of MyGo's fixed 600ms delay.

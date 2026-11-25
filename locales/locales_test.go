@@ -8,8 +8,8 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/Licoy/sshyard/internal/settings"
 	"github.com/egoist/mygo/i18n"
+	"github.com/lvbibir/sshyard/internal/settings"
 )
 
 func load(t *testing.T, name string) map[string]string {

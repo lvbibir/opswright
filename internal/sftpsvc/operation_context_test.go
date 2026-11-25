@@ -3,7 +3,7 @@ package sftpsvc
 import (
 	"context"
 	"errors"
-	"github.com/Licoy/sshyard/internal/sshtest"
+	"github.com/lvbibir/sshyard/internal/sshtest"
 	"github.com/pkg/sftp"
 	"io"
 	"sync"

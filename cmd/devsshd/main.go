@@ -18,7 +18,7 @@ import (
 	"path/filepath"
 	"syscall"
 
-	"github.com/Licoy/sshyard/internal/sshtest"
+	"github.com/lvbibir/sshyard/internal/sshtest"
 	"golang.org/x/crypto/ssh"
 )
 

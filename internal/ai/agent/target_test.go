@@ -4,7 +4,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/Licoy/sshyard/internal/ai/llm"
+	"github.com/lvbibir/sshyard/internal/ai/llm"
 )
 
 // TestTerminalTarget: a session on a device's terminal gives the model

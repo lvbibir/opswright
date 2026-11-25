@@ -14,9 +14,9 @@ import (
 	"sync"
 	"time"
 
-	"github.com/Licoy/sshyard/internal/ai/policy"
-	"github.com/Licoy/sshyard/internal/mcp"
 	sdk "github.com/coder/acp-go-sdk"
+	"github.com/lvbibir/sshyard/internal/ai/policy"
+	"github.com/lvbibir/sshyard/internal/mcp"
 )
 
 // Config starts one agent process for one pane.

@@ -3,9 +3,9 @@ package app
 import (
 	"slices"
 
-	"github.com/Licoy/sshyard/internal/settings"
-	"github.com/Licoy/sshyard/locales"
 	"github.com/egoist/mygo/ui"
+	"github.com/lvbibir/sshyard/internal/settings"
+	"github.com/lvbibir/sshyard/locales"
 )
 
 func (a *App) trayPreferences(c *ui.Context, m locales.Messages, g *settingsGroup, s *settings.Settings, changed *bool) {

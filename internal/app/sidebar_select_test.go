@@ -4,7 +4,7 @@ import (
 	"slices"
 	"testing"
 
-	"github.com/Licoy/sshyard/internal/assets"
+	"github.com/lvbibir/sshyard/internal/assets"
 )
 
 // TestMultiSelectPicks: checking a group checks its subgroups and their

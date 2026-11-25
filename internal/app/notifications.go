@@ -5,8 +5,8 @@ import (
 	"errors"
 	"log"
 
-	"github.com/Licoy/sshyard/locales"
 	"github.com/egoist/mygo/i18n"
+	"github.com/lvbibir/sshyard/locales"
 )
 
 // Notification is a desktop notification. An empty ID makes it unique;

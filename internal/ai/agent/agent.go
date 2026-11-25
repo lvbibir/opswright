@@ -11,8 +11,8 @@ import (
 	"strings"
 	"time"
 
-	"github.com/Licoy/sshyard/internal/ai/llm"
-	"github.com/Licoy/sshyard/internal/ai/policy"
+	"github.com/lvbibir/sshyard/internal/ai/llm"
+	"github.com/lvbibir/sshyard/internal/ai/policy"
 )
 
 // MaxToolCalls is how many tool calls one turn runs before it pauses, for a

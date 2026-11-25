@@ -8,11 +8,11 @@ import (
 	"testing"
 	"time"
 
-	"github.com/Licoy/sshyard/internal/assets"
-	"github.com/Licoy/sshyard/internal/forward"
-	"github.com/Licoy/sshyard/internal/session"
-	"github.com/Licoy/sshyard/internal/sshtest"
-	"github.com/Licoy/sshyard/locales"
+	"github.com/lvbibir/sshyard/internal/assets"
+	"github.com/lvbibir/sshyard/internal/forward"
+	"github.com/lvbibir/sshyard/internal/session"
+	"github.com/lvbibir/sshyard/internal/sshtest"
+	"github.com/lvbibir/sshyard/locales"
 	"golang.org/x/crypto/ssh"
 )
 

@@ -7,7 +7,7 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/Licoy/sshyard/internal/serial"
+	"github.com/lvbibir/sshyard/internal/serial"
 )
 
 // ErrStreamURL is a telnet:// or serial:// destination that cannot be

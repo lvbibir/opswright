@@ -16,7 +16,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/Licoy/sshyard/internal/keychain"
+	"github.com/lvbibir/sshyard/internal/keychain"
 )
 
 // Dir is the folder beside the executable that holds a portable copy's

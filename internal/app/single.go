@@ -3,9 +3,9 @@ package app
 import (
 	"errors"
 
-	"github.com/Licoy/sshyard/internal/layout"
-	"github.com/Licoy/sshyard/locales"
 	"github.com/egoist/mygo/ui"
+	"github.com/lvbibir/sshyard/internal/layout"
+	"github.com/lvbibir/sshyard/locales"
 )
 
 // A tab has at most one files pane and one AI pane. Opening either on a

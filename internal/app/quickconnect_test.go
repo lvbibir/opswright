@@ -6,10 +6,10 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/Licoy/sshyard/internal/layout"
-	"github.com/Licoy/sshyard/internal/session"
-	"github.com/Licoy/sshyard/locales"
 	"github.com/egoist/mygo/ui"
+	"github.com/lvbibir/sshyard/internal/layout"
+	"github.com/lvbibir/sshyard/internal/session"
+	"github.com/lvbibir/sshyard/locales"
 )
 
 func TestQuickConnect(t *testing.T) {

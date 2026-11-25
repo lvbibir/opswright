@@ -9,9 +9,9 @@ import (
 	"sync"
 	"testing"
 
-	"github.com/Licoy/sshyard/internal/settings"
-	"github.com/Licoy/sshyard/internal/sftpsvc"
-	"github.com/Licoy/sshyard/locales"
+	"github.com/lvbibir/sshyard/internal/settings"
+	"github.com/lvbibir/sshyard/internal/sftpsvc"
+	"github.com/lvbibir/sshyard/locales"
 )
 
 // A files pane shows the server's files alone, with their uploads and

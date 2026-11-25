@@ -9,13 +9,13 @@ import (
 	"testing"
 	"time"
 
-	"github.com/Licoy/sshyard/internal/assets"
-	"github.com/Licoy/sshyard/internal/layout"
-	"github.com/Licoy/sshyard/internal/session"
-	"github.com/Licoy/sshyard/internal/settings"
-	"github.com/Licoy/sshyard/internal/theme"
-	"github.com/Licoy/sshyard/locales"
 	"github.com/egoist/mygo/ui"
+	"github.com/lvbibir/sshyard/internal/assets"
+	"github.com/lvbibir/sshyard/internal/layout"
+	"github.com/lvbibir/sshyard/internal/session"
+	"github.com/lvbibir/sshyard/internal/settings"
+	"github.com/lvbibir/sshyard/internal/theme"
+	"github.com/lvbibir/sshyard/locales"
 )
 
 // TestSettingsNav: the settings' sidebar leads to every page, Back
@@ -90,8 +90,8 @@ func TestAboutLicenseLink(t *testing.T) {
 	tt.SetSize(1200, 1600)
 	a.openSettings(prefAbout)
 	tt.Frame()
-	mustClick(t, tt, "github.com/Licoy/sshyard/blob/main/LICENSE")
-	if got := tt.OpenedURLs(); !slices.Equal(got, []string{"https://github.com/Licoy/sshyard/blob/main/LICENSE"}) {
+	mustClick(t, tt, "github.com/lvbibir/sshyard/blob/main/LICENSE")
+	if got := tt.OpenedURLs(); !slices.Equal(got, []string{"https://github.com/lvbibir/sshyard/blob/main/LICENSE"}) {
 		t.Errorf("license opened %q", got)
 	}
 }

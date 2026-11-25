@@ -9,7 +9,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/Licoy/sshyard/internal/settings"
+	"github.com/lvbibir/sshyard/internal/settings"
 )
 
 func TestCRUDAndPersistence(t *testing.T) {

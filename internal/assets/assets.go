@@ -21,9 +21,9 @@ import (
 	"sync"
 	"time"
 
-	"github.com/Licoy/sshyard/internal/session"
-	"github.com/Licoy/sshyard/internal/settings"
-	"github.com/Licoy/sshyard/internal/theme"
+	"github.com/lvbibir/sshyard/internal/session"
+	"github.com/lvbibir/sshyard/internal/settings"
+	"github.com/lvbibir/sshyard/internal/theme"
 	"github.com/mattn/go-runewidth"
 )
 

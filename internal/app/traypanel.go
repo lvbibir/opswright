@@ -4,13 +4,13 @@ import (
 	"slices"
 	"time"
 
-	"github.com/Licoy/sshyard/internal/assets"
-	"github.com/Licoy/sshyard/internal/icons"
-	"github.com/Licoy/sshyard/internal/keychain"
-	"github.com/Licoy/sshyard/internal/settings"
-	"github.com/Licoy/sshyard/internal/theme"
-	"github.com/Licoy/sshyard/locales"
 	"github.com/egoist/mygo/ui"
+	"github.com/lvbibir/sshyard/internal/assets"
+	"github.com/lvbibir/sshyard/internal/icons"
+	"github.com/lvbibir/sshyard/internal/keychain"
+	"github.com/lvbibir/sshyard/internal/settings"
+	"github.com/lvbibir/sshyard/internal/theme"
+	"github.com/lvbibir/sshyard/locales"
 )
 
 // TrayAction identifies an action handed back to the desktop window owner.
@@ -93,9 +93,6 @@ func (p *TrayPanel) header(c *ui.Context, m locales.Messages, tok theme.Tokens) 
 			p.headerAction(c, "quick", icons.Quick, m.QuickConnect(), TrayQuickConnect)
 			p.headerAction(c, "local", icons.LocalShell, m.LocalTerminal(), TrayLocalTerminal)
 			p.headerAction(c, "new", icons.Add, m.NewHost(), TrayNewHost)
-			if (IconButton{Icon: icons.GitHub, Label: m.GitHubRepo(), Size: Small, InstantTooltip: true}).Clicked(c, "github") {
-				c.OpenURL(repoURL)
-			}
 			p.headerAction(c, "settings", icons.Settings, m.Settings(), TraySettings)
 		})
 	})

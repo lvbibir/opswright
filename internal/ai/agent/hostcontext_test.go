@@ -4,7 +4,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/Licoy/sshyard/internal/ai/llm"
+	"github.com/lvbibir/sshyard/internal/ai/llm"
 )
 
 func TestHostContextReusedAcrossTurnsWithoutHostInfo(t *testing.T) {

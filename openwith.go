@@ -4,9 +4,9 @@ import (
 	"os/exec"
 	"runtime"
 
-	"github.com/Licoy/sshyard/internal/app"
 	"github.com/egoist/mygo"
 	"github.com/egoist/mygo/ui"
+	"github.com/lvbibir/sshyard/internal/app"
 )
 
 // openWith lets the user choose the app that opens path: the system's

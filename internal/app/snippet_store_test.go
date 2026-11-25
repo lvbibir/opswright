@@ -3,8 +3,8 @@ package app
 import (
 	"bytes"
 	"errors"
-	"github.com/Licoy/sshyard/internal/assets"
-	"github.com/Licoy/sshyard/internal/keychain"
+	"github.com/lvbibir/sshyard/internal/assets"
+	"github.com/lvbibir/sshyard/internal/keychain"
 	"os"
 	"path/filepath"
 	"testing"

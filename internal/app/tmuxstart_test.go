@@ -6,8 +6,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/Licoy/sshyard/internal/session"
-	"github.com/Licoy/sshyard/locales"
+	"github.com/lvbibir/sshyard/internal/session"
+	"github.com/lvbibir/sshyard/locales"
 )
 
 // startOnce is the command c's shell is to be given once, "" for none.

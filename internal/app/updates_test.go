@@ -5,10 +5,10 @@ import (
 	"slices"
 	"testing"
 
-	"github.com/Licoy/sshyard/internal/keychain"
-	"github.com/Licoy/sshyard/internal/settings"
-	"github.com/Licoy/sshyard/internal/updater"
 	"github.com/egoist/mygo/ui"
+	"github.com/lvbibir/sshyard/internal/keychain"
+	"github.com/lvbibir/sshyard/internal/settings"
+	"github.com/lvbibir/sshyard/internal/updater"
 )
 
 // fakeUpdates is the update window in tests: it counts the checks the

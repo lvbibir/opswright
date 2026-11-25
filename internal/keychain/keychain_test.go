@@ -8,7 +8,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/Licoy/sshyard/internal/vault"
+	"github.com/lvbibir/sshyard/internal/vault"
 )
 
 // testPassword is the master password the tests set up their stores with.

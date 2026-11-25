@@ -1,10 +1,10 @@
 package app
 
 import (
-	"github.com/Licoy/sshyard/internal/fonts"
-	"github.com/Licoy/sshyard/internal/theme"
-	"github.com/Licoy/sshyard/locales"
 	"github.com/egoist/mygo/ui"
+	"github.com/lvbibir/sshyard/internal/fonts"
+	"github.com/lvbibir/sshyard/internal/theme"
+	"github.com/lvbibir/sshyard/locales"
 )
 
 // listFonts lists the installed families; tests replace it.

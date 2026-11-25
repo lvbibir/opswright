@@ -6,11 +6,11 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/Licoy/sshyard/internal/highlight"
-	"github.com/Licoy/sshyard/internal/theme"
-	"github.com/Licoy/sshyard/internal/vt"
-	"github.com/Licoy/sshyard/locales"
 	"github.com/egoist/mygo/ui"
+	"github.com/lvbibir/sshyard/internal/highlight"
+	"github.com/lvbibir/sshyard/internal/theme"
+	"github.com/lvbibir/sshyard/internal/vt"
+	"github.com/lvbibir/sshyard/locales"
 )
 
 // TestHighlightPaint: a frame colors the keywords of the output in the

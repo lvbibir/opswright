@@ -7,9 +7,9 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/Licoy/sshyard/internal/sftpsvc"
-	"github.com/Licoy/sshyard/internal/sshtest"
 	"github.com/egoist/mygo/ui"
+	"github.com/lvbibir/sshyard/internal/sftpsvc"
+	"github.com/lvbibir/sshyard/internal/sshtest"
 )
 
 func TestShownName(t *testing.T) {

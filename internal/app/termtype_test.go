@@ -3,9 +3,9 @@ package app
 import (
 	"testing"
 
-	"github.com/Licoy/sshyard/internal/session"
-	"github.com/Licoy/sshyard/internal/sshtest"
-	"github.com/Licoy/sshyard/locales"
+	"github.com/lvbibir/sshyard/internal/session"
+	"github.com/lvbibir/sshyard/internal/sshtest"
+	"github.com/lvbibir/sshyard/locales"
 )
 
 func TestHostTermType(t *testing.T) {

@@ -12,7 +12,7 @@ import (
 	"time"
 	"unicode/utf8"
 
-	"github.com/Licoy/sshyard/internal/xfer"
+	"github.com/lvbibir/sshyard/internal/xfer"
 )
 
 // Offer is a transfer the other end started.

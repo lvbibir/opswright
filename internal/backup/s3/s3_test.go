@@ -15,7 +15,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/Licoy/sshyard/internal/backup"
+	"github.com/lvbibir/sshyard/internal/backup"
 )
 
 // The example credentials of the AWS documentation.

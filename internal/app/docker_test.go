@@ -7,8 +7,8 @@ import (
 	"sync"
 	"testing"
 
-	"github.com/Licoy/sshyard/internal/layout"
-	"github.com/Licoy/sshyard/internal/session"
+	"github.com/lvbibir/sshyard/internal/layout"
+	"github.com/lvbibir/sshyard/internal/session"
 	"golang.org/x/crypto/ssh"
 )
 

@@ -14,7 +14,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/Licoy/sshyard/internal/backup"
+	"github.com/lvbibir/sshyard/internal/backup"
 )
 
 // ErrEndpoint reports an endpoint that is not an http or https URL with a

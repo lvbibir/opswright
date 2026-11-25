@@ -6,7 +6,7 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/Licoy/sshyard/internal/keychain"
+	"github.com/lvbibir/sshyard/internal/keychain"
 )
 
 func write(t *testing.T, path, s string) {

@@ -5,7 +5,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/Licoy/sshyard/internal/sshtest"
+	"github.com/lvbibir/sshyard/internal/sshtest"
 )
 
 // While a download is planned the pane says so, with Cancel; canceled,

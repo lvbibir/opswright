@@ -1,9 +1,9 @@
 package app
 
 import (
-	"github.com/Licoy/sshyard/internal/icons"
-	"github.com/Licoy/sshyard/internal/theme"
 	"github.com/egoist/mygo/ui"
+	"github.com/lvbibir/sshyard/internal/icons"
+	"github.com/lvbibir/sshyard/internal/theme"
 )
 
 // IconButton is the app's one icon-only button: every action shown as an

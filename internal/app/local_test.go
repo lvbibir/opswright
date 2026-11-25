@@ -5,10 +5,10 @@ import (
 	"slices"
 	"testing"
 
-	"github.com/Licoy/sshyard/internal/session"
-	"github.com/Licoy/sshyard/internal/settings"
-	"github.com/Licoy/sshyard/internal/theme"
-	"github.com/Licoy/sshyard/locales"
+	"github.com/lvbibir/sshyard/internal/session"
+	"github.com/lvbibir/sshyard/internal/settings"
+	"github.com/lvbibir/sshyard/internal/theme"
+	"github.com/lvbibir/sshyard/locales"
 )
 
 // withShells stands in shells for this computer's, for apps made after.

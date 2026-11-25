@@ -5,8 +5,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/Licoy/sshyard/internal/assets"
 	"github.com/egoist/mygo/ui"
+	"github.com/lvbibir/sshyard/internal/assets"
 )
 
 func TestWelcomeFieldFollowsPointer(t *testing.T) {

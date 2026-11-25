@@ -100,6 +100,6 @@ Optional repository variables:
 | `INDEXNOW_KEY` | Publishes the IndexNow key file and pings IndexNow after each deploy |
 
 `robots.txt` is only honoured at the root of a host. On the default
-`licoy.github.io/sshyard` address, crawlers read `licoy.github.io/robots.txt`
+`lvbibir.github.io/sshyard` address, crawlers read `lvbibir.github.io/robots.txt`
 instead, so submit `sitemap.xml` in each search console, or use a custom
 domain.

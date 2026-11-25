@@ -13,10 +13,10 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/Licoy/sshyard/internal/highlight"
-	"github.com/Licoy/sshyard/internal/keymap"
-	"github.com/Licoy/sshyard/internal/session"
-	"github.com/Licoy/sshyard/internal/theme"
+	"github.com/lvbibir/sshyard/internal/highlight"
+	"github.com/lvbibir/sshyard/internal/keymap"
+	"github.com/lvbibir/sshyard/internal/session"
+	"github.com/lvbibir/sshyard/internal/theme"
 )
 
 // Settings are the user's preferences.

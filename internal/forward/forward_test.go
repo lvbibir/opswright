@@ -16,9 +16,9 @@ import (
 	"testing"
 	"time"
 
-	"github.com/Licoy/sshyard/internal/netproxy"
-	"github.com/Licoy/sshyard/internal/session"
-	"github.com/Licoy/sshyard/internal/sshtest"
+	"github.com/lvbibir/sshyard/internal/netproxy"
+	"github.com/lvbibir/sshyard/internal/session"
+	"github.com/lvbibir/sshyard/internal/sshtest"
 )
 
 func server(t *testing.T) *sshtest.Server {

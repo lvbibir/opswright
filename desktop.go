@@ -4,11 +4,11 @@ import (
 	"errors"
 	"log"
 
-	"github.com/Licoy/sshyard/icon"
-	"github.com/Licoy/sshyard/internal/app"
-	"github.com/Licoy/sshyard/internal/settings"
-	"github.com/Licoy/sshyard/locales"
 	"github.com/egoist/mygo"
+	"github.com/lvbibir/sshyard/icon"
+	"github.com/lvbibir/sshyard/internal/app"
+	"github.com/lvbibir/sshyard/internal/settings"
+	"github.com/lvbibir/sshyard/locales"
 )
 
 // postUI never runs fn inline: callers may still hold application locks.

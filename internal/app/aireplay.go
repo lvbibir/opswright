@@ -3,8 +3,8 @@ package app
 import (
 	"strings"
 
-	"github.com/Licoy/sshyard/internal/ai/agent"
-	"github.com/Licoy/sshyard/internal/ai/llm"
+	"github.com/lvbibir/sshyard/internal/ai/agent"
+	"github.com/lvbibir/sshyard/internal/ai/llm"
 )
 
 // An agent that does not remember a conversation the pane shows, as an

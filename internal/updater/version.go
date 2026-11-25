@@ -1,7 +1,7 @@
 // Package updater is SSHYard's update client. Releases are published as
 // MyGo publishes them on GitHub Releases: a signed archive per platform
 // with a manifest, update-<os>-<arch>.json, in the latest release of
-// Licoy/sshyard. Installing goes through mygo.Updater, which checks the
+// lvbibir/sshyard. Installing goes through mygo.Updater, which checks the
 // Ed25519 signature against the public key built into the app.
 package updater
 

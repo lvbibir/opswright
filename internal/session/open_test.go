@@ -8,7 +8,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/Licoy/sshyard/internal/serial"
+	"github.com/lvbibir/sshyard/internal/serial"
 )
 
 // TestTelnetOpener: a Telnet session dials its address and shows what

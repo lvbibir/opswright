@@ -16,9 +16,9 @@ import (
 	"testing"
 	"time"
 
-	"github.com/Licoy/sshyard/internal/ai/policy"
-	"github.com/Licoy/sshyard/internal/sftpsvc"
 	sdk "github.com/coder/acp-go-sdk"
+	"github.com/lvbibir/sshyard/internal/ai/policy"
+	"github.com/lvbibir/sshyard/internal/sftpsvc"
 )
 
 var fakeBin string
@@ -32,7 +32,7 @@ func TestMain(m *testing.M) {
 	if runtime.GOOS == "windows" {
 		fakeBin += ".exe"
 	}
-	cmd := exec.Command("go", "build", "-mod=mod", "-o", fakeBin, "github.com/Licoy/sshyard/internal/ai/acp/internal/fakeagent")
+	cmd := exec.Command("go", "build", "-mod=mod", "-o", fakeBin, "github.com/lvbibir/sshyard/internal/ai/acp/internal/fakeagent")
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
 	if err := cmd.Run(); err != nil {

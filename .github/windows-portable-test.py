@@ -97,7 +97,7 @@ class WindowsPortableTest(unittest.TestCase):
             ):
                 (dist / name).touch()
             command = [bash, (HERE / "release-download-notes.sh").as_posix(),
-                       dist.as_posix(), "v0.0.4", "Licoy/sshyard"]
+                       dist.as_posix(), "v0.0.4", "lvbibir/sshyard"]
             result = subprocess.run(command, capture_output=True, encoding="utf-8")
             self.assertNotEqual(result.returncode, 0)
             self.assertIn("expected one asset matching", result.stderr, repr(result))
@@ -105,12 +105,12 @@ class WindowsPortableTest(unittest.TestCase):
             (dist / name).touch()
             result = subprocess.run(command, capture_output=True, encoding="utf-8", check=True)
             self.assertIn(
-                f"[Portable ZIP](https://github.com/Licoy/sshyard/releases/download/v0.0.4/{name})",
+                f"[Portable ZIP](https://github.com/lvbibir/sshyard/releases/download/v0.0.4/{name})",
                 result.stdout,
             )
             for row in (
-                "| Arm64 | [Installer](https://github.com/Licoy/sshyard/releases/download/v0.0.4/sshyard-setup-0.0.4-arm64.exe)"
-                " · [Portable ZIP](https://github.com/Licoy/sshyard/releases/download/v0.0.4/sshyard-0.0.4-windows-arm64-portable.zip) |",
+                "| Arm64 | [Installer](https://github.com/lvbibir/sshyard/releases/download/v0.0.4/sshyard-setup-0.0.4-arm64.exe)"
+                " · [Portable ZIP](https://github.com/lvbibir/sshyard/releases/download/v0.0.4/sshyard-0.0.4-windows-arm64-portable.zip) |",
             ):
                 self.assertIn(row, result.stdout)
             (dist / "sshyard-0.0.5-windows-amd64-portable.zip").touch()

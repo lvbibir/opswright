@@ -10,14 +10,14 @@ import (
 	"strings"
 	"time"
 
-	"github.com/Licoy/sshyard/internal/icons"
-	"github.com/Licoy/sshyard/internal/layout"
-	"github.com/Licoy/sshyard/internal/session"
-	"github.com/Licoy/sshyard/internal/termlog"
-	"github.com/Licoy/sshyard/internal/theme"
-	"github.com/Licoy/sshyard/internal/vt"
-	"github.com/Licoy/sshyard/locales"
 	"github.com/egoist/mygo/ui"
+	"github.com/lvbibir/sshyard/internal/icons"
+	"github.com/lvbibir/sshyard/internal/layout"
+	"github.com/lvbibir/sshyard/internal/session"
+	"github.com/lvbibir/sshyard/internal/termlog"
+	"github.com/lvbibir/sshyard/internal/theme"
+	"github.com/lvbibir/sshyard/internal/vt"
+	"github.com/lvbibir/sshyard/locales"
 )
 
 // The session logs pane lists the terminals: it starts and stops each

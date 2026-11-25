@@ -8,14 +8,14 @@ import (
 	"strings"
 	"time"
 
-	"github.com/Licoy/sshyard/internal/ai/history"
-	"github.com/Licoy/sshyard/internal/aibrands"
-	"github.com/Licoy/sshyard/internal/icons"
-	"github.com/Licoy/sshyard/internal/keychain"
-	"github.com/Licoy/sshyard/internal/settings"
-	"github.com/Licoy/sshyard/internal/theme"
-	"github.com/Licoy/sshyard/locales"
 	"github.com/egoist/mygo/ui"
+	"github.com/lvbibir/sshyard/internal/ai/history"
+	"github.com/lvbibir/sshyard/internal/aibrands"
+	"github.com/lvbibir/sshyard/internal/icons"
+	"github.com/lvbibir/sshyard/internal/keychain"
+	"github.com/lvbibir/sshyard/internal/settings"
+	"github.com/lvbibir/sshyard/internal/theme"
+	"github.com/lvbibir/sshyard/locales"
 )
 
 // A saved host keeps its AI conversations (internal/ai/history), sealed by

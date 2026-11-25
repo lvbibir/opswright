@@ -1,8 +1,8 @@
 package app
 
 import (
-	"github.com/Licoy/sshyard/internal/theme"
 	"github.com/egoist/mygo/ui"
+	"github.com/lvbibir/sshyard/internal/theme"
 )
 
 // drawBackground paints one image in window coordinates, before all regions.

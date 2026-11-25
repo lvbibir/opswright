@@ -7,7 +7,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/Licoy/sshyard/internal/sshtest"
+	"github.com/lvbibir/sshyard/internal/sshtest"
 )
 
 // A listing cleans up at most maxLeftovers leftovers, as a save did,

@@ -5,9 +5,9 @@ import (
 	"slices"
 	"testing"
 
-	"github.com/Licoy/sshyard/internal/assets"
-	"github.com/Licoy/sshyard/locales"
 	"github.com/egoist/mygo/ui"
+	"github.com/lvbibir/sshyard/internal/assets"
+	"github.com/lvbibir/sshyard/locales"
 )
 
 func hostJumpTestEditor(t *testing.T, edit bool, count int) (*App, *ui.Tester, []string) {

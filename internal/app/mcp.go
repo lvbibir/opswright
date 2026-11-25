@@ -13,13 +13,13 @@ import (
 	"sync"
 	"time"
 
-	"github.com/Licoy/sshyard/internal/ai/audit"
-	"github.com/Licoy/sshyard/internal/ai/policy"
-	"github.com/Licoy/sshyard/internal/ai/remote"
-	"github.com/Licoy/sshyard/internal/assets"
-	"github.com/Licoy/sshyard/internal/keychain"
-	"github.com/Licoy/sshyard/internal/mcp"
-	"github.com/Licoy/sshyard/internal/session"
+	"github.com/lvbibir/sshyard/internal/ai/audit"
+	"github.com/lvbibir/sshyard/internal/ai/policy"
+	"github.com/lvbibir/sshyard/internal/ai/remote"
+	"github.com/lvbibir/sshyard/internal/assets"
+	"github.com/lvbibir/sshyard/internal/keychain"
+	"github.com/lvbibir/sshyard/internal/mcp"
+	"github.com/lvbibir/sshyard/internal/session"
 	"golang.org/x/crypto/ssh"
 )
 

@@ -16,7 +16,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/Licoy/sshyard/internal/ai/policy"
+	"github.com/lvbibir/sshyard/internal/ai/policy"
 )
 
 func TestNormalizeRetention(t *testing.T) {

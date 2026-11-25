@@ -6,8 +6,8 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/Licoy/sshyard/internal/ai/llm"
-	"github.com/Licoy/sshyard/internal/session"
+	"github.com/lvbibir/sshyard/internal/ai/llm"
+	"github.com/lvbibir/sshyard/internal/session"
 )
 
 func TestAIReusesOpenTerminalSSHAcrossTurns(t *testing.T) {

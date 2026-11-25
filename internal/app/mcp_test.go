@@ -5,9 +5,9 @@ import (
 	"testing"
 	"time"
 
-	"github.com/Licoy/sshyard/internal/keychain"
-	"github.com/Licoy/sshyard/internal/settings"
 	"github.com/egoist/mygo/ui"
+	"github.com/lvbibir/sshyard/internal/keychain"
+	"github.com/lvbibir/sshyard/internal/settings"
 )
 
 // clickRowControl clicks over the settings row labeled label, right of

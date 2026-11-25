@@ -9,7 +9,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/Licoy/sshyard/internal/xfer"
+	"github.com/lvbibir/sshyard/internal/xfer"
 )
 
 // marker is a transfer in what the shell prints: it starts at "<<X>>"

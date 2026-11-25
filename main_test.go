@@ -3,8 +3,8 @@ package main
 import (
 	"testing"
 
-	"github.com/Licoy/sshyard/internal/theme"
 	"github.com/egoist/mygo"
+	"github.com/lvbibir/sshyard/internal/theme"
 )
 
 func TestThemeSource(t *testing.T) {

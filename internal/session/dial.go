@@ -18,7 +18,7 @@ import (
 	"sync/atomic"
 	"time"
 
-	"github.com/Licoy/sshyard/internal/netproxy"
+	"github.com/lvbibir/sshyard/internal/netproxy"
 	"golang.org/x/crypto/ssh"
 )
 

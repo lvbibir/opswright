@@ -3,8 +3,8 @@ package main
 import (
 	"time"
 
-	"github.com/Licoy/sshyard/internal/app"
 	"github.com/egoist/mygo"
+	"github.com/lvbibir/sshyard/internal/app"
 )
 
 // This runs inside the existing opt-in native helper, using its isolated

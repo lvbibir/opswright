@@ -9,7 +9,7 @@ import (
 	"sync/atomic"
 	"time"
 
-	"github.com/Licoy/sshyard/internal/vt"
+	"github.com/lvbibir/sshyard/internal/vt"
 	"golang.org/x/crypto/ssh"
 )
 

@@ -2,7 +2,7 @@ package app
 
 import (
 	"bufio"
-	"github.com/Licoy/sshyard/internal/session"
+	"github.com/lvbibir/sshyard/internal/session"
 	"io"
 	"path/filepath"
 	"regexp"
@@ -11,9 +11,9 @@ import (
 	"testing"
 	"time"
 
-	"github.com/Licoy/sshyard/internal/layout"
-	"github.com/Licoy/sshyard/internal/sftpsvc"
-	"github.com/Licoy/sshyard/internal/sshtest"
+	"github.com/lvbibir/sshyard/internal/layout"
+	"github.com/lvbibir/sshyard/internal/sftpsvc"
+	"github.com/lvbibir/sshyard/internal/sshtest"
 	"golang.org/x/crypto/ssh"
 )
 

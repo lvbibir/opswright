@@ -20,7 +20,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/Licoy/sshyard/internal/ai/policy"
+	"github.com/lvbibir/sshyard/internal/ai/policy"
 )
 
 // DefaultRetentionDays is the retention window when the caller passes

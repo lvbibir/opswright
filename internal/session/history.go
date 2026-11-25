@@ -9,7 +9,7 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/Licoy/sshyard/internal/shellhist"
+	"github.com/lvbibir/sshyard/internal/shellhist"
 	"golang.org/x/crypto/ssh"
 )
 

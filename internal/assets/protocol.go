@@ -4,7 +4,7 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/Licoy/sshyard/internal/serial"
+	"github.com/lvbibir/sshyard/internal/serial"
 )
 
 // Protocol is how a host is reached.

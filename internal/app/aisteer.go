@@ -5,7 +5,7 @@ import (
 	"reflect"
 	"strings"
 
-	"github.com/Licoy/sshyard/internal/ai/policy"
+	"github.com/lvbibir/sshyard/internal/ai/policy"
 )
 
 var errAIStopUnconfirmed = errors.New("ai: could not confirm the previous turn stopped")

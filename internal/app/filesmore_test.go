@@ -11,10 +11,10 @@ import (
 	"testing"
 	"time"
 
-	"github.com/Licoy/sshyard/internal/sftpsvc"
-	"github.com/Licoy/sshyard/internal/sshtest"
-	"github.com/Licoy/sshyard/locales"
 	"github.com/egoist/mygo/ui"
+	"github.com/lvbibir/sshyard/internal/sftpsvc"
+	"github.com/lvbibir/sshyard/internal/sshtest"
+	"github.com/lvbibir/sshyard/locales"
 	"golang.org/x/crypto/ssh"
 )
 

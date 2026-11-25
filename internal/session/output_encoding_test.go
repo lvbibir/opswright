@@ -9,8 +9,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/Licoy/sshyard/internal/sshtest"
-	"github.com/Licoy/sshyard/internal/vt"
+	"github.com/lvbibir/sshyard/internal/sshtest"
+	"github.com/lvbibir/sshyard/internal/vt"
 	"golang.org/x/crypto/ssh"
 )
 

@@ -9,7 +9,7 @@ import (
 	"log"
 	"net"
 
-	"github.com/Licoy/sshyard/internal/netproxy"
+	"github.com/lvbibir/sshyard/internal/netproxy"
 )
 
 func main() {

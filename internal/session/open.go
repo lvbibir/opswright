@@ -4,8 +4,8 @@ import (
 	"context"
 	"net"
 
-	"github.com/Licoy/sshyard/internal/serial"
-	"github.com/Licoy/sshyard/internal/telnet"
+	"github.com/lvbibir/sshyard/internal/serial"
+	"github.com/lvbibir/sshyard/internal/telnet"
 )
 
 // Opener opens a session's stream, for Options.Open.

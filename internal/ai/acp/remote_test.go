@@ -9,7 +9,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/Licoy/sshyard/internal/ai/policy"
+	"github.com/lvbibir/sshyard/internal/ai/policy"
 
 	sdk "github.com/coder/acp-go-sdk"
 )

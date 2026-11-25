@@ -3,8 +3,8 @@ package app
 import (
 	"testing"
 
-	"github.com/Licoy/sshyard/internal/vt"
 	"github.com/egoist/mygo/ui"
+	"github.com/lvbibir/sshyard/internal/vt"
 )
 
 func TestEncodeKeySuperArrowsAreHomeEnd(t *testing.T) {

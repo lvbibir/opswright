@@ -11600,46 +11600,6 @@ func (msgs Messages) SecuritySftpOperationsBusy() string {
 	return Catalog.Format(msgs.locale, "securitySftpOperationsBusy", nil)
 }
 
-// GitHubRepo says "GitHub Repository"
-// in the language the app shows.
-func GitHubRepo() string { return In(i18n.Locale()).GitHubRepo() }
-
-// GitHubRepo says "GitHub Repository"
-// in the language of msgs.
-func (msgs Messages) GitHubRepo() string {
-	return Catalog.Format(msgs.locale, "gitHubRepo", nil)
-}
-
-// Feedback says "Feedback / Community"
-// in the language the app shows.
-func Feedback() string { return In(i18n.Locale()).Feedback() }
-
-// Feedback says "Feedback / Community"
-// in the language of msgs.
-func (msgs Messages) Feedback() string {
-	return Catalog.Format(msgs.locale, "feedback", nil)
-}
-
-// FeedbackGitHub says "GitHub Feedback"
-// in the language the app shows.
-func FeedbackGitHub() string { return In(i18n.Locale()).FeedbackGitHub() }
-
-// FeedbackGitHub says "GitHub Feedback"
-// in the language of msgs.
-func (msgs Messages) FeedbackGitHub() string {
-	return Catalog.Format(msgs.locale, "feedbackGitHub", nil)
-}
-
-// FeedbackQQGroup says "QQ Group"
-// in the language the app shows.
-func FeedbackQQGroup() string { return In(i18n.Locale()).FeedbackQQGroup() }
-
-// FeedbackQQGroup says "QQ Group"
-// in the language of msgs.
-func (msgs Messages) FeedbackQQGroup() string {
-	return Catalog.Format(msgs.locale, "feedbackQQGroup", nil)
-}
-
 // CrumbsLabel says "Path"
 // in the language the app shows.
 func CrumbsLabel() string { return In(i18n.Locale()).CrumbsLabel() }

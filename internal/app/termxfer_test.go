@@ -10,9 +10,9 @@ import (
 	"testing"
 	"time"
 
-	"github.com/Licoy/sshyard/internal/assets"
-	"github.com/Licoy/sshyard/internal/xfer"
-	"github.com/Licoy/sshyard/locales"
+	"github.com/lvbibir/sshyard/internal/assets"
+	"github.com/lvbibir/sshyard/internal/xfer"
+	"github.com/lvbibir/sshyard/locales"
 )
 
 func writeFile(t *testing.T, p, data string) {

@@ -15,12 +15,12 @@ import (
 	"sync"
 	"time"
 
-	"github.com/Licoy/sshyard/internal/ai/acp"
-	"github.com/Licoy/sshyard/internal/ai/acp/detect"
-	"github.com/Licoy/sshyard/internal/ai/agent"
-	"github.com/Licoy/sshyard/internal/ai/policy"
-	"github.com/Licoy/sshyard/internal/ai/remote"
-	"github.com/Licoy/sshyard/internal/session"
+	"github.com/lvbibir/sshyard/internal/ai/acp"
+	"github.com/lvbibir/sshyard/internal/ai/acp/detect"
+	"github.com/lvbibir/sshyard/internal/ai/agent"
+	"github.com/lvbibir/sshyard/internal/ai/policy"
+	"github.com/lvbibir/sshyard/internal/ai/remote"
+	"github.com/lvbibir/sshyard/internal/session"
 )
 
 // acpRuntime owns only this pane's process, SFTP subsystem and pool reference

@@ -7,8 +7,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/Licoy/sshyard/internal/awake"
-	"github.com/Licoy/sshyard/internal/sftpsvc"
+	"github.com/lvbibir/sshyard/internal/awake"
+	"github.com/lvbibir/sshyard/internal/sftpsvc"
 )
 
 // awakeHold is a system hold that says whether it is taken.

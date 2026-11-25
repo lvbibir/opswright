@@ -1,14 +1,13 @@
 package app
 
 import (
-	"slices"
 	"strconv"
 	"testing"
 
-	"github.com/Licoy/sshyard/internal/assets"
-	"github.com/Licoy/sshyard/internal/layout"
-	"github.com/Licoy/sshyard/internal/session"
-	"github.com/Licoy/sshyard/locales"
+	"github.com/lvbibir/sshyard/internal/assets"
+	"github.com/lvbibir/sshyard/internal/layout"
+	"github.com/lvbibir/sshyard/internal/session"
+	"github.com/lvbibir/sshyard/locales"
 )
 
 // TestTitleBarMultipleShells exercises shell-named tabs on every platform,
@@ -32,21 +31,10 @@ func TestTitleBarMultipleShells(t *testing.T) {
 	}
 }
 
-// TestTitleBar: its GitHub button opens the repository, its updates
-// button checks without opening the settings, its settings button closes
-// the settings, and the window's own buttons call the window.
+// TestTitleBar: its settings button closes the settings, and the window's
+// own buttons call the window.
 func TestTitleBar(t *testing.T) {
 	a, tt := newTestApp(t)
-	mustClick(t, tt, "GitHub Repository")
-	if got := tt.OpenedURLs(); !slices.Equal(got, []string{repoURL}) {
-		t.Errorf("GitHub opened %q", got)
-	}
-	upd := &fakeUpdates{enabled: true}
-	a.upd = upd
-	mustClick(t, tt, "Check for Updates")
-	if upd.checks != 1 || a.page == pageSettings {
-		t.Errorf("updates: %d checks, page %v", upd.checks, a.page)
-	}
 	a.openSettings(prefAbout)
 	tt.Frame()
 	mustClick(t, tt, "Close Settings")

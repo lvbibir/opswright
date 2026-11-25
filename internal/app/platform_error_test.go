@@ -4,9 +4,9 @@ import (
 	"errors"
 	"testing"
 
-	"github.com/Licoy/sshyard/internal/keychain"
-	"github.com/Licoy/sshyard/locales"
 	"github.com/egoist/mygo/ui"
+	"github.com/lvbibir/sshyard/internal/keychain"
+	"github.com/lvbibir/sshyard/locales"
 )
 
 func TestPlatformErrorVisible(t *testing.T) {

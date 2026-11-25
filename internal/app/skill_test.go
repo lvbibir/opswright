@@ -7,7 +7,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/Licoy/sshyard/internal/mcp"
+	"github.com/lvbibir/sshyard/internal/mcp"
 )
 
 func TestSkillText(t *testing.T) {

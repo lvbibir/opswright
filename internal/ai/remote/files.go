@@ -3,7 +3,7 @@ package remote
 import (
 	"context"
 
-	"github.com/Licoy/sshyard/internal/sftpsvc"
+	"github.com/lvbibir/sshyard/internal/sftpsvc"
 	"golang.org/x/crypto/ssh"
 )
 

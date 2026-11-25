@@ -14,14 +14,14 @@ import (
 	"testing"
 	"time"
 
-	"github.com/Licoy/sshyard/internal/session"
-	"github.com/Licoy/sshyard/internal/settings"
-	"github.com/Licoy/sshyard/locales"
+	"github.com/lvbibir/sshyard/internal/session"
+	"github.com/lvbibir/sshyard/internal/settings"
+	"github.com/lvbibir/sshyard/locales"
 )
 
 func TestACPAppProtocolAndLifecycle(t *testing.T) {
 	binary := filepath.Join(t.TempDir(), "fakeagent")
-	command := exec.Command("go", "build", "-o", binary, "github.com/Licoy/sshyard/internal/ai/acp/internal/fakeagent")
+	command := exec.Command("go", "build", "-o", binary, "github.com/lvbibir/sshyard/internal/ai/acp/internal/fakeagent")
 	if output, err := command.CombinedOutput(); err != nil {
 		t.Fatalf("build fakeagent: %v %s", err, output)
 	}

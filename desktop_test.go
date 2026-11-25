@@ -18,11 +18,11 @@ import (
 	"testing"
 	"time"
 
-	"github.com/Licoy/sshyard/internal/app"
-	"github.com/Licoy/sshyard/internal/keychain"
-	"github.com/Licoy/sshyard/internal/settings"
 	"github.com/egoist/mygo"
 	"github.com/egoist/mygo/ui"
+	"github.com/lvbibir/sshyard/internal/app"
+	"github.com/lvbibir/sshyard/internal/keychain"
+	"github.com/lvbibir/sshyard/internal/settings"
 )
 
 // TestMain keeps the opt-in native event loop on the process's main thread.

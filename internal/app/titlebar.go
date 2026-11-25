@@ -1,10 +1,10 @@
 package app
 
 import (
-	"github.com/Licoy/sshyard/internal/icons"
-	"github.com/Licoy/sshyard/internal/theme"
-	"github.com/Licoy/sshyard/locales"
 	"github.com/egoist/mygo/ui"
+	"github.com/lvbibir/sshyard/internal/icons"
+	"github.com/lvbibir/sshyard/internal/theme"
+	"github.com/lvbibir/sshyard/locales"
 )
 
 // WindowControls are the window's buttons, for a window whose view draws
@@ -80,29 +80,11 @@ func (a *App) settingsBack(c *ui.Context, m locales.Messages, tok theme.Tokens) 
 	}
 }
 
-// appButtons are the app's own IconButtons in the title bar: updates, its
-// source on GitHub, feedback (GitHub issues or the QQ group) and the
-// settings. Updates show in the accent while a
-// newer version is out; a click checks, and the update window shows what
-// it found with the release notes.
+// appButtons are the app's own IconButtons in the title bar: the settings,
+// which open them, or close them while they are open. Checking for updates,
+// the source on GitHub and feedback are reached from the settings' About
+// page instead.
 func (a *App) appButtons(c *ui.Context, m locales.Messages) {
-	v := a.upd.Available()
-	label := m.CheckForUpdates()
-	if v != "" {
-		label = m.UpdateAvailable(v)
-	}
-	if (IconButton{Icon: icons.Update, Label: label, Active: v != ""}).Clicked(c, "update") {
-		a.upd.Check()
-	}
-	if iconButton(c, "github", icons.GitHub, m.GitHubRepo()) {
-		c.OpenURL(repoURL)
-	}
-	a.menuButton(c, "feedback", IconButton{Icon: icons.Feedback, Label: m.Feedback()}, func() []menuEntry {
-		return []menuEntry{
-			{Icon: icons.GitHub, Label: m.FeedbackGitHub(), Do: func() { c.OpenURL(issuesURL) }},
-			{Icon: icons.QQ, Label: m.FeedbackQQGroup(), Do: func() { c.OpenURL(qqGroupURL) }},
-		}
-	})
 	if a.page == pageSettings {
 		if (IconButton{Icon: icons.Close, Label: m.CloseSettings(), Danger: true, Prominent: true}).Clicked(c, "settings") {
 			a.closeSettings()

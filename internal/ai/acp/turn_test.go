@@ -9,8 +9,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/Licoy/sshyard/internal/sftpsvc"
 	sdk "github.com/coder/acp-go-sdk"
+	"github.com/lvbibir/sshyard/internal/sftpsvc"
 )
 
 type cancellingFiles struct {

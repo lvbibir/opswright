@@ -16,7 +16,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/Licoy/sshyard/internal/xfer"
+	"github.com/lvbibir/sshyard/internal/xfer"
 )
 
 // version is the trzsz version this client says it is.

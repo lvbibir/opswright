@@ -8,8 +8,8 @@ import (
 	"sync"
 	"testing"
 
-	"github.com/Licoy/sshyard/internal/sshtest"
 	"github.com/egoist/mygo/ui"
+	"github.com/lvbibir/sshyard/internal/sshtest"
 )
 
 // hostilePane opens a files pane on a server listing what ffs says, its

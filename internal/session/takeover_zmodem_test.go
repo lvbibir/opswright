@@ -8,9 +8,9 @@ import (
 	"testing"
 	"time"
 
-	"github.com/Licoy/sshyard/internal/xfer"
-	"github.com/Licoy/sshyard/internal/xfer/xfertest"
-	"github.com/Licoy/sshyard/internal/zmodem"
+	"github.com/lvbibir/sshyard/internal/xfer"
+	"github.com/lvbibir/sshyard/internal/xfer/xfertest"
+	"github.com/lvbibir/sshyard/internal/zmodem"
 )
 
 // pipeStream is a shell whose other end a test drives as a server.

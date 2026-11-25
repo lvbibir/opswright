@@ -12,13 +12,13 @@ import (
 	"time"
 	"unicode/utf8"
 
-	"github.com/Licoy/sshyard/internal/highlight"
-	"github.com/Licoy/sshyard/internal/session"
-	"github.com/Licoy/sshyard/internal/settings"
-	"github.com/Licoy/sshyard/internal/theme"
-	"github.com/Licoy/sshyard/internal/vt"
 	"github.com/egoist/mygo/transfer"
 	"github.com/egoist/mygo/ui"
+	"github.com/lvbibir/sshyard/internal/highlight"
+	"github.com/lvbibir/sshyard/internal/session"
+	"github.com/lvbibir/sshyard/internal/settings"
+	"github.com/lvbibir/sshyard/internal/theme"
+	"github.com/lvbibir/sshyard/internal/vt"
 )
 
 // TerminalView is SSHYard's own native terminal widget: it draws a

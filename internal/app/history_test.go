@@ -12,9 +12,9 @@ import (
 	"testing"
 	"time"
 
-	"github.com/Licoy/sshyard/internal/layout"
-	"github.com/Licoy/sshyard/internal/shellhist"
-	"github.com/Licoy/sshyard/locales"
+	"github.com/lvbibir/sshyard/internal/layout"
+	"github.com/lvbibir/sshyard/internal/shellhist"
+	"github.com/lvbibir/sshyard/locales"
 	"golang.org/x/crypto/ssh"
 )
 

@@ -3,8 +3,8 @@ package app
 import (
 	"errors"
 
-	"github.com/Licoy/sshyard/internal/assets"
-	"github.com/Licoy/sshyard/internal/keychain"
+	"github.com/lvbibir/sshyard/internal/assets"
+	"github.com/lvbibir/sshyard/internal/keychain"
 )
 
 // snippetStoreError identifies a failed persistence stage without exposing paths

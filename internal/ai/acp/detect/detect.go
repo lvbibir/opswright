@@ -26,7 +26,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/Licoy/sshyard/internal/ai/acp"
+	"github.com/lvbibir/sshyard/internal/ai/acp"
 )
 
 // Agent is one ACP agent found on this computer.

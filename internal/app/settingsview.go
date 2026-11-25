@@ -5,26 +5,23 @@ import (
 	"slices"
 	"strconv"
 
-	"github.com/Licoy/sshyard/internal/fonts"
-	"github.com/Licoy/sshyard/internal/icons"
-	"github.com/Licoy/sshyard/internal/keymap"
-	"github.com/Licoy/sshyard/internal/settings"
-	"github.com/Licoy/sshyard/internal/theme"
-	"github.com/Licoy/sshyard/locales"
 	"github.com/egoist/mygo/ui"
+	"github.com/lvbibir/sshyard/internal/fonts"
+	"github.com/lvbibir/sshyard/internal/icons"
+	"github.com/lvbibir/sshyard/internal/keymap"
+	"github.com/lvbibir/sshyard/internal/settings"
+	"github.com/lvbibir/sshyard/internal/theme"
+	"github.com/lvbibir/sshyard/locales"
 )
 
 // languageNames are the languages offered, by their own names.
 var languageNames = map[string]string{"en": "English", "zh-Hans": "简体中文"}
 
 // repoURL is where SSHYard's source and issues live.
-const repoURL = "https://github.com/Licoy/sshyard"
+const repoURL = "https://github.com/lvbibir/sshyard"
 
-// issuesURL is where feedback goes on GitHub, qqGroupURL the users' QQ group.
-const (
-	issuesURL  = repoURL + "/issues"
-	qqGroupURL = "https://qm.qq.com/q/OcPq9MNkeO"
-)
+// issuesURL is where feedback goes on GitHub.
+const issuesURL = repoURL + "/issues"
 
 // prefPage is a page of the settings, chosen in their sidebar.
 type prefPage string

@@ -7,9 +7,9 @@ import (
 	"testing"
 	"time"
 
-	"github.com/Licoy/sshyard/internal/vt"
-	"github.com/Licoy/sshyard/locales"
 	"github.com/egoist/mygo/ui"
+	"github.com/lvbibir/sshyard/internal/vt"
+	"github.com/lvbibir/sshyard/locales"
 )
 
 // readLog waits for the log at path to hold want, and returns it.

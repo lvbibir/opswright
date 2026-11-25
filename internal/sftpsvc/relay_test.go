@@ -13,7 +13,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/Licoy/sshyard/internal/sshtest"
+	"github.com/lvbibir/sshyard/internal/sshtest"
 )
 
 // enqueueRelay makes the plan's folders on the destination and queues

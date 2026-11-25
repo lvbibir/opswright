@@ -38,11 +38,11 @@ import og
 
 HERE = Path(__file__).resolve().parent
 REPO = HERE.parent
-REPOSITORY = "Licoy/sshyard"
+REPOSITORY = "lvbibir/sshyard"
 GITHUB = f"https://github.com/{REPOSITORY}"
-AUTHOR = "https://github.com/Licoy"
+AUTHOR = "https://github.com/lvbibir"
 LICENSE_URL = "https://www.gnu.org/licenses/agpl-3.0.html"
-DEFAULT_BASE_URL = "https://licoy.github.io/sshyard"
+DEFAULT_BASE_URL = "https://lvbibir.github.io/sshyard"
 
 
 @dataclass(frozen=True)
@@ -545,7 +545,7 @@ class Site:
         graph = [
             {"@type": "WebSite", "@id": f"{root}#website", "url": root, "name": "SSHYard",
              "inLanguage": [l.code for l in LANGS], "publisher": {"@id": f"{AUTHOR}#person"}},
-            {"@type": "Person", "@id": f"{AUTHOR}#person", "name": "Licoy", "url": AUTHOR},
+            {"@type": "Person", "@id": f"{AUTHOR}#person", "name": "lvbibir", "url": AUTHOR},
             app,
             {"@type": "WebPage", "@id": f"{url}#webpage", "url": url, "name": title, "description": desc,
              "inLanguage": lang.code, "isPartOf": {"@id": f"{root}#website"}, "about": {"@id": f"{root}#software"},

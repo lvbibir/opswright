@@ -7,8 +7,8 @@ import (
 	"sync/atomic"
 	"testing"
 
-	"github.com/Licoy/sshyard/internal/layout"
 	"github.com/egoist/mygo/ui"
+	"github.com/lvbibir/sshyard/internal/layout"
 	"golang.org/x/crypto/ssh"
 )
 

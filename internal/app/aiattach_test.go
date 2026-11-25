@@ -12,9 +12,9 @@ import (
 	"sync"
 	"testing"
 
-	"github.com/Licoy/sshyard/internal/ai/agent"
-	"github.com/Licoy/sshyard/internal/ai/llm"
 	"github.com/egoist/mygo/transfer"
+	"github.com/lvbibir/sshyard/internal/ai/agent"
+	"github.com/lvbibir/sshyard/internal/ai/llm"
 )
 
 // partsModel answers at once, keeping the last question it was asked.

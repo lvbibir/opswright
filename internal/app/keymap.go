@@ -6,11 +6,11 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/Licoy/sshyard/internal/icons"
-	"github.com/Licoy/sshyard/internal/keymap"
-	"github.com/Licoy/sshyard/internal/layout"
-	"github.com/Licoy/sshyard/locales"
 	"github.com/egoist/mygo/ui"
+	"github.com/lvbibir/sshyard/internal/icons"
+	"github.com/lvbibir/sshyard/internal/keymap"
+	"github.com/lvbibir/sshyard/internal/layout"
+	"github.com/lvbibir/sshyard/locales"
 )
 
 // The actions a shortcut runs, by the ID the settings keep their

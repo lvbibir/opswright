@@ -4,7 +4,7 @@ import (
 	"slices"
 	"testing"
 
-	"github.com/Licoy/sshyard/internal/layout"
+	"github.com/lvbibir/sshyard/internal/layout"
 )
 
 // TestTabDragReorders: a tab dropped on another's first half goes before

@@ -3,9 +3,9 @@ package app
 import (
 	"time"
 
-	"github.com/Licoy/sshyard/internal/icons"
-	"github.com/Licoy/sshyard/internal/theme"
 	"github.com/egoist/mygo/ui"
+	"github.com/lvbibir/sshyard/internal/icons"
+	"github.com/lvbibir/sshyard/internal/theme"
 )
 
 // The app's own building blocks over MyGo's native elements, after the

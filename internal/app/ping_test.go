@@ -5,7 +5,7 @@ import (
 	"strconv"
 	"testing"
 
-	"github.com/Licoy/sshyard/internal/assets"
+	"github.com/lvbibir/sshyard/internal/assets"
 )
 
 // TestPingHosts: the hosts are measured only when asked, those reached

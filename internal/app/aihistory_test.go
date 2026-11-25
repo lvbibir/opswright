@@ -9,9 +9,9 @@ import (
 	"sync"
 	"testing"
 
-	"github.com/Licoy/sshyard/internal/ai/agent"
-	"github.com/Licoy/sshyard/internal/ai/history"
-	"github.com/Licoy/sshyard/internal/ai/llm"
+	"github.com/lvbibir/sshyard/internal/ai/agent"
+	"github.com/lvbibir/sshyard/internal/ai/history"
+	"github.com/lvbibir/sshyard/internal/ai/llm"
 )
 
 func chatSummaries(t *testing.T, a *App, host string) []history.Summary {

@@ -3,9 +3,9 @@ package app
 import (
 	"testing"
 
-	"github.com/Licoy/sshyard/internal/session"
-	"github.com/Licoy/sshyard/locales"
 	"github.com/egoist/mygo/ui"
+	"github.com/lvbibir/sshyard/internal/session"
+	"github.com/lvbibir/sshyard/locales"
 )
 
 // TestRenameTab: the tab's menu renames it through a sheet that takes the

@@ -4,8 +4,8 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/Licoy/sshyard/internal/vt"
 	"github.com/egoist/mygo/ui"
+	"github.com/lvbibir/sshyard/internal/vt"
 )
 
 // TestCursorMoveBytes: the arrows for a move, in the cursor key mode.

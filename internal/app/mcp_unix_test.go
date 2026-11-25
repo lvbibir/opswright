@@ -10,8 +10,8 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/Licoy/sshyard/internal/ai/audit"
-	"github.com/Licoy/sshyard/internal/sshtest"
+	"github.com/lvbibir/sshyard/internal/ai/audit"
+	"github.com/lvbibir/sshyard/internal/sshtest"
 )
 
 // mcpClient calls the endpoint as an agent would.

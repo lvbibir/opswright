@@ -19,7 +19,7 @@ import (
 	"time"
 	"unicode/utf8"
 
-	"github.com/Licoy/sshyard/internal/backup"
+	"github.com/lvbibir/sshyard/internal/backup"
 )
 
 // Description marks the gist SSHYard keeps its backups in.

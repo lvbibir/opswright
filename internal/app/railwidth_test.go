@@ -4,9 +4,9 @@ import (
 	"math"
 	"testing"
 
-	"github.com/Licoy/sshyard/internal/keychain"
-	"github.com/Licoy/sshyard/internal/layout"
 	"github.com/egoist/mygo/ui"
+	"github.com/lvbibir/sshyard/internal/keychain"
+	"github.com/lvbibir/sshyard/internal/layout"
 )
 
 // TestRailPaneKeepsWidth: a pane the rail opens comes back as wide as the

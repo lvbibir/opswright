@@ -5,9 +5,9 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/Licoy/sshyard/internal/assets"
-	"github.com/Licoy/sshyard/internal/keychain"
-	"github.com/Licoy/sshyard/internal/sftpsvc"
+	"github.com/lvbibir/sshyard/internal/assets"
+	"github.com/lvbibir/sshyard/internal/keychain"
+	"github.com/lvbibir/sshyard/internal/sftpsvc"
 )
 
 // TestSFTPSudoPassword: sudo gets the password typed for it, else the

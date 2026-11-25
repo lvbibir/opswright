@@ -5,8 +5,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/Licoy/sshyard/internal/keychain"
 	"github.com/egoist/mygo/ui"
+	"github.com/lvbibir/sshyard/internal/keychain"
 )
 
 // The test goroutine is the UI thread; no View frames are rendered.

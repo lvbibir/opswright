@@ -6,9 +6,9 @@ import (
 	"testing"
 	"time"
 
-	"github.com/Licoy/sshyard/internal/theme"
-	"github.com/Licoy/sshyard/internal/vt"
 	"github.com/egoist/mygo/ui"
+	"github.com/lvbibir/sshyard/internal/theme"
+	"github.com/lvbibir/sshyard/internal/vt"
 )
 
 // dragScrollFixture is a terminal view drawn in a window taller than its

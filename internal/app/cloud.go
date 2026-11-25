@@ -16,17 +16,17 @@ import (
 	"strings"
 	"time"
 
-	"github.com/Licoy/sshyard/internal/assets"
-	"github.com/Licoy/sshyard/internal/backup"
-	"github.com/Licoy/sshyard/internal/backup/gist"
-	"github.com/Licoy/sshyard/internal/backup/s3"
-	"github.com/Licoy/sshyard/internal/backup/webdav"
-	"github.com/Licoy/sshyard/internal/icons"
-	"github.com/Licoy/sshyard/internal/keychain"
-	"github.com/Licoy/sshyard/internal/settings"
-	"github.com/Licoy/sshyard/internal/theme"
-	"github.com/Licoy/sshyard/locales"
 	"github.com/egoist/mygo/ui"
+	"github.com/lvbibir/sshyard/internal/assets"
+	"github.com/lvbibir/sshyard/internal/backup"
+	"github.com/lvbibir/sshyard/internal/backup/gist"
+	"github.com/lvbibir/sshyard/internal/backup/s3"
+	"github.com/lvbibir/sshyard/internal/backup/webdav"
+	"github.com/lvbibir/sshyard/internal/icons"
+	"github.com/lvbibir/sshyard/internal/keychain"
+	"github.com/lvbibir/sshyard/internal/settings"
+	"github.com/lvbibir/sshyard/internal/theme"
+	"github.com/lvbibir/sshyard/locales"
 )
 
 // Cloud backup: the places this device backs up to (settings.BackupTarget),

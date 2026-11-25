@@ -8,8 +8,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/Licoy/sshyard/internal/settings"
 	"github.com/egoist/mygo/ui"
+	"github.com/lvbibir/sshyard/internal/settings"
 )
 
 // The files of a host open in tabs of one window, those of this computer
