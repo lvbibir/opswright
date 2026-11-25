@@ -765,16 +765,6 @@ func dynFloor(core partial, args []arg) partial {
 	return core
 }
 
-func readsPaths(name string) bool {
-	switch name {
-	case "ls", "cat", "head", "tail", "less", "more", "grep", "rg", "egrep", "fgrep",
-		"stat", "df", "du", "file", "wc", "sort", "uniq", "find":
-		return true
-	default:
-		return false
-	}
-}
-
 func baseName(s string) string {
 	s = strings.TrimSpace(s)
 	if i := strings.LastIndexAny(s, `/\`); i >= 0 {

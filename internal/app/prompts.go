@@ -590,11 +590,3 @@ func knownHostsErrorText(m locales.Messages, err error) string {
 	}
 	return m.ErrGeneric(err.Error())
 }
-
-// hostID is the ID of the connection's host, for its tint.
-func hostID(cn *conn) string {
-	if cn == nil {
-		return ""
-	}
-	return cn.host.ID
-}

@@ -1092,22 +1092,6 @@ func (a *App) answerAI(c *conn, ans policy.Answer) {
 	}
 }
 
-func (a *App) pendingAI() *conn {
-	if cn := a.focused(); cn != nil && cn.ai != nil && cn.ai.pending != nil {
-		return cn
-	}
-	var best *conn
-	for _, c := range a.conns {
-		if c.ai == nil || c.ai.pending == nil {
-			continue
-		}
-		if best == nil || c.id < best.id {
-			best = c
-		}
-	}
-	return best
-}
-
 // invalidateAI cancels the current turn before applying new credentials or permissions
 // The session history stays in memory; the next turn gets a fresh gate and no old grants
 func (a *App) invalidateAI(c *conn) {

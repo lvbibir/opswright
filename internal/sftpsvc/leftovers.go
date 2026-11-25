@@ -54,11 +54,6 @@ func backupName(p string) string {
 	return path.Join(path.Dir(p), ".opswright-old-"+hex.EncodeToString(sum[:6])+"-"+path.Base(p))
 }
 
-// leftover reports whether name is in a form cleanLeftovers handles.
-func leftover(name string) bool {
-	return tempRe.MatchString(name) || backupRe.MatchString(name)
-}
-
 // Unfinished is a file whose last save did not finish: it is missing,
 // and its old version is at Backup, both names in the same folder.
 type Unfinished struct {

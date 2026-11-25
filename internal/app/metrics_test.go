@@ -79,19 +79,6 @@ func startMetricSrv(t *testing.T, exec func(ssh.Channel, string) int) *sshtest.S
 	return srv
 }
 
-func clickContaining(t *testing.T, tt *ui.Tester, sub string) {
-	t.Helper()
-	for _, s := range tt.Texts() {
-		if strings.Contains(s, sub) {
-			if err := tt.Click(s); err != nil {
-				t.Fatalf("click %q: %v; texts %q", s, err, tt.Texts())
-			}
-			return
-		}
-	}
-	t.Fatalf("no text contains %q in %q", sub, tt.Texts())
-}
-
 func textCount(tt *ui.Tester, s string) int {
 	n := 0
 	for _, text := range tt.Texts() {
@@ -100,15 +87,6 @@ func textCount(tt *ui.Tester, s string) int {
 		}
 	}
 	return n
-}
-
-func textsContain(tt *ui.Tester, s string) bool {
-	for _, text := range tt.Texts() {
-		if strings.Contains(text, s) {
-			return true
-		}
-	}
-	return false
 }
 
 func hasLatency(tt *ui.Tester) bool {
@@ -284,15 +262,6 @@ func TestMetricsHideSaveError(t *testing.T) {
 	if !tt.HasText("Couldn’t hide the metrics bar") {
 		t.Fatalf("no error toast: %q", tt.Texts())
 	}
-}
-
-func textsHave(list []string, s string) bool {
-	for _, item := range list {
-		if item == s {
-			return true
-		}
-	}
-	return false
 }
 
 func TestMetricsBarHidden(t *testing.T) {

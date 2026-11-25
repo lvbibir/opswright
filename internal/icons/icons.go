@@ -14,8 +14,6 @@ package icons
 
 import (
 	"embed"
-	"io/fs"
-	"strings"
 
 	"github.com/egoist/mygo/ui"
 )
@@ -25,20 +23,15 @@ var files embed.FS
 
 // Icon is one parsed Remix Icon.
 type Icon struct {
-	Name string // the Remix Icon name, as "folder-3-line"
-	SVG  *ui.SVG
+	SVG *ui.SVG
 }
-
-var all = map[string]*Icon{}
 
 func load(name string) *Icon {
 	data, err := files.ReadFile("svg/" + name + ".svg")
 	if err != nil {
 		panic("icons: no Remix Icon " + name + " in svg/")
 	}
-	ic := &Icon{Name: name, SVG: ui.MustParseSVG(data)}
-	all[name] = ic
-	return ic
+	return &Icon{SVG: ui.MustParseSVG(data)}
 }
 
 // The icons the app uses, by what they mean.
@@ -267,20 +260,4 @@ func HostIconOf(key string) (*Icon, bool) {
 		}
 	}
 	return nil, false
-}
-
-// Get returns an icon by its Remix Icon name.
-func Get(name string) (*Icon, bool) {
-	ic, ok := all[name]
-	return ic, ok
-}
-
-// Names lists the embedded icon files' names.
-func Names() []string {
-	var out []string
-	es, _ := fs.ReadDir(files, "svg")
-	for _, e := range es {
-		out = append(out, strings.TrimSuffix(e.Name(), ".svg"))
-	}
-	return out
 }
