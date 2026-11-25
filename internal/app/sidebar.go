@@ -82,7 +82,7 @@ func (a *App) sidebarView(c *ui.Context, m locales.Messages, tok theme.Tokens) {
 			})
 			ui.Spacer(c)
 		} else {
-			favs, groups, byGroup := hostsBy(a.store, a.search)
+			favs, groups, byGroup := a.sideHosts.get(a.store, a.search)
 			sb := ui.Sidebar(c.Key("hosts"), &a.selected, func() {
 				if len(favs) > 0 {
 					ui.SidebarSection(c.Key("s:fav"), m.Favorites(), a.section("fav"), func() {

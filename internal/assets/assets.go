@@ -388,6 +388,11 @@ type Store struct {
 	groupLooks map[string]GroupLook
 	// discarded are the host IDs of an older file Open threw away.
 	discarded []string
+	// at is where each host was in hosts as last looked up, a hint index
+	// checks before it trusts, so that no change to hosts can make it
+	// wrong; rev counts the changes made or undone (Rev).
+	at  map[string]int
+	rev uint64
 }
 
 type file struct {
@@ -485,6 +490,7 @@ func (s *Store) commit(fn func()) error {
 	h, c, p, gw, f, g := slices.Clone(s.hosts), slices.Clone(s.creds), slices.Clone(s.proxies), slices.Clone(s.gateways), slices.Clone(s.forwards), slices.Clone(s.groups)
 	n := slices.Clone(s.snippets)
 	order, looks := slices.Clone(s.groupOrder), maps.Clone(s.groupLooks)
+	s.rev++
 	fn()
 	if len(s.groupOrder) > 0 {
 		s.groupOrder = s.groupNames()
@@ -506,8 +512,28 @@ func newID() string {
 	return hex.EncodeToString(b[:])
 }
 
+// index is where host id is in hosts, -1 for none: at once where the hint
+// holds, else by a scan that renews the hint.
 func (s *Store) index(id string) int {
-	return slices.IndexFunc(s.hosts, func(h Host) bool { return h.ID == id })
+	if i, ok := s.at[id]; ok && i < len(s.hosts) && s.hosts[i].ID == id {
+		return i
+	}
+	i := slices.IndexFunc(s.hosts, func(h Host) bool { return h.ID == id })
+	if i >= 0 {
+		s.at = make(map[string]int, len(s.hosts))
+		for j, h := range s.hosts {
+			s.at[h.ID] = j
+		}
+	}
+	return i
+}
+
+// Rev changes whenever what the store holds may have: a caller keeping
+// what it read (sorted hosts, groups) reads it again once Rev differs.
+func (s *Store) Rev() uint64 {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	return s.rev
 }
 
 func sorted(hs []Host) []Host {
