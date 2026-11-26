@@ -221,15 +221,9 @@ type conn struct {
 	probeRTT    time.Duration
 	probeOK     int
 	// start is what an SSH terminal's shell is given each time it starts
-	// (see shellStart); tmuxConn is the connect it was last seen at,
-	// tmuxUp when, and tmuxAt when the tmux session the terminal is in
-	// was last read (tmuxReading while it is); see watchTmux
-	start       *shellStart
-	container   bool // a container's shell, whose files are not the host's: none listed
-	tmuxConn    int
-	tmuxUp      time.Time
-	tmuxAt      time.Time
-	tmuxReading bool
+	// (see shellStart)
+	start     *shellStart
+	container bool // a container's shell, whose files are not the host's: none listed
 	// temp is the ID of the temporary host the pane was opened on, kept
 	// after it is saved as a host, so that what was typed for it goes
 	// when its last pane closes
@@ -381,14 +375,10 @@ type App struct {
 	ctx  ctxMenu
 	// card is the sidebar host whose card shows, or soon will
 	card cardHover
-	// tmuxWarned are the hosts whose terminals were told that their
-	// server has no tmux, by ID
-	tmuxWarned map[string]bool
-	// usage, docker, tmux and hist are what the usage, Docker, tmux and
-	// command history panels read
+	// usage, docker and hist are what the usage, Docker and command
+	// history panels read
 	usage       *usageState
 	docker      *dockerState
-	tmux        *tmuxState
 	hist        *historyState
 	sug         *suggestState // what the terminals complete from
 	listAsk     int           // the pane whose path list its shortcut asked for, 0 none
@@ -1153,7 +1143,7 @@ func (a *App) makeConn(hostID string, kind layout.Kind, link int) (*conn, error)
 	if kind == layout.Terminal {
 		opts.Dir = h.TerminalDir
 		if !opts.Local && !isStream(h) {
-			c.start = &shellStart{host: h.Tmux, dir: h.TerminalDir, startup: h.Startup}
+			c.start = &shellStart{dir: h.TerminalDir, startup: h.Startup}
 			opts.Start = a.shellStartCmd(c)
 			opts.Elevate = a.elevateOptions(h)
 		}

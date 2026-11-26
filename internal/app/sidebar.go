@@ -349,10 +349,6 @@ func (a *App) hostEntries(m locales.Messages, h assets.Host) []menuEntry {
 	}
 	groups = append(groups, menuSep, menuEntry{Icon: icons.NewFolder, Label: m.NewGroupEllipsis(), Do: func() { a.openGroupForm("", h.ID) }})
 	connect := []menuEntry{{Icon: icons.Run, Label: m.Connect(), Do: func() { a.Connect(h.ID, openAt{}) }}}
-	if h.SSH() && h.Tmux != "" {
-		// A way in should the host's tmux session not start.
-		connect = append(connect, menuEntry{Icon: icons.Terminal, Label: m.ConnectWithoutTmux(), Do: func() { a.ConnectWithoutTmux(h.ID) }})
-	}
 	if h.SSH() && h.Startup {
 		// A way in should the host's startup commands keep its shell from starting.
 		connect = append(connect, menuEntry{Icon: icons.Terminal, Label: m.ConnectWithoutStartup(), Do: func() { a.ConnectWithoutStartup(h.ID) }})

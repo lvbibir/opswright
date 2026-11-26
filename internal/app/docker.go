@@ -192,13 +192,11 @@ func (a *App) dockerShell(tc *conn, ref string) {
 	if a.docker.info.Sudo {
 		docker = "sudo docker"
 	}
-	// The container's shell is typed once, without the host's tmux
-	// session.
+	// The container's shell is typed once.
 	a.openTerminal(tc.host.ID, func(cn *conn) {
 		cn.container = true
 		if cn.start != nil {
 			cn.start.once = docker + " exec -it " + ref + ` sh -c "command -v bash >/dev/null && exec bash || exec sh"`
-			cn.start.host = ""
 		}
 	})
 }

@@ -110,20 +110,14 @@ type Host struct {
 	// FileProtocol is how an SSH host's Files panes reach its files;
 	// with scp, SFTPSudo is off.
 	FileProtocol FileProtocol `json:"fileProtocol,omitempty"`
-	// Tmux is the tmux session an SSH host's terminals attach to each
-	// time their shell starts, created when there is none; empty is
-	// none.
-	Tmux string `json:"tmux,omitempty"`
 	// Startup is set when an SSH host's terminals type commands each
-	// time their shell starts, after the cd to TerminalDir and before
-	// the tmux attach; the commands are a host-owned secret
-	// (keychain.HostStartup).
+	// time their shell starts, after the cd to TerminalDir; the commands
+	// are a host-owned secret (keychain.HostStartup).
 	Startup bool `json:"startup,omitempty"`
 	// TerminalSu is set when an SSH host's terminals run su - as their
-	// shell starts, before the cd to TerminalDir and the tmux attach, so
-	// that the terminal, its startup commands and its tmux session run
-	// as root; the password typed when su asks for it is a host-owned
-	// secret (keychain.HostElevate).
+	// shell starts, before the cd to TerminalDir, so that the terminal,
+	// its startup commands and its shell run as root; the password typed
+	// when su asks for it is a host-owned secret (keychain.HostElevate).
 	TerminalSu bool `json:"elevate,omitempty"`
 	// TerminalSuPrompt is the prompt the terminals wait for before
 	// typing that password; empty is DefaultSuPrompt (SuPrompt).
@@ -226,7 +220,6 @@ func (h *Host) Normalize() {
 	h.Address = strings.TrimSpace(h.Address)
 	h.User = strings.TrimSpace(h.User)
 	h.Group = CleanGroup(h.Group)
-	h.Tmux = strings.TrimSpace(h.Tmux)
 	h.TerminalSuPrompt = strings.TrimSpace(h.TerminalSuPrompt)
 	if h.Encoding = strings.TrimSpace(h.Encoding); h.Encoding == "UTF-8" {
 		h.Encoding = ""

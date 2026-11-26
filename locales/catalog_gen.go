@@ -1370,11 +1370,11 @@ func (msgs Messages) ReturnToFolder() string {
 	return Catalog.Format(msgs.locale, "returnToFolder", nil)
 }
 
-// ReturnToFolderNote says "When an SSH terminal reconnects, its new shell goes back to the folder the old one reported. Not when a tmux session …"
+// ReturnToFolderNote says "When an SSH terminal reconnects, its new shell goes back to the folder the old one reported."
 // in the language the app shows.
 func ReturnToFolderNote() string { return In(i18n.Locale()).ReturnToFolderNote() }
 
-// ReturnToFolderNote says "When an SSH terminal reconnects, its new shell goes back to the folder the old one reported. Not when a tmux session …"
+// ReturnToFolderNote says "When an SSH terminal reconnects, its new shell goes back to the folder the old one reported."
 // in the language of msgs.
 func (msgs Messages) ReturnToFolderNote() string {
 	return Catalog.Format(msgs.locale, "returnToFolderNote", nil)
@@ -10064,390 +10064,6 @@ func (msgs Messages) DockerImageUnused() string {
 	return Catalog.Format(msgs.locale, "dockerImageUnused", nil)
 }
 
-// TmuxManager says "tmux Sessions"
-// in the language the app shows.
-func TmuxManager() string { return In(i18n.Locale()).TmuxManager() }
-
-// TmuxManager says "tmux Sessions"
-// in the language of msgs.
-func (msgs Messages) TmuxManager() string {
-	return Catalog.Format(msgs.locale, "tmuxManager", nil)
-}
-
-// TmuxSessionCount says "{count, plural, one {# session} other {# sessions}}"
-// in the language the app shows.
-func TmuxSessionCount(count int) string { return In(i18n.Locale()).TmuxSessionCount(count) }
-
-// TmuxSessionCount says "{count, plural, one {# session} other {# sessions}}"
-// in the language of msgs.
-func (msgs Messages) TmuxSessionCount(count int) string {
-	return Catalog.Format(msgs.locale, "tmuxSessionCount", map[string]any{"count": count})
-}
-
-// TmuxSummary says "{version} · {sessions}"
-// in the language the app shows.
-func TmuxSummary(version string, sessions string) string {
-	return In(i18n.Locale()).TmuxSummary(version, sessions)
-}
-
-// TmuxSummary says "{version} · {sessions}"
-// in the language of msgs.
-func (msgs Messages) TmuxSummary(version string, sessions string) string {
-	return Catalog.Format(msgs.locale, "tmuxSummary", map[string]any{"version": version, "sessions": sessions})
-}
-
-// TmuxNewSession says "New tmux Session"
-// in the language the app shows.
-func TmuxNewSession() string { return In(i18n.Locale()).TmuxNewSession() }
-
-// TmuxNewSession says "New tmux Session"
-// in the language of msgs.
-func (msgs Messages) TmuxNewSession() string {
-	return Catalog.Format(msgs.locale, "tmuxNewSession", nil)
-}
-
-// TmuxMissing says "tmux is not installed on this server."
-// in the language the app shows.
-func TmuxMissing() string { return In(i18n.Locale()).TmuxMissing() }
-
-// TmuxMissing says "tmux is not installed on this server."
-// in the language of msgs.
-func (msgs Messages) TmuxMissing() string {
-	return Catalog.Format(msgs.locale, "tmuxMissing", nil)
-}
-
-// TmuxFailed says "tmux failed: {detail}"
-// in the language the app shows.
-func TmuxFailed(detail string) string { return In(i18n.Locale()).TmuxFailed(detail) }
-
-// TmuxFailed says "tmux failed: {detail}"
-// in the language of msgs.
-func (msgs Messages) TmuxFailed(detail string) string {
-	return Catalog.Format(msgs.locale, "tmuxFailed", map[string]any{"detail": detail})
-}
-
-// TmuxNone says "No tmux sessions on this server yet."
-// in the language the app shows.
-func TmuxNone() string { return In(i18n.Locale()).TmuxNone() }
-
-// TmuxNone says "No tmux sessions on this server yet."
-// in the language of msgs.
-func (msgs Messages) TmuxNone() string {
-	return Catalog.Format(msgs.locale, "tmuxNone", nil)
-}
-
-// TmuxHereBanner says "This terminal is attached to “{name}”."
-// in the language the app shows.
-func TmuxHereBanner(name string) string { return In(i18n.Locale()).TmuxHereBanner(name) }
-
-// TmuxHereBanner says "This terminal is attached to “{name}”."
-// in the language of msgs.
-func (msgs Messages) TmuxHereBanner(name string) string {
-	return Catalog.Format(msgs.locale, "tmuxHereBanner", map[string]any{"name": name})
-}
-
-// TmuxDetach says "Detach from Session"
-// in the language the app shows.
-func TmuxDetach() string { return In(i18n.Locale()).TmuxDetach() }
-
-// TmuxDetach says "Detach from Session"
-// in the language of msgs.
-func (msgs Messages) TmuxDetach() string {
-	return Catalog.Format(msgs.locale, "tmuxDetach", nil)
-}
-
-// TmuxThisTerminal says "This terminal"
-// in the language the app shows.
-func TmuxThisTerminal() string { return In(i18n.Locale()).TmuxThisTerminal() }
-
-// TmuxThisTerminal says "This terminal"
-// in the language of msgs.
-func (msgs Messages) TmuxThisTerminal() string {
-	return Catalog.Format(msgs.locale, "tmuxThisTerminal", nil)
-}
-
-// TmuxWindowCount says "{count, plural, one {# window} other {# windows}}"
-// in the language the app shows.
-func TmuxWindowCount(count int) string { return In(i18n.Locale()).TmuxWindowCount(count) }
-
-// TmuxWindowCount says "{count, plural, one {# window} other {# windows}}"
-// in the language of msgs.
-func (msgs Messages) TmuxWindowCount(count int) string {
-	return Catalog.Format(msgs.locale, "tmuxWindowCount", map[string]any{"count": count})
-}
-
-// TmuxAttachedCount says "{count, plural, one {# client} other {# clients}}"
-// in the language the app shows.
-func TmuxAttachedCount(count int) string { return In(i18n.Locale()).TmuxAttachedCount(count) }
-
-// TmuxAttachedCount says "{count, plural, one {# client} other {# clients}}"
-// in the language of msgs.
-func (msgs Messages) TmuxAttachedCount(count int) string {
-	return Catalog.Format(msgs.locale, "tmuxAttachedCount", map[string]any{"count": count})
-}
-
-// TmuxNotAttached says "Not attached"
-// in the language the app shows.
-func TmuxNotAttached() string { return In(i18n.Locale()).TmuxNotAttached() }
-
-// TmuxNotAttached says "Not attached"
-// in the language of msgs.
-func (msgs Messages) TmuxNotAttached() string {
-	return Catalog.Format(msgs.locale, "tmuxNotAttached", nil)
-}
-
-// TmuxActiveAgo says "active {when} ago"
-// in the language the app shows.
-func TmuxActiveAgo(when string) string { return In(i18n.Locale()).TmuxActiveAgo(when) }
-
-// TmuxActiveAgo says "active {when} ago"
-// in the language of msgs.
-func (msgs Messages) TmuxActiveAgo(when string) string {
-	return Catalog.Format(msgs.locale, "tmuxActiveAgo", map[string]any{"when": when})
-}
-
-// TmuxAttachHere says "Attach in This Terminal"
-// in the language the app shows.
-func TmuxAttachHere() string { return In(i18n.Locale()).TmuxAttachHere() }
-
-// TmuxAttachHere says "Attach in This Terminal"
-// in the language of msgs.
-func (msgs Messages) TmuxAttachHere() string {
-	return Catalog.Format(msgs.locale, "tmuxAttachHere", nil)
-}
-
-// TmuxOpenTab says "Open in New Tab"
-// in the language the app shows.
-func TmuxOpenTab() string { return In(i18n.Locale()).TmuxOpenTab() }
-
-// TmuxOpenTab says "Open in New Tab"
-// in the language of msgs.
-func (msgs Messages) TmuxOpenTab() string {
-	return Catalog.Format(msgs.locale, "tmuxOpenTab", nil)
-}
-
-// TmuxRename says "Rename Session"
-// in the language the app shows.
-func TmuxRename() string { return In(i18n.Locale()).TmuxRename() }
-
-// TmuxRename says "Rename Session"
-// in the language of msgs.
-func (msgs Messages) TmuxRename() string {
-	return Catalog.Format(msgs.locale, "tmuxRename", nil)
-}
-
-// TmuxKill says "End Session"
-// in the language the app shows.
-func TmuxKill() string { return In(i18n.Locale()).TmuxKill() }
-
-// TmuxKill says "End Session"
-// in the language of msgs.
-func (msgs Messages) TmuxKill() string {
-	return Catalog.Format(msgs.locale, "tmuxKill", nil)
-}
-
-// TmuxEnd says "End"
-// in the language the app shows.
-func TmuxEnd() string { return In(i18n.Locale()).TmuxEnd() }
-
-// TmuxEnd says "End"
-// in the language of msgs.
-func (msgs Messages) TmuxEnd() string {
-	return Catalog.Format(msgs.locale, "tmuxEnd", nil)
-}
-
-// TmuxKillConfirm says "End the session “{name}”? The programs running in it are stopped."
-// in the language the app shows.
-func TmuxKillConfirm(name string) string { return In(i18n.Locale()).TmuxKillConfirm(name) }
-
-// TmuxKillConfirm says "End the session “{name}”? The programs running in it are stopped."
-// in the language of msgs.
-func (msgs Messages) TmuxKillConfirm(name string) string {
-	return Catalog.Format(msgs.locale, "tmuxKillConfirm", map[string]any{"name": name})
-}
-
-// TmuxKillConfirmAttached says "End the session “{name}”? The terminals still attached to it are detached, and the programs running in it are sto…"
-// in the language the app shows.
-func TmuxKillConfirmAttached(name string) string {
-	return In(i18n.Locale()).TmuxKillConfirmAttached(name)
-}
-
-// TmuxKillConfirmAttached says "End the session “{name}”? The terminals still attached to it are detached, and the programs running in it are sto…"
-// in the language of msgs.
-func (msgs Messages) TmuxKillConfirmAttached(name string) string {
-	return Catalog.Format(msgs.locale, "tmuxKillConfirmAttached", map[string]any{"name": name})
-}
-
-// TmuxShowWindows says "Show Windows"
-// in the language the app shows.
-func TmuxShowWindows() string { return In(i18n.Locale()).TmuxShowWindows() }
-
-// TmuxShowWindows says "Show Windows"
-// in the language of msgs.
-func (msgs Messages) TmuxShowWindows() string {
-	return Catalog.Format(msgs.locale, "tmuxShowWindows", nil)
-}
-
-// TmuxHideWindows says "Hide Windows"
-// in the language the app shows.
-func TmuxHideWindows() string { return In(i18n.Locale()).TmuxHideWindows() }
-
-// TmuxHideWindows says "Hide Windows"
-// in the language of msgs.
-func (msgs Messages) TmuxHideWindows() string {
-	return Catalog.Format(msgs.locale, "tmuxHideWindows", nil)
-}
-
-// TmuxAttachWindow says "Attach to Window {index}"
-// in the language the app shows.
-func TmuxAttachWindow(index string) string { return In(i18n.Locale()).TmuxAttachWindow(index) }
-
-// TmuxAttachWindow says "Attach to Window {index}"
-// in the language of msgs.
-func (msgs Messages) TmuxAttachWindow(index string) string {
-	return Catalog.Format(msgs.locale, "tmuxAttachWindow", map[string]any{"index": index})
-}
-
-// TmuxPaneCount says "{count, plural, one {# pane} other {# panes}}"
-// in the language the app shows.
-func TmuxPaneCount(count int) string { return In(i18n.Locale()).TmuxPaneCount(count) }
-
-// TmuxPaneCount says "{count, plural, one {# pane} other {# panes}}"
-// in the language of msgs.
-func (msgs Messages) TmuxPaneCount(count int) string {
-	return Catalog.Format(msgs.locale, "tmuxPaneCount", map[string]any{"count": count})
-}
-
-// TmuxName says "Session name"
-// in the language the app shows.
-func TmuxName() string { return In(i18n.Locale()).TmuxName() }
-
-// TmuxName says "Session name"
-// in the language of msgs.
-func (msgs Messages) TmuxName() string {
-	return Catalog.Format(msgs.locale, "tmuxName", nil)
-}
-
-// TmuxNameInvalid says "Use 1 to 64 characters, without “:”, “.”, control characters or a leading “-”."
-// in the language the app shows.
-func TmuxNameInvalid() string { return In(i18n.Locale()).TmuxNameInvalid() }
-
-// TmuxNameInvalid says "Use 1 to 64 characters, without “:”, “.”, control characters or a leading “-”."
-// in the language of msgs.
-func (msgs Messages) TmuxNameInvalid() string {
-	return Catalog.Format(msgs.locale, "tmuxNameInvalid", nil)
-}
-
-// TmuxNameTaken says "A session named “{name}” already exists."
-// in the language the app shows.
-func TmuxNameTaken(name string) string { return In(i18n.Locale()).TmuxNameTaken(name) }
-
-// TmuxNameTaken says "A session named “{name}” already exists."
-// in the language of msgs.
-func (msgs Messages) TmuxNameTaken(name string) string {
-	return Catalog.Format(msgs.locale, "tmuxNameTaken", map[string]any{"name": name})
-}
-
-// TmuxDir says "Start in"
-// in the language the app shows.
-func TmuxDir() string { return In(i18n.Locale()).TmuxDir() }
-
-// TmuxDir says "Start in"
-// in the language of msgs.
-func (msgs Messages) TmuxDir() string {
-	return Catalog.Format(msgs.locale, "tmuxDir", nil)
-}
-
-// TmuxDirPlaceholder says "~ (home folder)"
-// in the language the app shows.
-func TmuxDirPlaceholder() string { return In(i18n.Locale()).TmuxDirPlaceholder() }
-
-// TmuxDirPlaceholder says "~ (home folder)"
-// in the language of msgs.
-func (msgs Messages) TmuxDirPlaceholder() string {
-	return Catalog.Format(msgs.locale, "tmuxDirPlaceholder", nil)
-}
-
-// TmuxOpenIn says "Open in"
-// in the language the app shows.
-func TmuxOpenIn() string { return In(i18n.Locale()).TmuxOpenIn() }
-
-// TmuxOpenIn says "Open in"
-// in the language of msgs.
-func (msgs Messages) TmuxOpenIn() string {
-	return Catalog.Format(msgs.locale, "tmuxOpenIn", nil)
-}
-
-// TmuxOpenBackground says "Don't attach"
-// in the language the app shows.
-func TmuxOpenBackground() string { return In(i18n.Locale()).TmuxOpenBackground() }
-
-// TmuxOpenBackground says "Don't attach"
-// in the language of msgs.
-func (msgs Messages) TmuxOpenBackground() string {
-	return Catalog.Format(msgs.locale, "tmuxOpenBackground", nil)
-}
-
-// TmuxBusyNewTab says "The terminal is running a program, so the session opened in a new tab."
-// in the language the app shows.
-func TmuxBusyNewTab() string { return In(i18n.Locale()).TmuxBusyNewTab() }
-
-// TmuxBusyNewTab says "The terminal is running a program, so the session opened in a new tab."
-// in the language of msgs.
-func (msgs Messages) TmuxBusyNewTab() string {
-	return Catalog.Format(msgs.locale, "tmuxBusyNewTab", nil)
-}
-
-// TmuxUnknownNewTab says "Could not tell whether the terminal is free, so the session opened in a new tab."
-// in the language the app shows.
-func TmuxUnknownNewTab() string { return In(i18n.Locale()).TmuxUnknownNewTab() }
-
-// TmuxUnknownNewTab says "Could not tell whether the terminal is free, so the session opened in a new tab."
-// in the language of msgs.
-func (msgs Messages) TmuxUnknownNewTab() string {
-	return Catalog.Format(msgs.locale, "tmuxUnknownNewTab", nil)
-}
-
-// TmuxAutoAttach says "tmux session"
-// in the language the app shows.
-func TmuxAutoAttach() string { return In(i18n.Locale()).TmuxAutoAttach() }
-
-// TmuxAutoAttach says "tmux session"
-// in the language of msgs.
-func (msgs Messages) TmuxAutoAttach() string {
-	return Catalog.Format(msgs.locale, "tmuxAutoAttach", nil)
-}
-
-// TmuxAutoAttachPlaceholder says "Session name (empty is off)"
-// in the language the app shows.
-func TmuxAutoAttachPlaceholder() string { return In(i18n.Locale()).TmuxAutoAttachPlaceholder() }
-
-// TmuxAutoAttachPlaceholder says "Session name (empty is off)"
-// in the language of msgs.
-func (msgs Messages) TmuxAutoAttachPlaceholder() string {
-	return Catalog.Format(msgs.locale, "tmuxAutoAttachPlaceholder", nil)
-}
-
-// TmuxAutoAttachHint says "Each terminal on this host attaches to this tmux session once its shell is ready, creating it when there is none, and…"
-// in the language the app shows.
-func TmuxAutoAttachHint() string { return In(i18n.Locale()).TmuxAutoAttachHint() }
-
-// TmuxAutoAttachHint says "Each terminal on this host attaches to this tmux session once its shell is ready, creating it when there is none, and…"
-// in the language of msgs.
-func (msgs Messages) TmuxAutoAttachHint() string {
-	return Catalog.Format(msgs.locale, "tmuxAutoAttachHint", nil)
-}
-
-// ConnectWithoutTmux says "Connect Without tmux"
-// in the language the app shows.
-func ConnectWithoutTmux() string { return In(i18n.Locale()).ConnectWithoutTmux() }
-
-// ConnectWithoutTmux says "Connect Without tmux"
-// in the language of msgs.
-func (msgs Messages) ConnectWithoutTmux() string {
-	return Catalog.Format(msgs.locale, "connectWithoutTmux", nil)
-}
-
 // StartupCommands says "Startup commands"
 // in the language the app shows.
 func StartupCommands() string { return In(i18n.Locale()).StartupCommands() }
@@ -10458,11 +10074,11 @@ func (msgs Messages) StartupCommands() string {
 	return Catalog.Format(msgs.locale, "startupCommands", nil)
 }
 
-// StartupCommandsHint says "Typed line by line each time a terminal's shell starts, reconnects included: after the cd to the terminal folder and …"
+// StartupCommandsHint says "Typed line by line each time a terminal's shell starts, reconnects included: after the cd to the terminal folder. A c…"
 // in the language the app shows.
 func StartupCommandsHint() string { return In(i18n.Locale()).StartupCommandsHint() }
 
-// StartupCommandsHint says "Typed line by line each time a terminal's shell starts, reconnects included: after the cd to the terminal folder and …"
+// StartupCommandsHint says "Typed line by line each time a terminal's shell starts, reconnects included: after the cd to the terminal folder. A c…"
 // in the language of msgs.
 func (msgs Messages) StartupCommandsHint() string {
 	return Catalog.Format(msgs.locale, "startupCommandsHint", nil)
@@ -10568,11 +10184,11 @@ func (msgs Messages) TerminalSuPasswordHint() string {
 	return Catalog.Format(msgs.locale, "terminalSuPasswordHint", nil)
 }
 
-// TerminalSuHint says "su - is typed as each terminal's shell starts, before the cd to the terminal folder, the startup commands and the tmu…"
+// TerminalSuHint says "su - is typed as each terminal's shell starts, before the cd to the terminal folder and the startup commands: all of …"
 // in the language the app shows.
 func TerminalSuHint() string { return In(i18n.Locale()).TerminalSuHint() }
 
-// TerminalSuHint says "su - is typed as each terminal's shell starts, before the cd to the terminal folder, the startup commands and the tmu…"
+// TerminalSuHint says "su - is typed as each terminal's shell starts, before the cd to the terminal folder and the startup commands: all of …"
 // in the language of msgs.
 func (msgs Messages) TerminalSuHint() string {
 	return Catalog.Format(msgs.locale, "terminalSuHint", nil)
@@ -11028,36 +10644,6 @@ func ConnectWithoutStartup() string { return In(i18n.Locale()).ConnectWithoutSta
 // in the language of msgs.
 func (msgs Messages) ConnectWithoutStartup() string {
 	return Catalog.Format(msgs.locale, "connectWithoutStartup", nil)
-}
-
-// TmuxStartMissing says "tmux is not installed on {host}, so its terminals start without a tmux session."
-// in the language the app shows.
-func TmuxStartMissing(host string) string { return In(i18n.Locale()).TmuxStartMissing(host) }
-
-// TmuxStartMissing says "tmux is not installed on {host}, so its terminals start without a tmux session."
-// in the language of msgs.
-func (msgs Messages) TmuxStartMissing(host string) string {
-	return Catalog.Format(msgs.locale, "tmuxStartMissing", map[string]any{"host": host})
-}
-
-// TmuxStartGone says "The tmux session “{name}” is gone, so the terminal was not attached to it again."
-// in the language the app shows.
-func TmuxStartGone(name string) string { return In(i18n.Locale()).TmuxStartGone(name) }
-
-// TmuxStartGone says "The tmux session “{name}” is gone, so the terminal was not attached to it again."
-// in the language of msgs.
-func (msgs Messages) TmuxStartGone(name string) string {
-	return Catalog.Format(msgs.locale, "tmuxStartGone", map[string]any{"name": name})
-}
-
-// TmuxStartFailed says "Could not attach the terminal to its tmux session again: {detail}"
-// in the language the app shows.
-func TmuxStartFailed(detail string) string { return In(i18n.Locale()).TmuxStartFailed(detail) }
-
-// TmuxStartFailed says "Could not attach the terminal to its tmux session again: {detail}"
-// in the language of msgs.
-func (msgs Messages) TmuxStartFailed(detail string) string {
-	return Catalog.Format(msgs.locale, "tmuxStartFailed", map[string]any{"detail": detail})
 }
 
 // BarCPU says "CPU"

@@ -9,33 +9,55 @@ import (
 	"github.com/lvbibir/opswright/internal/keychain"
 	"github.com/lvbibir/opswright/internal/session"
 	"github.com/lvbibir/opswright/locales"
+	"golang.org/x/crypto/ssh"
 )
 
-// TestStartLine: the cd back, then the startup commands, then the tmux
-// attach, each typed on its own line.
+// startOnce is the command c's shell is to be given once, "" for none.
+func startOnce(c *conn) string {
+	if c.start == nil {
+		return ""
+	}
+	c.start.mu.Lock()
+	defer c.start.mu.Unlock()
+	return c.start.once
+}
+
+// setStartOnce gives c's shell cmd once.
+func setStartOnce(c *conn, cmd string) {
+	if c.start == nil {
+		c.start = &shellStart{}
+	}
+	c.start.mu.Lock()
+	c.start.once = cmd
+	c.start.mu.Unlock()
+}
+
+// dirQuietForTest outlasts the wait for a new shell's prompt.
+const dirQuietForTest = 800 * time.Millisecond
+
+// TestStartLine: the cd back, then the startup commands, each typed on
+// its own line.
 func TestStartLine(t *testing.T) {
 	for _, tc := range []struct {
 		cd      string
 		startup []string
-		tmux    string
 		want    string
 	}{
 		{want: ""},
-		{tmux: "tmux a", want: "tmux a"},
 		{startup: []string{"export A=1", "source env"}, want: "export A=1\rsource env"},
-		{cd: "cd /srv", startup: []string{"ls"}, tmux: "tmux a", want: "cd /srv\rls\rtmux a"},
+		{cd: "cd /srv", startup: []string{"ls"}, want: "cd /srv\rls"},
 		{cd: "cd /srv", want: "cd /srv"},
 	} {
-		if got := startLine(tc.cd, tc.startup, tc.tmux); got != tc.want {
-			t.Errorf("startLine(%q, %q, %q) = %q, want %q", tc.cd, tc.startup, tc.tmux, got, tc.want)
+		if got := startLine(tc.cd, tc.startup); got != tc.want {
+			t.Errorf("startLine(%q, %q) = %q, want %q", tc.cd, tc.startup, got, tc.want)
 		}
 	}
 }
 
 // TestHostStartupTyped: a terminal types its host's startup commands in
-// the shell, before the tmux attach; one opened without them types none.
+// the shell; one opened without them types none.
 func TestHostStartupTyped(t *testing.T) {
-	srv := startMetricSrv(t, (&tmuxExec{}).run)
+	srv := startMetricSrv(t, func(_ ssh.Channel, _ string) int { return 0 })
 	a, tt := newTestApp(t)
 	m := locales.In("en")
 	h := addHost(t, a, srv, "box", "secret")
@@ -43,23 +65,26 @@ func TestHostStartupTyped(t *testing.T) {
 	if err := a.kc.Set(keychain.HostStartup(h.ID), []byte("export A=1\nsource env")); err != nil {
 		t.Fatal(err)
 	}
-	h.Startup, h.Tmux = true, "main"
+	h.Startup = true
 	if _, err := a.Store().Update(h); err != nil {
 		t.Fatal(err)
 	}
 	a.Connect(h.ID, openAt{})
 	cn := a.focused()
-	const attach = "you said: tmux new-session -A -s 'main'"
-	waitFor(t, tt, "the attach", func() bool { return strings.Contains(cn.s.Term.ScreenText(), attach) })
+	waitFor(t, tt, "the commands", func() bool {
+		return strings.Contains(cn.s.Term.ScreenText(), "you said: source env")
+	})
 	screen := cn.s.Term.ScreenText()
 	first, second := strings.Index(screen, "you said: export A=1"), strings.Index(screen, "you said: source env")
-	if first < 0 || second < first || strings.Index(screen, attach) < second {
+	if first < 0 || second < first {
 		t.Fatalf("typed out of order: %q", screen)
 	}
 
 	a.ConnectWithoutStartup(h.ID)
 	plain := a.focused()
-	waitFor(t, tt, "the attach", func() bool { return strings.Contains(plain.s.Term.ScreenText(), attach) })
+	waitFor(t, tt, "connected", func() bool { return plain.s.Status().State == session.Connected })
+	time.Sleep(dirQuietForTest)
+	tt.Frame()
 	if strings.Contains(plain.s.Term.ScreenText(), "export A=1") {
 		t.Errorf("typed startup commands: %q", plain.s.Term.ScreenText())
 	}
@@ -75,7 +100,7 @@ func TestHostStartupTyped(t *testing.T) {
 	if err := a.kc.Set(keychain.HostStartup(h.ID), []byte("bad\tline")); err != nil {
 		t.Fatal(err)
 	}
-	a.ConnectWithoutTmux(h.ID)
+	a.Connect(h.ID, openAt{})
 	bad := a.focused()
 	waitFor(t, tt, "the warning", func() bool { return tt.HasText(m.StartupReadFailed("box")) })
 	waitFor(t, tt, "connected", func() bool { return bad.s.Status().State == session.Connected })

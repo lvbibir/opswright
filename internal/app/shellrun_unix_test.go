@@ -78,7 +78,7 @@ func TestRoutedGatewayRunsCommandsOverShell(t *testing.T) {
 	waitFor(t, tt, "connected", func() bool { return c.s.Status().State == session.Connected })
 
 	// The exec-based tool panes are refused on this host, the others not.
-	for _, k := range []layout.Kind{layout.Monitor, layout.Usage, layout.History, layout.Docker, layout.Tmux} {
+	for _, k := range []layout.Kind{layout.Monitor, layout.Usage, layout.History, layout.Docker} {
 		if a.toolCanRun(k) {
 			t.Fatalf("%v allowed on a gateway without exec", k)
 		}

@@ -150,9 +150,6 @@ var (
 	UsageOn     = load("bar-chart-horizontal-fill")
 	Docker      = load("ship-2-line")
 	DockerOn    = load("ship-2-fill")
-	Tmux        = load("stack-line")
-	TmuxOn      = load("stack-fill")
-	Detach      = load("logout-box-r-line")
 	OpenInTab   = load("window-line")
 	AppWindow   = OpenInTab
 	Duplicate   = WinRestore

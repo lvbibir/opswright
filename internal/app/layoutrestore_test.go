@@ -161,7 +161,7 @@ func TestLayoutStartupReconnectsOnceWithoutReplay(t *testing.T) {
 func TestLayoutDropsPanelsNowPanes(t *testing.T) {
 	dir := t.TempDir()
 	rememberLayoutIn(t, dir)
-	raw := []byte(`{"version":1,"active":0,"tabs":[],"sections":{"none":false},"panels":["host","snippets","history","tmux","bogus","host"],"stackPct":{"host/tmux/":250}}`)
+	raw := []byte(`{"version":1,"active":0,"tabs":[],"sections":{"none":false},"panels":["host","snippets","history","docker","bogus","host"],"stackPct":{"host/docker/":250}}`)
 	if err := os.WriteFile(filepath.Join(dir, "layout.json"), raw, 0o600); err != nil {
 		t.Fatal(err)
 	}
@@ -169,7 +169,7 @@ func TestLayoutDropsPanelsNowPanes(t *testing.T) {
 	if a.layoutBlocked || a.sections["none"] == nil || *a.sections["none"] {
 		t.Fatalf("blocked=%v sections=%v", a.layoutBlocked, a.sections)
 	}
-	for _, k := range []layout.Kind{layout.HostInfo, layout.Tmux, layout.Snippets, layout.History} {
+	for _, k := range []layout.Kind{layout.HostInfo, layout.Docker, layout.Snippets, layout.History} {
 		if a.toolPane(k) != nil {
 			t.Fatalf("restored the %v pane", k)
 		}

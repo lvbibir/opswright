@@ -69,18 +69,16 @@ func TestReturnDirWanted(t *testing.T) {
 		on       bool
 		connects int
 		back     string
-		tmux     string
 		ran      bool
 		want     bool
 	}{
-		{"a reconnect", true, 2, "/srv", "", false, true},
-		{"setting off", false, 2, "/srv", "", false, false},
-		{"first connect", true, 1, "/srv", "", false, false},
-		{"no folder reported", true, 3, "", "", false, false},
-		{"tmux attaches", true, 2, "/srv", "tmux attach-session -t '$1'", false, false},
-		{"opened for a command", true, 2, "/srv", "", true, false},
+		{"a reconnect", true, 2, "/srv", false, true},
+		{"setting off", false, 2, "/srv", false, false},
+		{"first connect", true, 1, "/srv", false, false},
+		{"no folder reported", true, 3, "", false, false},
+		{"opened for a command", true, 2, "/srv", true, false},
 	} {
-		if got := returnDirWanted(tc.on, tc.connects, tc.back, tc.tmux, tc.ran); got != tc.want {
+		if got := returnDirWanted(tc.on, tc.connects, tc.back, tc.ran); got != tc.want {
 			t.Errorf("%s: %v, want %v", tc.name, got, tc.want)
 		}
 	}

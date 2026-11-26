@@ -10,8 +10,8 @@ import (
 
 // The tool panes, the broadcast, the session logs, the snippets, the
 // command history and the panels on the focused session's host (the
-// system monitor, the process usage, the host's details, Docker and
-// tmux), work on the sessions, not on one of their own. They are panes as the others are, dragged by their
+// system monitor, the process usage, the host's details and Docker),
+// work on the sessions, not on one of their own. They are panes as the others are, dragged by their
 // header to any edge of a pane or another tab, but on no host, and one of
 // each in the whole workspace, which the rail opens and closes. The layout
 // saves where they are, never what they show. A tool pane never keeps a tab's focus: the
@@ -21,7 +21,7 @@ import (
 func isTool(k layout.Kind) bool {
 	switch k {
 	case layout.Broadcast, layout.Logs, layout.Snippets, layout.History,
-		layout.Monitor, layout.Usage, layout.HostInfo, layout.Docker, layout.Tmux:
+		layout.Monitor, layout.Usage, layout.HostInfo, layout.Docker:
 		return true
 	}
 	return false
@@ -68,7 +68,6 @@ func (a *App) nameTools(m locales.Messages) {
 	a.toolNames[layout.Usage] = m.ProcessUsage()
 	a.toolNames[layout.HostInfo] = m.HostDetails()
 	a.toolNames[layout.Docker] = m.DockerManager()
-	a.toolNames[layout.Tmux] = m.TmuxManager()
 }
 
 // ShowTool opens the tool pane of kind k in the active tab, or brings it
@@ -80,12 +79,12 @@ func (a *App) ShowTool(k layout.Kind) {
 }
 
 // toolCanRun reports whether a tool pane may open on the focused pane's
-// host. The monitor, the process usage, the command history, Docker and
-// tmux run commands on it, so a connection that allows none (a gateway
+// host. The monitor, the process usage, the command history and Docker
+// run commands on it, so a connection that allows none (a gateway
 // that routes and refuses the exec channel) cannot show them.
 func (a *App) toolCanRun(k layout.Kind) bool {
 	switch k {
-	case layout.Monitor, layout.Usage, layout.History, layout.Docker, layout.Tmux:
+	case layout.Monitor, layout.Usage, layout.History, layout.Docker:
 	default:
 		return true
 	}

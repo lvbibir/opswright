@@ -237,7 +237,7 @@ func (a *App) restoreLayoutNode(n *nodeSnap, mapping map[int]*layout.Node, links
 
 // toolKind is the tool pane kind saved as s.
 func toolKind(s string) (layout.Kind, bool) {
-	for k := layout.Broadcast; k <= layout.Tmux; k++ {
+	for k := layout.Broadcast; k <= layout.Docker; k++ {
 		if isTool(k) && k.String() == s {
 			return k, true
 		}

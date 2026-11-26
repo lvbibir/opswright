@@ -379,9 +379,9 @@ func TestRailHidden(t *testing.T) {
 	if err != nil || s.RailHidden != nil || !s.RailShown("docker") {
 		t.Fatalf("old file %v %v", s.RailHidden, err)
 	}
-	os.WriteFile(path, []byte(`{"theme":"dark","railHidden":[" docker","tmux","","docker","later"]}`), 0o600)
+	os.WriteFile(path, []byte(`{"theme":"dark","railHidden":[" docker","snippets","","docker","later"]}`), 0o600)
 	s, err = Load(path)
-	if err != nil || !slices.Equal(s.RailHidden, []string{"docker", "tmux", "later"}) {
+	if err != nil || !slices.Equal(s.RailHidden, []string{"docker", "snippets", "later"}) {
 		t.Fatalf("loaded %q %v", s.RailHidden, err)
 	}
 	if s.RailShown("docker") || !s.RailShown("monitor") {
@@ -391,7 +391,7 @@ func TestRailHidden(t *testing.T) {
 	s.SetRailShown("docker", true)
 	s.SetRailShown("logs", false)
 	s.SetRailShown("logs", false)
-	if !slices.Equal(s.RailHidden, []string{"tmux", "later", "logs"}) || !slices.Equal(held.RailHidden, []string{"docker", "tmux", "later"}) {
+	if !slices.Equal(s.RailHidden, []string{"snippets", "later", "logs"}) || !slices.Equal(held.RailHidden, []string{"docker", "snippets", "later"}) {
 		t.Fatalf("set %q, held %q", s.RailHidden, held.RailHidden)
 	}
 	if err := Save(path, s); err != nil {
@@ -400,7 +400,7 @@ func TestRailHidden(t *testing.T) {
 	if got, _ := Load(path); !slices.Equal(got.RailHidden, s.RailHidden) {
 		t.Errorf("saved %q", got.RailHidden)
 	}
-	for _, id := range []string{"tmux", "later", "logs"} {
+	for _, id := range []string{"snippets", "later", "logs"} {
 		s.SetRailShown(id, true)
 	}
 	if s.RailHidden != nil {

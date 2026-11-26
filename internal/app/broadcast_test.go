@@ -403,11 +403,11 @@ func TestToolPanesAsTabs(t *testing.T) {
 		t.Fatalf("the logs stayed open: %v", other.Items())
 	}
 	// The AI pane is one of the rail's as the tools are.
-	a.ToggleTool(layout.Tmux)
+	a.ToggleTool(layout.Usage)
 	n = len(other.Panes())
 	a.ToggleAI()
-	if a.toolPane(layout.Tmux) != nil || other.Count(layout.AI) != 1 || len(other.Panes()) != n {
-		t.Fatalf("the assistant did not replace tmux: %v", other.Items())
+	if a.toolPane(layout.Usage) != nil || other.Count(layout.AI) != 1 || len(other.Panes()) != n {
+		t.Fatalf("the assistant did not replace usage: %v", other.Items())
 	}
 	a.ToggleTool(layout.Monitor)
 	if other.Count(layout.AI) != 0 || other.Count(layout.Monitor) != 1 || len(other.Panes()) != n {
@@ -505,9 +505,9 @@ func TestToolPanesFit(t *testing.T) {
 	if above := railAbove(a, tab, layout.AI); above == nil || above.Item.ID != snippets.id || a.focused().kind != layout.AI {
 		t.Fatalf("the assistant did not open under the snippets: %v, focused %v", tab.Items(), a.focused())
 	}
-	a.ToggleTool(layout.Tmux)
-	if above := railAbove(a, tab, layout.Tmux); above == nil || above.Item.ID != history.id || a.focused().kind != layout.AI {
-		t.Fatalf("tmux did not open under the history: %v, focused %v", tab.Items(), a.focused())
+	a.ToggleTool(layout.Usage)
+	if above := railAbove(a, tab, layout.Usage); above == nil || above.Item.ID != history.id || a.focused().kind != layout.AI {
+		t.Fatalf("usage did not open under the history: %v, focused %v", tab.Items(), a.focused())
 	}
 }
 

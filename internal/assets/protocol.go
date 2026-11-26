@@ -134,7 +134,7 @@ func (h *Host) normalizeStream() {
 	h.AskPassphrase, h.Certificate = false, ""
 	h.GatewayID = ""
 	h.CwdFollow = false
-	h.TerminalDir, h.RemoteDir, h.LocalDir, h.Tmux = "", "", "", ""
+	h.TerminalDir, h.RemoteDir, h.LocalDir = "", "", ""
 	h.Startup = false
 	h.TerminalSu, h.TerminalSuPrompt = false, ""
 	h.SFTPSudo, h.FileProtocol = false, FileAuto

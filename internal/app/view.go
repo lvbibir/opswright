@@ -41,7 +41,6 @@ func (a *App) View(c *ui.Context) {
 	a.syncMetrics()
 	a.wakeUndo(c)
 	a.followCwd(c)
-	a.watchTmux(c)
 	a.watchLogs(locales.In(c.Locale()))
 	for _, cn := range a.conns {
 		if cn.fs != nil {

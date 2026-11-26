@@ -45,8 +45,7 @@ Opswright is a native desktop SSH / SFTP client for Windows, bringing terminals,
   - Shared connections across panes on the same host, with automatic reconnection that acts at once on a network change or wake from sleep and returns the shell to its folder
 
 - **Workspace**
-  - System monitor, process usage, host details, Docker, tmux, snippets, command history, broadcast commands and session logs are draggable panes that dock beside any pane or in another tab
-  - tmux session manager that returns to your session after a reconnect
+  - System monitor, process usage, host details, Docker, snippets, command history, broadcast commands and session logs are draggable panes that dock beside any pane or in another tab
   - Docker container and image details with resource usage, plus starting and stopping containers
   - Broadcast commands with synchronised typing, and session logs recorded as text or raw output
   - Command palette and customisable shortcuts, with optional memory of window and split layouts

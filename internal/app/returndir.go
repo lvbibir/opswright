@@ -16,10 +16,9 @@ import (
 // folder the old one last reported (OSC 7, or read from the server, see
 // followCwd), when the user lets it (settings.ReturnToFolder): a cd typed
 // once the shell is at its prompt, as the cd to the host's folder is
-// (session.Options.Start). It is not typed when a tmux session is
-// attached instead (the session keeps its own folders), in a terminal
-// opened for a command (a shell in a container: its folders are not the
-// server's), nor for a shell whose quoting is not known.
+// (session.Options.Start). It is not typed in a terminal opened for a
+// command (a shell in a container: its folders are not the server's),
+// nor for a shell whose quoting is not known.
 
 // returnDirTimeout bounds asking the server for the user's shell and home.
 const returnDirTimeout = 5 * time.Second
@@ -57,11 +56,10 @@ func familyOf(shell string) shellFamily {
 // returnDirWanted says whether a shell starting at its terminal's connect
 // number connects is to be taken back to back, the folder the terminal
 // was in before: the setting is on, the shell is a reconnect's, the old
-// one reported a folder, no tmux session is being attached (tmux, the
-// command typed for it) and the terminal was not opened for a command
+// one reported a folder, and the terminal was not opened for a command
 // (ran).
-func returnDirWanted(on bool, connects int, back, tmux string, ran bool) bool {
-	return on && connects > 1 && back != "" && tmux == "" && !ran
+func returnDirWanted(on bool, connects int, back string, ran bool) bool {
+	return on && connects > 1 && back != "" && !ran
 }
 
 // startDirOf is the folder a new shell is in once started: the

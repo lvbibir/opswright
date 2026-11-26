@@ -3,7 +3,7 @@
 // session, a files (SFTP) browser, an editor of a remote file, an AI
 // assistant, or a tool on the sessions (the broadcast, the session logs,
 // the snippets, the command history, the system monitor, the process
-// usage, the host's details, Docker, tmux). All are panes alike, so any of them can sit in any split
+// usage, the host's details, Docker). All are panes alike, so any of them can sit in any split
 // cell, be dragged onto another pane's edge, be focused and closed. An
 // item lives in exactly one pane; moving it (by drag and drop) takes it
 // out of its old pane. Item IDs are unique across kinds.
@@ -25,7 +25,7 @@ const (
 	AI
 	// Broadcast sends a command to several terminals; Logs keeps their
 	// session logs; Snippets and History send saved and past commands to
-	// the focused terminal; Monitor, Usage, HostInfo, Docker and Tmux show
+	// the focused terminal; Monitor, Usage, HostInfo and Docker show
 	// and work on the focused session's host. None is bound to a host.
 	Broadcast
 	Logs
@@ -35,7 +35,6 @@ const (
 	Usage
 	HostInfo
 	Docker
-	Tmux
 )
 
 func (k Kind) String() string {
@@ -62,8 +61,6 @@ func (k Kind) String() string {
 		return "host"
 	case Docker:
 		return "docker"
-	case Tmux:
-		return "tmux"
 	}
 	return "terminal"
 }

@@ -81,14 +81,12 @@ type Options struct {
 	// under the home folder.
 	Dir string
 	// Start, when set, is asked each time an SSH shell starts for a
-	// command to type after the cd to Dir, as an attach to a tmux
-	// session; "" types none. It may take its time, and run commands on
-	// client.
+	// command to type after the cd to Dir; "" types none. It may take
+	// its time, and run commands on client.
 	Start func(ctx context.Context, client *ssh.Client) string
 	// Elevate, when set, is typed before the cd to Dir, and its password
-	// is answered: the shell, its startup commands and its tmux session
-	// run as root. A shell that cannot be elevated goes on as the login
-	// user's.
+	// is answered: the shell and its startup commands run as root. A
+	// shell that cannot be elevated goes on as the login user's.
 	Elevate *Elevate
 }
 

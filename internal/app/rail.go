@@ -47,7 +47,6 @@ var railItems = []railItem{
 	{"host", 0, icons.Info, locales.Messages.HostDetails},
 	{"files", 1, icons.Folder, locales.Messages.Sftp},
 	{"docker", 1, icons.Docker, locales.Messages.DockerManager},
-	{"tmux", 1, icons.Tmux, locales.Messages.TmuxManager},
 	{"ai", 1, icons.Robot, locales.Messages.AiSettings},
 	{"forward", 1, icons.Forward, locales.Messages.NewForward},
 	{"snippets", 2, icons.API, locales.Messages.Snippets},
@@ -136,8 +135,6 @@ func (a *App) railButton(c *ui.Context, m locales.Messages, cn *conn, id string)
 		do = a.ToggleFiles
 	case "docker":
 		tool(layout.Docker, icons.Docker, icons.DockerOn, m.DockerManager())
-	case "tmux":
-		tool(layout.Tmux, icons.Tmux, icons.TmuxOn, m.TmuxManager())
 	case "ai":
 		ai := a.tabPane(t, layout.AI) != nil
 		label := m.OpenAIRight()
@@ -204,17 +201,15 @@ func (a *App) setRailShown(id string, on bool) {
 }
 
 // hostToolPanel is the body of tool pane k on the focused session's host:
-// the monitor and the host's details as cards scrolling, the usage,
-// Docker and tmux as tables (the tmux list) that scroll themselves.
+// the monitor and the host's details as cards scrolling, the usage and
+// Docker as tables that scroll themselves.
 func (a *App) hostToolPanel(c *ui.Context, m locales.Messages, tok theme.Tokens, k layout.Kind) {
 	switch k {
-	case layout.Usage, layout.Docker, layout.Tmux:
+	case layout.Usage, layout.Docker:
 		ui.Column(c.Key("panel")).Fill().MinHeight(0).Padding(theme.Space(3)).Gap(theme.Space(2.5)).Children(func() {
 			switch k {
 			case layout.Usage:
 				a.usagePanel(c, m, tok)
-			case layout.Tmux:
-				a.tmuxPanel(c, m, tok)
 			default:
 				a.dockerPanel(c, m, tok)
 			}

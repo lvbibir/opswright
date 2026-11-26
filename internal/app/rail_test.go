@@ -21,7 +21,7 @@ func TestRailRows(t *testing.T) {
 		}
 		seen[it.id] = true
 	}
-	all := []string{"monitor", "usage", "host", railSep, "files", "docker", "tmux", "ai", "forward", railSep, "snippets", "history", "broadcast", "logs"}
+	all := []string{"monitor", "usage", "host", railSep, "files", "docker", "ai", "forward", railSep, "snippets", "history", "broadcast", "logs"}
 	for _, tc := range []struct {
 		name        string
 		hidden      []string
@@ -29,15 +29,15 @@ func TestRailRows(t *testing.T) {
 	}{
 		{"none", nil, all, []string{"quick"}},
 		{"unknown", []string{"later", ""}, all, []string{"quick"}},
-		{"some", []string{"usage", "tmux"},
+		{"some", []string{"usage"},
 			[]string{"monitor", "host", railSep, "files", "docker", "ai", "forward", railSep, "snippets", "history", "broadcast", "logs"}, []string{"quick"}},
 		{"first group", []string{"monitor", "usage", "host"},
-			[]string{"files", "docker", "tmux", "ai", "forward", railSep, "snippets", "history", "broadcast", "logs"}, []string{"quick"}},
-		{"middle group", []string{"files", "docker", "tmux", "ai", "forward"},
+			[]string{"files", "docker", "ai", "forward", railSep, "snippets", "history", "broadcast", "logs"}, []string{"quick"}},
+		{"middle group", []string{"files", "docker", "ai", "forward"},
 			[]string{"monitor", "usage", "host", railSep, "snippets", "history", "broadcast", "logs"}, []string{"quick"}},
 		{"last group", []string{"snippets", "history", "broadcast", "logs", "quick"},
-			[]string{"monitor", "usage", "host", railSep, "files", "docker", "tmux", "ai", "forward"}, nil},
-		{"one left", []string{"monitor", "usage", "host", "files", "docker", "tmux", "ai", "snippets", "history", "broadcast", "logs"},
+			[]string{"monitor", "usage", "host", railSep, "files", "docker", "ai", "forward"}, nil},
+		{"one left", []string{"monitor", "usage", "host", "files", "docker", "ai", "snippets", "history", "broadcast", "logs"},
 			[]string{"forward"}, []string{"quick"}},
 	} {
 		top, bottom := railRows(tc.hidden)

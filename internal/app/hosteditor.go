@@ -12,7 +12,6 @@ import (
 	"github.com/lvbibir/opswright/internal/icons"
 	"github.com/lvbibir/opswright/internal/keychain"
 	"github.com/lvbibir/opswright/internal/keys"
-	"github.com/lvbibir/opswright/internal/session"
 	"github.com/lvbibir/opswright/internal/settings"
 	"github.com/lvbibir/opswright/internal/theme"
 	"github.com/lvbibir/opswright/internal/vt"
@@ -50,8 +49,6 @@ type hostForm struct {
 	// (Host.TerminalDir, RemoteDir, LocalDir); dirsOpen shows them.
 	termDir, remoteDir, localDir string
 	dirsOpen                     bool
-	// tmux is the tmux session the host's terminals attach to (Host.Tmux)
-	tmux string
 	// startup is the commands the host's terminals type as their shell
 	// starts (Host.Startup), startupOrig those it had; startupGen renews
 	// the field once a snippet is added to it, startupPick the snippet
@@ -170,7 +167,6 @@ func (a *App) openEditor(h *assets.Host) {
 		f.proxy = h.ProxyID
 		f.netOpen = f.proxy != "" || f.gateway != ""
 		f.termDir, f.remoteDir, f.localDir = h.TerminalDir, h.RemoteDir, h.LocalDir
-		f.tmux = h.Tmux
 		if h.SSH() && h.Startup {
 			if data, err := a.kc.Get(keychain.HostStartup(h.ID)); err == nil {
 				f.startup = string(data)
@@ -339,7 +335,6 @@ func (a *App) SaveForm(m locales.Messages) bool {
 	h.ProxyID = f.proxy
 	h.GatewayID = f.gateway
 	h.TerminalDir, h.RemoteDir, h.LocalDir = f.termDir, f.remoteDir, f.localDir
-	h.Tmux = strings.TrimSpace(f.tmux)
 	h.Encoding = string(f.encoding)
 	h.Term = f.term
 	h.SessionLog = f.sessionLog
@@ -356,10 +351,6 @@ func (a *App) SaveForm(m locales.Messages) bool {
 	}
 	h.FileProtocol = fileProtocols[f.fileProtoIdx]
 	h.TransfersOff = !f.transfers
-	if h.SSH() && h.Tmux != "" && !session.TmuxNameOK(h.Tmux) {
-		f.err = m.TmuxNameInvalid()
-		return false
-	}
 	if h.SSH() {
 		if err := assets.ValidateStartup(f.startup); err != nil {
 			f.err = fieldError(m, err)
@@ -556,12 +547,6 @@ func (a *App) editorView(c *ui.Context, m locales.Messages) {
 								sftpSudoField(c, m, tok, f)
 							}
 							a.terminalSuField(c, m, tok, f)
-							ui.Field(c, m.TmuxAutoAttach(), func() {
-								ui.Column(c).Gap(4).FillWidth().Children(func() {
-									formTextInput(c.Key("f:tmux"), &f.tmux).Placeholder(m.TmuxAutoAttachPlaceholder()).Label(m.TmuxAutoAttach()).FillWidth()
-									ui.Text(c, m.TmuxAutoAttachHint()).FontSize(theme.Caption).TextColor(tok.TextMuted)
-								})
-							})
 							a.startupField(c, m, tok, f)
 							ui.Field(c, m.MetricsBar(), func() {
 								ui.Column(c).Gap(4).Children(func() {

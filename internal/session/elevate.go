@@ -11,8 +11,8 @@ import (
 // Elevate is how an SSH shell is made root as it starts: its command is
 // typed once the shell has gone quiet, its password is typed when the
 // terminal prints the prompt, and then the cd to Options.Dir and the
-// Start command follow, so that the terminal, its startup commands and
-// its tmux session all run as root.
+// Start command follow, so that the terminal and its startup commands
+// all run as root.
 //
 // The command must be the only thing typed before the password: it is a
 // program that reads one line from the terminal, so anything typed after
