@@ -71,6 +71,97 @@ type Proxy struct {
 // Addr is address:port for dialing.
 func (p Proxy) Addr() string { return Host{Address: p.Address, Port: p.Port}.Addr() }
 
+// DefaultGatewayLogin is the login name a routed gateway uses when its
+// own Login is empty: the gateway's account, the host's user and the
+// host's address, joined by @, as some jump servers expect
+// (liuzhijie@sysadm@192.168.8.40).
+const DefaultGatewayLogin = "{gateway}@{user}@{host}"
+
+// Gateway is a jump server (a bastion) hosts are reached through, with
+// what the connection it gives can do. It logs in with the credential
+// CredentialID. With DirectTCPIP it forwards a real connection to the
+// host (as a jump chain does), and the host's own exec and sftp are what
+// the session gets. Without it the gateway routes to the host by the
+// login name (Login), a single connection the gateway itself carries:
+// Exec and SFTP then say whether that routed session allows the exec
+// channel and the sftp subsystem.
+type Gateway struct {
+	ID   string `json:"id"`
+	Name string `json:"name"`
+	// Address and Port locate the gateway.
+	Address string `json:"address"`
+	Port    int    `json:"port"`
+	// User is the gateway's own account, the {gateway} of Login.
+	User string `json:"user"`
+	// CredentialID is the credential that logs in to the gateway.
+	CredentialID string `json:"credentialId"`
+	// DirectTCPIP is whether the gateway forwards to the real host
+	// (a jump chain) rather than routing it by the login name.
+	DirectTCPIP bool `json:"directTcpip,omitempty"`
+	// Exec is whether a routed session allows the exec channel.
+	Exec bool `json:"exec,omitempty"`
+	// SFTP is whether a routed session allows the sftp subsystem.
+	SFTP bool `json:"sftp,omitempty"`
+	// Login is the routed login name, with {gateway}, {user} and {host}
+	// replaced; empty is DefaultGatewayLogin. It is used only when
+	// DirectTCPIP is off.
+	Login string `json:"login,omitempty"`
+	Note  string `json:"note,omitempty"`
+
+	Created time.Time `json:"created"`
+	Updated time.Time `json:"updated"`
+}
+
+// Addr is address:port for dialing.
+func (g Gateway) Addr() string { return Host{Address: g.Address, Port: g.Port}.Addr() }
+
+// Label names the gateway in lists: its name, or its address.
+func (g Gateway) Label() string {
+	if g.Name != "" {
+		return g.Name
+	}
+	return g.Address
+}
+
+// LoginName is the SSH user name a routed login uses to reach user at
+// host, with the placeholders of Login replaced.
+func (g Gateway) LoginName(user, host string) string {
+	t := g.Login
+	if t == "" {
+		t = DefaultGatewayLogin
+	}
+	return strings.NewReplacer("{gateway}", g.User, "{user}", user, "{host}", host).Replace(t)
+}
+
+// Normalize trims the gateway's fields and fills defaults.
+func (g *Gateway) Normalize() {
+	g.Name = strings.TrimSpace(g.Name)
+	g.Address = strings.TrimSpace(g.Address)
+	g.User = strings.TrimSpace(g.User)
+	g.Login = strings.TrimSpace(g.Login)
+	g.Note = strings.TrimSpace(g.Note)
+	if g.Port == 0 {
+		g.Port = 22
+	}
+}
+
+// Validate checks a normalized gateway.
+func (g Gateway) Validate() error {
+	switch {
+	case g.Address == "":
+		return &FieldError{"address", "required"}
+	case strings.ContainsAny(g.Address, " \t/@"):
+		return &FieldError{"address", "invalid"}
+	case g.Port < 1 || g.Port > 65535:
+		return &FieldError{"port", "out of range"}
+	case g.User == "":
+		return &FieldError{"user", "required"}
+	case g.CredentialID == "":
+		return &FieldError{"credential", "required"}
+	}
+	return nil
+}
+
 // ForwardKind is the kind of a port forward.
 type ForwardKind string
 
@@ -234,6 +325,10 @@ func (s *Store) proxyIndex(id string) int {
 	return slices.IndexFunc(s.proxies, func(p Proxy) bool { return p.ID == id })
 }
 
+func (s *Store) gatewayIndex(id string) int {
+	return slices.IndexFunc(s.gateways, func(g Gateway) bool { return g.ID == id })
+}
+
 func (s *Store) forwardIndex(id string) int {
 	return slices.IndexFunc(s.forwards, func(f Forward) bool { return f.ID == id })
 }
@@ -335,13 +430,17 @@ func (s *Store) CredentialUsers(id string) []Host {
 	return out
 }
 
-// DeleteCredential removes a credential no host uses; one in use is an
-// *InUseError listing the hosts.
+// DeleteCredential removes a credential no host or gateway uses; one in
+// use is an *InUseError listing them.
 func (s *Store) DeleteCredential(id string) error {
-	if us := s.CredentialUsers(id); len(us) > 0 {
+	us, gs := s.CredentialUsers(id), s.CredentialGateways(id)
+	if len(us) > 0 || len(gs) > 0 {
 		e := &InUseError{}
 		for _, h := range us {
 			e.Hosts = append(e.Hosts, h.ID)
+		}
+		for _, g := range gs {
+			e.Gateways = append(e.Gateways, g.ID)
 		}
 		return e
 	}
@@ -352,6 +451,18 @@ func (s *Store) DeleteCredential(id string) error {
 		return ErrNotFound
 	}
 	return s.commit(func() { s.creds = slices.Delete(s.creds, i, i+1) })
+}
+
+// CredentialGateways are the gateways that log in with the credential of
+// id, sorted.
+func (s *Store) CredentialGateways(id string) []Gateway {
+	var out []Gateway
+	for _, g := range s.Gateways() {
+		if g.CredentialID == id {
+			out = append(out, g)
+		}
+	}
+	return out
 }
 
 // Proxies returns every proxy, sorted by name.
@@ -453,6 +564,93 @@ func (s *Store) DeleteProxy(id string) error {
 		return ErrNotFound
 	}
 	return s.commit(func() { s.proxies = slices.Delete(s.proxies, i, i+1) })
+}
+
+// Gateways returns every gateway, sorted by label.
+func (s *Store) Gateways() []Gateway {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	return byName(s.gateways, Gateway.Label)
+}
+
+// Gateway returns the gateway of id.
+func (s *Store) Gateway(id string) (Gateway, bool) {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	if i := s.gatewayIndex(id); i >= 0 {
+		return s.gateways[i], true
+	}
+	return Gateway{}, false
+}
+
+// SaveGateway adds a gateway (no ID) or replaces the one of its ID.
+func (s *Store) SaveGateway(g Gateway) (Gateway, error) {
+	g.Normalize()
+	if err := g.Validate(); err != nil {
+		return Gateway{}, err
+	}
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	for _, o := range s.gateways {
+		if o.ID != g.ID && strings.EqualFold(o.Name, g.Name) {
+			return Gateway{}, &FieldError{"name", "taken"}
+		}
+	}
+	if s.credIndex(g.CredentialID) < 0 {
+		return Gateway{}, &FieldError{"credential", "unknown"}
+	}
+	now := s.now()
+	i := s.gatewayIndex(g.ID)
+	switch {
+	case g.ID == "":
+		g.ID, g.Created = newID(), now
+	case i < 0:
+		return Gateway{}, ErrNotFound
+	default:
+		g.Created = s.gateways[i].Created
+	}
+	g.Updated = now
+	err := s.commit(func() {
+		if i < 0 {
+			s.gateways = append(s.gateways, g)
+		} else {
+			s.gateways[i] = g
+		}
+	})
+	if err != nil {
+		return Gateway{}, err
+	}
+	return g, nil
+}
+
+// GatewayUsers are the hosts reached through the gateway of id, sorted.
+func (s *Store) GatewayUsers(id string) []Host {
+	var out []Host
+	for _, h := range s.List() {
+		if h.GatewayID == id {
+			out = append(out, h)
+		}
+	}
+	return out
+}
+
+// DeleteGateway removes a gateway no host uses; one in use is an
+// *InUseError listing the hosts.
+func (s *Store) DeleteGateway(id string) error {
+	if us := s.GatewayUsers(id); len(us) > 0 {
+		e := &InUseError{}
+		for _, h := range us {
+			e.Hosts = append(e.Hosts, h.ID)
+		}
+		return e
+	}
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	i := s.gatewayIndex(id)
+	if i < 0 {
+		return ErrNotFound
+	}
+	return s.commit(func() { s.gateways = slices.Delete(s.gateways, i, i+1) })
 }
 
 // Forwards returns every port forward, sorted by label.

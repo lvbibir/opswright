@@ -3096,16 +3096,6 @@ func (msgs Messages) ErrProxy(proxy string, detail string) string {
 	return Catalog.Format(msgs.locale, "errProxy", map[string]any{"proxy": proxy, "detail": detail})
 }
 
-// ErrJumpLoop says "The jump hosts loop or repeat: a host can’t be reached through itself, or appear twice on the way."
-// in the language the app shows.
-func ErrJumpLoop() string { return In(i18n.Locale()).ErrJumpLoop() }
-
-// ErrJumpLoop says "The jump hosts loop or repeat: a host can’t be reached through itself, or appear twice on the way."
-// in the language of msgs.
-func (msgs Messages) ErrJumpLoop() string {
-	return Catalog.Format(msgs.locale, "errJumpLoop", nil)
-}
-
 // Network says "Network"
 // in the language the app shows.
 func Network() string { return In(i18n.Locale()).Network() }
@@ -3226,46 +3216,6 @@ func (msgs Messages) ProxySystemNote() string {
 	return Catalog.Format(msgs.locale, "proxySystemNote", nil)
 }
 
-// FieldJumpHosts says "Jump hosts, in the order they are dialed (drag to reorder)"
-// in the language the app shows.
-func FieldJumpHosts() string { return In(i18n.Locale()).FieldJumpHosts() }
-
-// FieldJumpHosts says "Jump hosts, in the order they are dialed (drag to reorder)"
-// in the language of msgs.
-func (msgs Messages) FieldJumpHosts() string {
-	return Catalog.Format(msgs.locale, "fieldJumpHosts", nil)
-}
-
-// NoJumpHosts says "No jump hosts: connects directly."
-// in the language the app shows.
-func NoJumpHosts() string { return In(i18n.Locale()).NoJumpHosts() }
-
-// NoJumpHosts says "No jump hosts: connects directly."
-// in the language of msgs.
-func (msgs Messages) NoJumpHosts() string {
-	return Catalog.Format(msgs.locale, "noJumpHosts", nil)
-}
-
-// AddJumpHost says "Add jump host…"
-// in the language the app shows.
-func AddJumpHost() string { return In(i18n.Locale()).AddJumpHost() }
-
-// AddJumpHost says "Add jump host…"
-// in the language of msgs.
-func (msgs Messages) AddJumpHost() string {
-	return Catalog.Format(msgs.locale, "addJumpHost", nil)
-}
-
-// RemoveJumpHost says "Remove Jump Host"
-// in the language the app shows.
-func RemoveJumpHost() string { return In(i18n.Locale()).RemoveJumpHost() }
-
-// RemoveJumpHost says "Remove Jump Host"
-// in the language of msgs.
-func (msgs Messages) RemoveJumpHost() string {
-	return Catalog.Format(msgs.locale, "removeJumpHost", nil)
-}
-
 // Proxies says "Proxies"
 // in the language the app shows.
 func Proxies() string { return In(i18n.Locale()).Proxies() }
@@ -3316,11 +3266,11 @@ func (msgs Messages) ProxyUserPlaceholder() string {
 	return Catalog.Format(msgs.locale, "proxyUserPlaceholder", nil)
 }
 
-// ProxyFirstHop says "Only the first hop goes through the proxy: the host itself, or its first jump host. SOCKS5 resolves names at the proxy."
+// ProxyFirstHop says "Only the first hop goes through the proxy: the host itself, or the gateway. SOCKS5 resolves names at the proxy."
 // in the language the app shows.
 func ProxyFirstHop() string { return In(i18n.Locale()).ProxyFirstHop() }
 
-// ProxyFirstHop says "Only the first hop goes through the proxy: the host itself, or its first jump host. SOCKS5 resolves names at the proxy."
+// ProxyFirstHop says "Only the first hop goes through the proxy: the host itself, or the gateway. SOCKS5 resolves names at the proxy."
 // in the language of msgs.
 func (msgs Messages) ProxyFirstHop() string {
 	return Catalog.Format(msgs.locale, "proxyFirstHop", nil)
@@ -5458,6 +5408,16 @@ func MetricsUnavailable() string { return In(i18n.Locale()).MetricsUnavailable()
 // in the language of msgs.
 func (msgs Messages) MetricsUnavailable() string {
 	return Catalog.Format(msgs.locale, "metricsUnavailable", nil)
+}
+
+// MetricsUnsupported says "Monitoring is not supported on this session."
+// in the language the app shows.
+func MetricsUnsupported() string { return In(i18n.Locale()).MetricsUnsupported() }
+
+// MetricsUnsupported says "Monitoring is not supported on this session."
+// in the language of msgs.
+func (msgs Messages) MetricsUnsupported() string {
+	return Catalog.Format(msgs.locale, "metricsUnsupported", nil)
 }
 
 // MetricsUnavailableReason says "{what}: {reason}"
@@ -8208,14 +8168,206 @@ func (msgs Messages) AuthLabelCredential(name string) string {
 	return Catalog.Format(msgs.locale, "authLabelCredential", map[string]any{"name": name})
 }
 
-// JumpHosts says "Jump hosts"
+// Gateway says "Gateway"
 // in the language the app shows.
-func JumpHosts() string { return In(i18n.Locale()).JumpHosts() }
+func Gateway() string { return In(i18n.Locale()).Gateway() }
 
-// JumpHosts says "Jump hosts"
+// Gateway says "Gateway"
 // in the language of msgs.
-func (msgs Messages) JumpHosts() string {
-	return Catalog.Format(msgs.locale, "jumpHosts", nil)
+func (msgs Messages) Gateway() string {
+	return Catalog.Format(msgs.locale, "gateway", nil)
+}
+
+// GatewayNone says "None (direct)"
+// in the language the app shows.
+func GatewayNone() string { return In(i18n.Locale()).GatewayNone() }
+
+// GatewayNone says "None (direct)"
+// in the language of msgs.
+func (msgs Messages) GatewayNone() string {
+	return Catalog.Format(msgs.locale, "gatewayNone", nil)
+}
+
+// ErrGatewayUnknown says "The gateway this host uses was deleted."
+// in the language the app shows.
+func ErrGatewayUnknown() string { return In(i18n.Locale()).ErrGatewayUnknown() }
+
+// ErrGatewayUnknown says "The gateway this host uses was deleted."
+// in the language of msgs.
+func (msgs Messages) ErrGatewayUnknown() string {
+	return Catalog.Format(msgs.locale, "errGatewayUnknown", nil)
+}
+
+// ToolUnsupported says "Not supported through the gateway this host uses."
+// in the language the app shows.
+func ToolUnsupported() string { return In(i18n.Locale()).ToolUnsupported() }
+
+// ToolUnsupported says "Not supported through the gateway this host uses."
+// in the language of msgs.
+func (msgs Messages) ToolUnsupported() string {
+	return Catalog.Format(msgs.locale, "toolUnsupported", nil)
+}
+
+// GatewayNoFiles says "The gateway this host uses does not allow file access."
+// in the language the app shows.
+func GatewayNoFiles() string { return In(i18n.Locale()).GatewayNoFiles() }
+
+// GatewayNoFiles says "The gateway this host uses does not allow file access."
+// in the language of msgs.
+func (msgs Messages) GatewayNoFiles() string {
+	return Catalog.Format(msgs.locale, "gatewayNoFiles", nil)
+}
+
+// Gateways says "Gateways"
+// in the language the app shows.
+func Gateways() string { return In(i18n.Locale()).Gateways() }
+
+// Gateways says "Gateways"
+// in the language of msgs.
+func (msgs Messages) Gateways() string {
+	return Catalog.Format(msgs.locale, "gateways", nil)
+}
+
+// GatewaysDesc says "Jump servers (bastions) hosts are reached through, and what their connections can do."
+// in the language the app shows.
+func GatewaysDesc() string { return In(i18n.Locale()).GatewaysDesc() }
+
+// GatewaysDesc says "Jump servers (bastions) hosts are reached through, and what their connections can do."
+// in the language of msgs.
+func (msgs Messages) GatewaysDesc() string {
+	return Catalog.Format(msgs.locale, "gatewaysDesc", nil)
+}
+
+// NewGateway says "New Gateway"
+// in the language the app shows.
+func NewGateway() string { return In(i18n.Locale()).NewGateway() }
+
+// NewGateway says "New Gateway"
+// in the language of msgs.
+func (msgs Messages) NewGateway() string {
+	return Catalog.Format(msgs.locale, "newGateway", nil)
+}
+
+// EditGateway says "Edit Gateway"
+// in the language the app shows.
+func EditGateway() string { return In(i18n.Locale()).EditGateway() }
+
+// EditGateway says "Edit Gateway"
+// in the language of msgs.
+func (msgs Messages) EditGateway() string {
+	return Catalog.Format(msgs.locale, "editGateway", nil)
+}
+
+// ConnectGateway says "Connect to the gateway"
+// in the language the app shows.
+func ConnectGateway() string { return In(i18n.Locale()).ConnectGateway() }
+
+// ConnectGateway says "Connect to the gateway"
+// in the language of msgs.
+func (msgs Messages) ConnectGateway() string {
+	return Catalog.Format(msgs.locale, "connectGateway", nil)
+}
+
+// GatewayDirect says "direct-tcpip"
+// in the language the app shows.
+func GatewayDirect() string { return In(i18n.Locale()).GatewayDirect() }
+
+// GatewayDirect says "direct-tcpip"
+// in the language of msgs.
+func (msgs Messages) GatewayDirect() string {
+	return Catalog.Format(msgs.locale, "gatewayDirect", nil)
+}
+
+// GatewayExec says "The session allows exec"
+// in the language the app shows.
+func GatewayExec() string { return In(i18n.Locale()).GatewayExec() }
+
+// GatewayExec says "The session allows exec"
+// in the language of msgs.
+func (msgs Messages) GatewayExec() string {
+	return Catalog.Format(msgs.locale, "gatewayExec", nil)
+}
+
+// GatewaySFTP says "The session allows SFTP"
+// in the language the app shows.
+func GatewaySFTP() string { return In(i18n.Locale()).GatewaySFTP() }
+
+// GatewaySFTP says "The session allows SFTP"
+// in the language of msgs.
+func (msgs Messages) GatewaySFTP() string {
+	return Catalog.Format(msgs.locale, "gatewaySFTP", nil)
+}
+
+// GatewayLogin says "Login name"
+// in the language the app shows.
+func GatewayLogin() string { return In(i18n.Locale()).GatewayLogin() }
+
+// GatewayLogin says "Login name"
+// in the language of msgs.
+func (msgs Messages) GatewayLogin() string {
+	return Catalog.Format(msgs.locale, "gatewayLogin", nil)
+}
+
+// GatewayLoginHint says "How the destination is named on the gateway: {gateway}, {user} and {host} are replaced."
+// in the language the app shows.
+func GatewayLoginHint(gateway string, user string, host string) string {
+	return In(i18n.Locale()).GatewayLoginHint(gateway, user, host)
+}
+
+// GatewayLoginHint says "How the destination is named on the gateway: {gateway}, {user} and {host} are replaced."
+// in the language of msgs.
+func (msgs Messages) GatewayLoginHint(gateway string, user string, host string) string {
+	return Catalog.Format(msgs.locale, "gatewayLoginHint", map[string]any{"gateway": gateway, "user": user, "host": host})
+}
+
+// GatewayHint says "With forwarding on, the host is a real SSH server reached through the gateway. Without it the gateway routes by the l…"
+// in the language the app shows.
+func GatewayHint() string { return In(i18n.Locale()).GatewayHint() }
+
+// GatewayHint says "With forwarding on, the host is a real SSH server reached through the gateway. Without it the gateway routes by the l…"
+// in the language of msgs.
+func (msgs Messages) GatewayHint() string {
+	return Catalog.Format(msgs.locale, "gatewayHint", nil)
+}
+
+// GatewayNoCredential says "Save a credential first: a gateway logs in with one."
+// in the language the app shows.
+func GatewayNoCredential() string { return In(i18n.Locale()).GatewayNoCredential() }
+
+// GatewayNoCredential says "Save a credential first: a gateway logs in with one."
+// in the language of msgs.
+func (msgs Messages) GatewayNoCredential() string {
+	return Catalog.Format(msgs.locale, "gatewayNoCredential", nil)
+}
+
+// GatewayCapDirect says "direct-tcpip"
+// in the language the app shows.
+func GatewayCapDirect() string { return In(i18n.Locale()).GatewayCapDirect() }
+
+// GatewayCapDirect says "direct-tcpip"
+// in the language of msgs.
+func (msgs Messages) GatewayCapDirect() string {
+	return Catalog.Format(msgs.locale, "gatewayCapDirect", nil)
+}
+
+// GatewayCapTerminalOnly says "terminal only"
+// in the language the app shows.
+func GatewayCapTerminalOnly() string { return In(i18n.Locale()).GatewayCapTerminalOnly() }
+
+// GatewayCapTerminalOnly says "terminal only"
+// in the language of msgs.
+func (msgs Messages) GatewayCapTerminalOnly() string {
+	return Catalog.Format(msgs.locale, "gatewayCapTerminalOnly", nil)
+}
+
+// NoGateways says "No gateways yet. A gateway is a jump server hosts are reached through."
+// in the language the app shows.
+func NoGateways() string { return In(i18n.Locale()).NoGateways() }
+
+// NoGateways says "No gateways yet. A gateway is a jump server hosts are reached through."
+// in the language of msgs.
+func (msgs Messages) NoGateways() string {
+	return Catalog.Format(msgs.locale, "noGateways", nil)
 }
 
 // StatusNoSession says "No active session"
@@ -16222,16 +16374,6 @@ func InvalidSerialSettings() string { return In(i18n.Locale()).InvalidSerialSett
 // in the language of msgs.
 func (msgs Messages) InvalidSerialSettings() string {
 	return Catalog.Format(msgs.locale, "invalidSerialSettings", nil)
-}
-
-// JumpNotSSH says "Jump hosts must be SSH hosts."
-// in the language the app shows.
-func JumpNotSSH() string { return In(i18n.Locale()).JumpNotSSH() }
-
-// JumpNotSSH says "Jump hosts must be SSH hosts."
-// in the language of msgs.
-func (msgs Messages) JumpNotSSH() string {
-	return Catalog.Format(msgs.locale, "jumpNotSSH", nil)
 }
 
 // ForwardNotSSH says "Port forwards go through SSH hosts only."

@@ -289,9 +289,7 @@ func (a *App) restoredConnectionNeedsSecrets(h assets.Host) bool {
 	if a.unlocked() || !a.unlock.stored || !a.lkOn.Load() || isLocal(h.ID) {
 		return false
 	}
-	path, _ := a.store.JumpPath(h.ID)
-	path = append(path, h)
-	for _, hop := range path {
+	for _, hop := range a.loginHops(h) {
 		if hop.Auth == assets.AuthAsk && a.lk.IsRemembered(a.lk.Last(hop.ID)) {
 			return true
 		}

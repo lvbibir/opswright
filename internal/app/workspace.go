@@ -167,7 +167,9 @@ func (a *App) OpenFilesBeside() {
 	if t == nil || cn == nil {
 		return
 	}
-	a.OpenFiles(cn.host.ID, openAt{pane: t.Focus, edge: a.filesEdge()}, cn)
+	if _, err := a.OpenFiles(cn.host.ID, openAt{pane: t.Focus, edge: a.filesEdge()}, cn); err != nil {
+		a.toast(func(m locales.Messages) ui.Toast { return ui.Toast{Title: openErrText(m, err), Type: "error"} })
+	}
 }
 
 // filesEdge is where a files pane opened from a terminal goes, as the
@@ -707,7 +709,7 @@ func (a *App) termElement(c *ui.Context, t *layout.Tab, n *layout.Node, cn *conn
 // termEntries are the context menu of a terminal pane n of tab t.
 func (a *App) termEntries(t *layout.Tab, n *layout.Node, cn *conn, tv *termView, svc ui.Services, m locales.Messages) []menuEntry {
 	sel := tv.SelectedText()
-	noFiles, noAI := !remoteOnly(cn), !canAI(cn)
+	noFiles, noAI := !remoteOnly(cn) || !a.gatewaySFTP(cn.host), !canAI(cn)
 	edge, other := a.filesEdge(), layout.Bottom
 	if edge == layout.Bottom {
 		other = layout.Right

@@ -296,7 +296,7 @@ func (a *App) hostItem(c *ui.Context, m locales.Messages, h assets.Host, prefix 
 			acts.Invisible()
 		}
 		acts.Children(func() {
-			if (IconButton{Icon: icons.Folder, Label: m.OpenFiles(), Size: Small, Disabled: !h.SSH()}).Clicked(c, "files") {
+			if (IconButton{Icon: icons.Folder, Label: m.OpenFiles(), Size: Small, Disabled: !h.SSH() || !a.gatewaySFTP(h)}).Clicked(c, "files") {
 				a.OpenFiles(h.ID, openAt{}, nil)
 			}
 			a.menuButton(c, more, IconButton{Icon: icons.More, Label: m.MoreActions(), Size: Small}, func() []menuEntry {
@@ -358,9 +358,9 @@ func (a *App) hostEntries(m locales.Messages, h assets.Host) []menuEntry {
 	}
 	return append(connect, []menuEntry{
 		{Icon: icons.SplitRight, Label: m.SplitRight(), Disabled: noTab, Do: beside(func(at openAt) { a.Connect(h.ID, at) })},
-		{Icon: icons.Folder, Label: m.OpenFiles(), Disabled: noSSH, Do: func() { a.OpenFiles(h.ID, openAt{}, nil) }},
+		{Icon: icons.Folder, Label: m.OpenFiles(), Disabled: noSSH || !a.gatewaySFTP(h), Do: func() { a.OpenFiles(h.ID, openAt{}, nil) }},
 		{Icon: icons.Robot, Label: m.OpenAI(), Do: func() { a.OpenAIFor(h.ID) }},
-		{Icon: icons.OpenFile, Label: openFilesLabel(m, a.filesEdge()), Disabled: noTab || noSSH, Do: beside(func(at openAt) {
+		{Icon: icons.OpenFile, Label: openFilesLabel(m, a.filesEdge()), Disabled: noTab || noSSH || !a.gatewaySFTP(h), Do: beside(func(at openAt) {
 			at.edge = a.filesEdge()
 			a.OpenFiles(h.ID, at, nil)
 		})},
@@ -413,9 +413,8 @@ func (a *App) hostTip(m locales.Messages, h assets.Host) string {
 	if px, ok := a.proxyOf(h); ok {
 		chain = append(chain, px.Name)
 	}
-	path, _ := a.store.JumpPath(h.ID)
-	for _, j := range path {
-		chain = append(chain, j.Label())
+	if gw, ok := a.gatewayFor(h); ok {
+		chain = append(chain, gw.Label())
 	}
 	if len(chain) == 0 {
 		return h.Target()

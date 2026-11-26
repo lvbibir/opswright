@@ -290,7 +290,7 @@ func (a *App) restoreBackup(m locales.Messages, p backupPayload) error {
 	}
 	if err := a.store.Restore(snap); err != nil {
 		var fe *assets.FieldError
-		if errors.As(err, &fe) || errors.Is(err, assets.ErrJumpLoop) {
+		if errors.As(err, &fe) {
 			err = errBadBackup
 		}
 		if rerr := tx.rollback(); rerr != nil {

@@ -89,10 +89,10 @@ type Host struct {
 	// Certificate is the OpenSSH user certificate of an AuthKey host's
 	// key, one key-cert.pub line; public, so it is kept here.
 	Certificate string `json:"certificate,omitempty"`
-	// JumpChain are the hosts connected through, in order, before this
-	// one (ProxyJump); each with its own credential and host key check.
-	JumpChain []string `json:"jumpChain,omitempty"`
-	// ProxyID is the proxy the first hop is dialed through.
+	// GatewayID is the gateway (jump server) this host is reached
+	// through; empty connects directly.
+	GatewayID string `json:"gatewayId,omitempty"`
+	// ProxyID is the proxy the connection is dialed through.
 	ProxyID string `json:"proxyId,omitempty"`
 	// CwdFollow lets a Files pane follow the directory the terminal of
 	// the same tab reports (OSC 7). New hosts have it on.
@@ -250,10 +250,7 @@ func (h *Host) Normalize() {
 	if h.Auth != AuthCredential {
 		h.CredentialID = ""
 	}
-	h.JumpChain = slices.DeleteFunc(slices.Clone(h.JumpChain), func(id string) bool { return id == "" })
-	if len(h.JumpChain) == 0 {
-		h.JumpChain = nil
-	}
+	h.GatewayID = strings.TrimSpace(h.GatewayID)
 	switch h.OSC52 {
 	case "", settings.OSC52Allow, settings.OSC52Ask, settings.OSC52Deny:
 	default:
@@ -351,20 +348,16 @@ var ErrNotFound = errors.New("assets: not found")
 // ErrExists is AddCredential's or AddProxy's error for an ID in use.
 var ErrExists = errors.New("assets: ID in use")
 
-// ErrJumpLoop reports a jump chain that comes back to a host already on
-// it (A through B, B through A), or reaches one host twice (A through B
-// and C, with C through B too).
-var ErrJumpLoop = errors.New("assets: the jump chain loops")
-
 // InUseError reports an entry other entries still use, so it can not be
-// deleted: the hosts (and forwards) using it.
+// deleted: the hosts, forwards and gateways using it.
 type InUseError struct {
 	Hosts    []string // IDs
 	Forwards []string // IDs
+	Gateways []string // IDs
 }
 
 func (e *InUseError) Error() string {
-	return fmt.Sprintf("assets: in use by %d hosts and %d forwards", len(e.Hosts), len(e.Forwards))
+	return fmt.Sprintf("assets: in use by %d hosts, %d forwards and %d gateways", len(e.Hosts), len(e.Forwards), len(e.Gateways))
 }
 
 // SchemaVersion is the version of the data file. A file of any other
@@ -381,6 +374,7 @@ type Store struct {
 	hosts    []Host
 	creds    []Credential
 	proxies  []Proxy
+	gateways []Gateway
 	forwards []Forward
 	snippets []Snippet
 	// groups are the groups made on their own, kept while empty; the
@@ -398,6 +392,7 @@ type file struct {
 	Hosts       []Host               `json:"hosts"`
 	Credentials []Credential         `json:"credentials"`
 	Proxies     []Proxy              `json:"proxies"`
+	Gateways    []Gateway            `json:"gateways"`
 	Forwards    []Forward            `json:"forwards"`
 	Groups      []string             `json:"groups,omitempty"`
 	GroupOrder  []string             `json:"groupOrder,omitempty"`
@@ -445,7 +440,7 @@ func Open(path string) (*Store, error) {
 		}
 		return s, nil
 	}
-	s.hosts, s.creds, s.proxies, s.forwards, s.groups, s.snippets = f.Hosts, f.Credentials, f.Proxies, f.Forwards, f.Groups, f.Snippets
+	s.hosts, s.creds, s.proxies, s.gateways, s.forwards, s.groups, s.snippets = f.Hosts, f.Credentials, f.Proxies, f.Gateways, f.Forwards, f.Groups, f.Snippets
 	s.groupOrder, s.groupLooks = f.GroupOrder, f.GroupLooks
 	return s, nil
 }
@@ -458,7 +453,7 @@ func (s *Store) save() error {
 	if s.path == "" {
 		return nil
 	}
-	f := file{Version: SchemaVersion, Hosts: s.hosts, Credentials: s.creds, Proxies: s.proxies, Forwards: s.forwards, Groups: s.groups, GroupOrder: s.groupOrder, GroupLooks: s.groupLooks, Snippets: s.snippets}
+	f := file{Version: SchemaVersion, Hosts: s.hosts, Credentials: s.creds, Proxies: s.proxies, Gateways: s.gateways, Forwards: s.forwards, Groups: s.groups, GroupOrder: s.groupOrder, GroupLooks: s.groupLooks, Snippets: s.snippets}
 	// Empty lists are written as [], not null.
 	if f.Hosts == nil {
 		f.Hosts = []Host{}
@@ -468,6 +463,9 @@ func (s *Store) save() error {
 	}
 	if f.Proxies == nil {
 		f.Proxies = []Proxy{}
+	}
+	if f.Gateways == nil {
+		f.Gateways = []Gateway{}
 	}
 	if f.Forwards == nil {
 		f.Forwards = []Forward{}
@@ -481,7 +479,7 @@ func (s *Store) save() error {
 
 // commit saves, or undoes what fn changed when saving fails.
 func (s *Store) commit(fn func()) error {
-	h, c, p, f, g := slices.Clone(s.hosts), slices.Clone(s.creds), slices.Clone(s.proxies), slices.Clone(s.forwards), slices.Clone(s.groups)
+	h, c, p, gw, f, g := slices.Clone(s.hosts), slices.Clone(s.creds), slices.Clone(s.proxies), slices.Clone(s.gateways), slices.Clone(s.forwards), slices.Clone(s.groups)
 	n := slices.Clone(s.snippets)
 	order, looks := slices.Clone(s.groupOrder), maps.Clone(s.groupLooks)
 	fn()
@@ -489,7 +487,7 @@ func (s *Store) commit(fn func()) error {
 		s.groupOrder = s.groupNames()
 	}
 	if err := s.save(); err != nil {
-		s.hosts, s.creds, s.proxies, s.forwards, s.groups, s.snippets = h, c, p, f, g, n
+		s.hosts, s.creds, s.proxies, s.gateways, s.forwards, s.groups, s.snippets = h, c, p, gw, f, g, n
 		s.groupOrder, s.groupLooks = order, looks
 		return err
 	}
@@ -545,7 +543,7 @@ func (s *Store) Get(id string) (Host, bool) {
 }
 
 // checkRefs checks what a host refers to: its credential, its proxy and
-// the hosts of its jump chain, which must exist and not loop back.
+// its gateway, which must exist.
 func (s *Store) checkRefs(h Host) error {
 	if h.Auth == AuthCredential {
 		i := s.credIndex(h.CredentialID)
@@ -560,82 +558,10 @@ func (s *Store) checkRefs(h Host) error {
 	if h.ProxyID != "" && s.proxyIndex(h.ProxyID) < 0 {
 		return &FieldError{"proxy", "unknown"}
 	}
-	for _, j := range h.JumpChain {
-		if j == h.ID {
-			continue
-		}
-		i := s.index(j)
-		if i < 0 {
-			return &FieldError{"jump", "unknown"}
-		}
-		if !s.hosts[i].SSH() {
-			return &FieldError{"jump", "not ssh"}
-		}
+	if h.GatewayID != "" && s.gatewayIndex(h.GatewayID) < 0 {
+		return &FieldError{"gateway", "unknown"}
 	}
-	// Walk every chain from h, with h as it is to be saved.
-	get := func(id string) (Host, bool) {
-		if id == h.ID {
-			return h, true
-		}
-		if i := s.index(id); i >= 0 {
-			return s.hosts[i], true
-		}
-		return Host{}, false
-	}
-	// A host met twice on the expanded path, by a loop or by two routes
-	// to it, is refused alike.
-	seen := map[string]bool{}
-	var walk func(id string) error
-	walk = func(id string) error {
-		if seen[id] {
-			return ErrJumpLoop
-		}
-		seen[id] = true
-		x, ok := get(id)
-		if !ok {
-			return nil
-		}
-		for _, j := range x.JumpChain {
-			if err := walk(j); err != nil {
-				return err
-			}
-		}
-		return nil
-	}
-	return walk(h.ID)
-}
-
-// JumpPath is the hosts dialed through to reach id, first hop first,
-// each jump host's own chain expanded before it.
-func (s *Store) JumpPath(id string) ([]Host, error) {
-	s.mu.Lock()
-	defer s.mu.Unlock()
-	var out []Host
-	seen := map[string]bool{}
-	var walk func(id string) error
-	walk = func(id string) error {
-		if seen[id] {
-			return ErrJumpLoop
-		}
-		seen[id] = true
-		i := s.index(id)
-		if i < 0 {
-			return ErrNotFound
-		}
-		for _, j := range s.hosts[i].JumpChain {
-			if err := walk(j); err != nil {
-				return err
-			}
-			if k := s.index(j); k >= 0 {
-				out = append(out, s.hosts[k])
-			}
-		}
-		return nil
-	}
-	if err := walk(id); err != nil {
-		return nil, err
-	}
-	return out, nil
+	return nil
 }
 
 // Add validates and adds a host, giving it an ID.
@@ -721,7 +647,7 @@ func (s *Store) Delete(id string) error {
 func (s *Store) users(id string) *InUseError {
 	use := &InUseError{}
 	for _, h := range s.hosts {
-		if slices.Contains(h.JumpChain, id) && h.ID != id {
+		if h.GatewayID == id && h.ID != id {
 			use.Hosts = append(use.Hosts, h.ID)
 		}
 	}

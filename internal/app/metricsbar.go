@@ -128,7 +128,7 @@ func (a *App) syncMetrics() {
 		if cur, ok := a.host(cn.host.ID); ok {
 			h = cur
 		}
-		visible := a.metricsWanted(h) && active[cn.id] && cn.s.Status().State == session.Connected
+		visible := a.metricsWanted(h) && a.gatewayExecChannel(h) && active[cn.id] && cn.s.Status().State == session.Connected
 		if visible {
 			cn.s.SetProbe(metricsProbe)
 		} else {
@@ -569,6 +569,13 @@ func (a *App) metricsMore(c *ui.Context, cn *conn, m locales.Messages, tok theme
 }
 
 func (a *App) metricsBar(c *ui.Context, cn *conn, tok theme.Tokens, m locales.Messages) {
+	h := cn.host
+	if cur, ok := a.host(cn.host.ID); ok {
+		h = cur
+	}
+	// A gateway that routes and allows no exec can run no metrics command:
+	// say so rather than show an empty bar.
+	unsupported := !a.gatewayExecChannel(h)
 	var rd session.Reading
 	reason := ""
 	if col := a.metricsCollector(cn); col != nil {
@@ -588,6 +595,12 @@ func (a *App) metricsBar(c *ui.Context, cn *conn, tok theme.Tokens, m locales.Me
 	a.metricsItemMenu(row, cn, m)
 	defer func() { cn.metShown = cn.metCompact }()
 	row.Children(func() {
+		if unsupported {
+			ui.Icon(c, icons.Warning.SVG).Size(12, 12).Shrink(0).TextColor(tok.Warning).Margin(0, 4, 0, 4)
+			tx := ui.Text(c, m.MetricsUnsupported()).FontSize(theme.Caption).TextColor(tok.TextMuted).SingleLine().Grow(1).Shrink(1).Label(m.MetricsUnsupported())
+			a.metricsItemMenu(tx, cn, m)
+			return
+		}
 		if reason != "" {
 			why := metricsReason(m, reason)
 			label := m.MetricsUnavailable()

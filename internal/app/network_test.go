@@ -16,7 +16,6 @@ import (
 	"github.com/lvbibir/opswright/internal/session"
 	"github.com/lvbibir/opswright/internal/sshtest"
 	"github.com/lvbibir/opswright/locales"
-	"golang.org/x/crypto/ssh"
 )
 
 func startServer(t *testing.T) *sshtest.Server {
@@ -29,15 +28,15 @@ func startServer(t *testing.T) *sshtest.Server {
 	return s
 }
 
-func TestJumpChainTerminalAndFiles(t *testing.T) {
+func TestGatewayTerminalAndFiles(t *testing.T) {
 	bastion, db := startServer(t), startServer(t)
 	bastion.DirectTCPIP = true
 	db.SFTPRoot = t.TempDir()
 	os.WriteFile(filepath.Join(db.SFTPRoot, "inside.txt"), []byte("x"), 0o644)
 	a, tt := newTestApp(t)
-	b := addHost(t, a, bastion, "bastion-1", "") // asks for its password
+	gw := addGateway(t, a, bastion, "bastion-1", "secret", true)
 	h := addHost(t, a, db, "db", "secret")
-	h.JumpChain = []string{b.ID}
+	h.GatewayID = gw.ID
 	if _, err := a.Store().Update(h); err != nil {
 		t.Fatal(err)
 	}
@@ -47,16 +46,8 @@ func TestJumpChainTerminalAndFiles(t *testing.T) {
 	}
 	a.Connect(h.ID, openAt{})
 	c := a.focused()
-	// The jump host's password is asked for under its name.
-	waitFor(t, tt, "jump password prompt", func() bool { return a.prompting })
-	tt.Frame()
-	if a.prompt.host.ID != b.ID || !tt.HasText("Jump host bastion-1: Enter the password for bastion-1 to connect.") {
-		t.Fatalf("prompt for %q: %q", a.prompt.host.Label(), tt.Texts())
-	}
-	a.prompt.value = "secret"
-	a.SubmitPrompt()
-	// Every hop's key is confirmed: the jump host's first.
-	waitFor(t, tt, "jump host key prompt", func() bool { return a.hostKey != nil })
+	// Every hop's key is confirmed: the gateway's first.
+	waitFor(t, tt, "gateway host key prompt", func() bool { return a.hostKey != nil })
 	if a.hostKey.err.Host != bastion.Addr {
 		t.Fatalf("asked for %s", a.hostKey.err.Host)
 	}
@@ -66,7 +57,7 @@ func TestJumpChainTerminalAndFiles(t *testing.T) {
 		t.Fatalf("asked for %s", a.hostKey.err.Host)
 	}
 	mustClick(t, tt, "Trust and Connect")
-	waitFor(t, tt, "connected through the chain", func() bool { return c.s.Status().State == session.Connected })
+	waitFor(t, tt, "connected through the gateway", func() bool { return c.s.Status().State == session.Connected })
 	if bastion.Tunnels() < 1 || db.Logins() != 1 {
 		t.Errorf("tunnels %d, logins %d", bastion.Tunnels(), db.Logins())
 	}
@@ -75,9 +66,9 @@ func TestJumpChainTerminalAndFiles(t *testing.T) {
 		t.Fatal(err)
 	}
 	fc := a.focused()
-	waitFor(t, tt, "files through the chain", func() bool { return fc.fs.remote.client != nil })
+	waitFor(t, tt, "files through the gateway", func() bool { return fc.fs.remote.client != nil })
 	waitFor(t, tt, "remote listing", func() bool { return tt.HasText("inside.txt") })
-	// The middle hop drops: the session comes back along the whole chain.
+	// The gateway drops: the session comes back through it.
 	bastion.Drop()
 	waitFor(t, tt, "reconnected", func() bool { st := c.s.Status(); return st.State == session.Connected && st.Connects == 2 })
 	if bastion.Logins() < 2 {
@@ -85,45 +76,74 @@ func TestJumpChainTerminalAndFiles(t *testing.T) {
 	}
 }
 
-func TestJumpErrorsAndStatus(t *testing.T) {
+func TestGatewayErrorsAndStatus(t *testing.T) {
 	a, _ := newTestApp(t)
 	m := locales.In("en")
-	b, _ := a.Store().Add(assets.Host{Name: "bastion-1", Address: "10.0.0.1", User: "ops", Auth: assets.AuthAsk})
-	h, _ := a.Store().Add(assets.Host{Name: "db", Address: "10.0.0.2", User: "demo", Auth: assets.AuthAsk, JumpChain: []string{b.ID}})
+	cr, _ := a.Store().SaveCredential(assets.Credential{Name: "pw", Kind: assets.CredPassword, User: "ops"})
+	gw, _ := a.Store().SaveGateway(assets.Gateway{Name: "bastion-1", Address: "10.0.0.1", User: "ops", CredentialID: cr.ID})
+	h, _ := a.Store().Add(assets.Host{Name: "db", Address: "10.0.0.2", User: "demo", Auth: assets.AuthAsk, GatewayID: gw.ID})
 	st := session.Status{State: session.Connecting, Hop: "bastion-1"}
 	if got := a.statusText(m, h, st, time.Now()); got != "Connecting to bastion-1…" {
 		t.Errorf("connecting: %q", got)
 	}
-	err := &session.HopError{Index: 0, ID: b.ID, Name: "bastion-1", Jump: true, Err: errors.New("ssh: unable to authenticate")}
+	err := &session.HopError{Index: 0, ID: gw.ID, Name: "bastion-1", Jump: true, Err: errors.New("ssh: unable to authenticate")}
 	if got := a.errText(m, h, err); !strings.HasPrefix(got, "Jump host bastion-1: Authentication failed for ops@") {
-		t.Errorf("jump auth: %q", got)
+		t.Errorf("gateway auth: %q", got)
 	}
 	err = &session.HopError{Index: 1, ID: h.ID, Name: "db", Err: errors.New("ssh: unable to authenticate")}
 	if got := a.errText(m, h, err); !strings.HasPrefix(got, "Authentication failed for demo@") {
 		t.Errorf("target auth: %q", got)
 	}
-	// A loop of jump hosts is refused on save, in the editor.
-	a.openEditor(&b)
-	a.form.jumps = []string{h.ID}
-	if a.SaveForm(m) || a.form.err != m.ErrJumpLoop() || !a.form.netOpen {
-		t.Errorf("loop saved: err %q", a.form.err)
+	// A host naming a gateway that does not exist is refused on save.
+	a.openEditor(&h)
+	a.form.gateway = "nope"
+	if a.SaveForm(m) || a.form.err != m.ErrGatewayUnknown() {
+		t.Errorf("unknown gateway saved: err %q", a.form.err)
 	}
-	if got, _ := a.Store().Get(b.ID); len(got.JumpChain) != 0 {
-		t.Errorf("loop stored: %v", got.JumpChain)
+	if got, _ := a.Store().Get(h.ID); got.GatewayID != gw.ID {
+		t.Errorf("gateway changed: %q", got.GatewayID)
 	}
 }
 
-func TestMoveRows(t *testing.T) {
-	s := []string{"a", "b", "c", "d"}
-	for _, tc := range []struct {
-		rows []int
-		to   int
-		want string
-	}{{[]int{0}, 4, "bcda"}, {[]int{3}, 0, "dabc"}, {[]int{1}, 3, "acbd"}, {[]int{2}, 1, "acbd"}, {[]int{0, 2}, 4, "bdac"}} {
-		if got := strings.Join(moveRows(s, tc.rows, tc.to), ""); got != tc.want {
-			t.Errorf("move %v to %d: %s, want %s", tc.rows, tc.to, got, tc.want)
-		}
+// TestGatewayLoginName: a routed gateway logs in with the composed name;
+// the credential's own user must not replace it.
+func TestGatewayLoginName(t *testing.T) {
+	const login = "liuzhijie@sysadm@192.168.8.40"
+	srv, err := sshtest.Start("127.0.0.1:0", login, "secret")
+	if err != nil {
+		t.Fatal(err)
 	}
+	t.Cleanup(srv.Close)
+	a, tt := newTestApp(t)
+	a.known.Add(srv.Addr, srv.HostKey.PublicKey())
+	cr, err := a.store.SaveCredential(assets.Credential{Name: "bastion", Kind: assets.CredPassword, User: "demo"})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if err := a.kc.Set(keychain.Cred(cr.ID, keychain.Password), []byte("secret")); err != nil {
+		t.Fatal(err)
+	}
+	host, port := splitAddr(t, srv.Addr)
+	gw, err := a.store.SaveGateway(assets.Gateway{Name: "bastion", Address: host, Port: port, User: "liuzhijie", CredentialID: cr.ID})
+	if err != nil {
+		t.Fatal(err)
+	}
+	h, err := a.store.Add(assets.Host{Name: "zabbix", Address: "192.168.8.40", User: "sysadm", Auth: assets.AuthAsk, GatewayID: gw.ID})
+	if err != nil {
+		t.Fatal(err)
+	}
+	id, err := a.Connect(h.ID, openAt{})
+	if err != nil {
+		t.Fatal(err)
+	}
+	c := a.conns[id]
+	waitFor(t, tt, "connected", func() bool {
+		st := c.s.Status()
+		if st.State == session.Failed {
+			t.Fatalf("failed: %v", st.Err)
+		}
+		return st.State == session.Connected
+	})
 }
 
 func TestProxySheetAndEditor(t *testing.T) {
@@ -244,15 +264,15 @@ func TestConnectThroughProxy(t *testing.T) {
 	waitFor(t, tt, "connected through the proxy", func() bool { return c.s.Status().State == session.Connected })
 }
 
-// TestPoolKeyFollowsJumpHosts: editing a jump host (or its credential or
-// proxy) gives the target a new connection, not the stale shared one.
-func TestPoolKeyFollowsJumpHosts(t *testing.T) {
+// TestPoolKeyFollowsGateway: editing a gateway (or its credential) gives
+// the host a new connection, not the stale shared one.
+func TestPoolKeyFollowsGateway(t *testing.T) {
 	old, fresh, db := startServer(t), startServer(t), startServer(t)
 	old.DirectTCPIP, fresh.DirectTCPIP = true, true
 	a, tt := newTestApp(t)
-	b := addHost(t, a, old, "bastion", "secret")
+	gw := addGateway(t, a, old, "bastion", "secret", true)
 	h := addHost(t, a, db, "db", "secret")
-	h.JumpChain = []string{b.ID}
+	h.GatewayID = gw.ID
 	h, _ = a.Store().Update(h)
 	for _, s := range []*sshtest.Server{old, fresh, db} {
 		a.known.Add(s.Addr, s.HostKey.PublicKey())
@@ -262,10 +282,10 @@ func TestPoolKeyFollowsJumpHosts(t *testing.T) {
 	c := a.focused()
 	waitFor(t, tt, "connected via old", func() bool { return c.s.Status().State == session.Connected })
 
-	// The jump host now points elsewhere: a new pane goes there.
-	b.Address, b.Port = splitAddr(t, fresh.Addr)
-	if b, _ = a.Store().Update(b); a.poolKey(h) == key {
-		t.Fatal("pool key ignores the jump host's address")
+	// The gateway now points elsewhere: a new pane goes there.
+	gw.Address, gw.Port = splitAddr(t, fresh.Addr)
+	if gw, _ = a.Store().SaveGateway(gw); a.poolKey(h) == key {
+		t.Fatal("pool key ignores the gateway's address")
 	}
 	a.Connect(h.ID, openAt{})
 	c2 := a.focused()
@@ -273,39 +293,33 @@ func TestPoolKeyFollowsJumpHosts(t *testing.T) {
 	if fresh.Tunnels() != 1 || old.Tunnels() != 1 {
 		t.Errorf("tunnels old %d fresh %d", old.Tunnels(), fresh.Tunnels())
 	}
-	// Its credential's user, and its proxy, are part of it too.
+	// Its credential's user is part of it too.
 	key = a.poolKey(h)
-	cr, _ := a.Store().Credential(b.CredentialID)
+	cr, _ := a.Store().Credential(gw.CredentialID)
 	cr.User = "other"
 	a.Store().SaveCredential(cr)
 	if a.poolKey(h) == key {
-		t.Error("pool key ignores the jump host's credential user")
+		t.Error("pool key ignores the gateway's credential user")
 	}
+	// Its capabilities are too: exec off vs on reconnects.
 	key = a.poolKey(h)
-	p, err := a.Store().SaveProxy(assets.Proxy{Name: "p", Kind: assets.ProxySOCKS5, Address: "127.0.0.1", Port: 1080})
-	if err != nil {
-		t.Fatal(err)
-	}
-	b.ProxyID = p.ID
-	b, _ = a.Store().Update(b)
-	key = a.poolKey(h)
-	p.Port = 1081
-	a.Store().SaveProxy(p)
+	gw.Exec = true
+	gw, _ = a.Store().SaveGateway(gw)
 	if a.poolKey(h) == key {
-		t.Error("pool key ignores the jump host's proxy")
+		t.Error("pool key ignores the gateway's capabilities")
 	}
 }
 
-// TestHopDownMessage: a hop the jump host cannot reach is named, with the
-// hop it was tried through, in plain words.
-func TestHopDownMessage(t *testing.T) {
+// TestGatewayHopDownMessage: a host the gateway cannot reach is named,
+// with the gateway it was tried through, in plain words.
+func TestGatewayHopDownMessage(t *testing.T) {
 	bastion, db := startServer(t), startServer(t)
 	bastion.DirectTCPIP = true
 	a, tt := newTestApp(t)
 	m := locales.In("en")
-	b := addHost(t, a, bastion, "bastion-1", "secret")
+	gw := addGateway(t, a, bastion, "bastion-1", "secret", true)
 	h := addHost(t, a, db, "db", "secret")
-	h.JumpChain = []string{b.ID}
+	h.GatewayID = gw.ID
 	h, _ = a.Store().Update(h)
 	a.known.Add(bastion.Addr, bastion.HostKey.PublicKey())
 	db.Close()
@@ -316,23 +330,4 @@ func TestHopDownMessage(t *testing.T) {
 		st := c.s.Status()
 		return st.Err != nil && a.errText(m, h, st.Err) == want
 	})
-	// A jump host further down the chain keeps its attribution.
-	mid := addHost(t, a, db, "mid", "secret")
-	mid.JumpChain = []string{b.ID}
-	mid, _ = a.Store().Update(mid)
-	h.JumpChain = []string{mid.ID}
-	h, _ = a.Store().Update(h)
-	err := &session.HopError{Index: 1, ID: mid.ID, Name: "mid", Jump: true, Err: &ssh.OpenChannelError{Reason: ssh.ConnectionFailed, Message: "dial tcp 10.0.0.9:22: connect: no route to host"}}
-	if got := a.errText(m, h, err); got != "Jump host mid: Cannot reach mid through bastion-1: "+m.NetUnreachable() {
-		t.Errorf("mid hop: %q", got)
-	}
-	zh := locales.In("zh-Hans")
-	if got := a.errText(zh, h, err); !strings.Contains(got, "经由 bastion-1") || !strings.Contains(got, zh.NetUnreachable()) {
-		t.Errorf("zh: %q", got)
-	}
-	// Windows says "actively refused", not "connection refused".
-	refused := &session.HopError{Index: 1, ID: mid.ID, Name: "mid", Jump: true, Err: &ssh.OpenChannelError{Reason: ssh.ConnectionFailed, Message: "dial tcp 127.0.0.1:22: connectex: No connection could be made because the target machine actively refused it."}}
-	if got := a.errText(m, h, refused); got != "Jump host mid: Cannot reach mid through bastion-1: "+m.NetRefused() {
-		t.Errorf("windows refuse: %q", got)
-	}
 }

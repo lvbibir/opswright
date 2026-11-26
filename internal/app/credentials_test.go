@@ -78,6 +78,27 @@ func addSrvHost(t *testing.T, a *App, srv *sshtest.Server, name string, auth ass
 	return h
 }
 
+// addGateway saves a gateway that logs in to srv as demo with pw,
+// forwarding to the real host when direct.
+func addGateway(t *testing.T, a *App, srv *sshtest.Server, name, pw string, direct bool) assets.Gateway {
+	t.Helper()
+	host, port := splitAddr(t, srv.Addr)
+	cr, err := a.Store().SaveCredential(assets.Credential{Name: name + "-cred", Kind: assets.CredPassword, User: "demo"})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if pw != "" {
+		if err := a.kc.Set(keychain.Cred(cr.ID, keychain.Password), []byte(pw)); err != nil {
+			t.Fatal(err)
+		}
+	}
+	gw, err := a.Store().SaveGateway(assets.Gateway{Name: name, Address: host, Port: port, User: "demo", CredentialID: cr.ID, DirectTCPIP: direct})
+	if err != nil {
+		t.Fatal(err)
+	}
+	return gw
+}
+
 func waitConnected(t *testing.T, a *App, tt *ui.Tester, ids ...int) {
 	t.Helper()
 	for _, id := range ids {

@@ -132,7 +132,7 @@ func (h *Host) normalizeStream() {
 		h.Auth = AuthNone
 	}
 	h.AskPassphrase, h.Certificate = false, ""
-	h.JumpChain = nil
+	h.GatewayID = ""
 	h.CwdFollow = false
 	h.TerminalDir, h.RemoteDir, h.LocalDir, h.Tmux = "", "", "", ""
 	h.Startup = false

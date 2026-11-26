@@ -266,65 +266,73 @@ func TestCredentials(t *testing.T) {
 	}
 }
 
-// TestJumpRepeats: a host met twice on the expanded path is refused like
-// a loop: target through [A, B] with B through A would go A, A, B.
-func TestJumpRepeats(t *testing.T) {
+// TestGatewayRefs checks a host's gateway reference and that a gateway in
+// use is not deleted.
+func TestGatewayRefs(t *testing.T) {
 	s, _ := Open("")
-	a, _ := s.Add(Host{Name: "a", Address: "a", User: "u"})
-	b, _ := s.Add(Host{Name: "b", Address: "b", User: "u", JumpChain: []string{a.ID}})
-	if _, err := s.Add(Host{Name: "t", Address: "t", User: "u", JumpChain: []string{a.ID, b.ID}}); !errors.Is(err, ErrJumpLoop) {
-		t.Fatalf("repeat saved: %v", err)
-	}
-	if _, err := s.Add(Host{Name: "t", Address: "t", User: "u", JumpChain: []string{a.ID, a.ID}}); !errors.Is(err, ErrJumpLoop) {
-		t.Fatalf("same hop twice saved: %v", err)
-	}
-	tg, err := s.Add(Host{Name: "t", Address: "t", User: "u", JumpChain: []string{b.ID}})
+	cr, err := s.SaveCredential(Credential{Name: "pw", Kind: CredPassword})
 	if err != nil {
 		t.Fatal(err)
 	}
-	// Made a repeat afterwards, by editing a hop: refused too.
-	a.JumpChain = []string{}
-	c, _ := s.Add(Host{Name: "c", Address: "c", User: "u", JumpChain: []string{a.ID}})
-	tg.JumpChain = []string{c.ID, b.ID}
-	if _, err := s.Update(tg); !errors.Is(err, ErrJumpLoop) {
-		t.Fatalf("repeat by edit saved: %v", err)
+	gw, err := s.SaveGateway(Gateway{Name: "bastion", Address: "bastion", User: "me", CredentialID: cr.ID})
+	if err != nil {
+		t.Fatal(err)
 	}
-	if path, err := s.JumpPath(tg.ID); err != nil || len(path) != 2 {
-		t.Fatalf("path %v %v", path, err)
+	if gw.Port != 22 || gw.LoginName("sysadm", "10.0.0.1") != "me@sysadm@10.0.0.1" {
+		t.Fatalf("gateway %+v", gw)
+	}
+	gw.Login = "{user}@{host}"
+	gw, err = s.SaveGateway(gw)
+	if err != nil || gw.LoginName("sysadm", "10.0.0.1") != "sysadm@10.0.0.1" {
+		t.Fatalf("custom login %+v %v", gw, err)
+	}
+	h, err := s.Add(Host{Name: "h", Address: "10.0.0.1", User: "sysadm", GatewayID: gw.ID})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if _, err := s.Add(Host{Name: "x", Address: "x", User: "u", GatewayID: "nope"}); !fieldIs(err, "gateway", "unknown") {
+		t.Fatalf("unknown gateway: %v", err)
+	}
+	var inUse *InUseError
+	if err := s.DeleteGateway(gw.ID); !errors.As(err, &inUse) || inUse.Hosts[0] != h.ID {
+		t.Fatalf("delete gateway in use: %v", err)
+	}
+	h.GatewayID = ""
+	if _, err := s.Update(h); err != nil {
+		t.Fatal(err)
+	}
+	if err := s.DeleteGateway(gw.ID); err != nil {
+		t.Fatalf("delete gateway: %v", err)
 	}
 }
 
-func TestJumpChainAndProxy(t *testing.T) {
+func TestGatewayAndProxy(t *testing.T) {
 	s, _ := Open("")
 	px, err := s.SaveProxy(Proxy{Name: "corp", Kind: ProxySOCKS5, Address: "proxy.corp", User: "me"})
 	if err != nil || px.Port != 1080 {
 		t.Fatal(px, err)
 	}
-	c, _ := s.Add(Host{Name: "c", Address: "c", User: "u"})
-	b, _ := s.Add(Host{Name: "b", Address: "b", User: "u", JumpChain: []string{c.ID}})
-	a, err := s.Add(Host{Name: "a", Address: "a", User: "u", JumpChain: []string{b.ID}, ProxyID: px.ID})
+	if _, err := s.SaveGateway(Gateway{Name: "bad", Address: "b", User: "u", CredentialID: "nope"}); !fieldIs(err, "credential", "unknown") {
+		t.Fatalf("gateway with unknown credential: %v", err)
+	}
+	cr, _ := s.SaveCredential(Credential{Name: "pw", Kind: CredPassword})
+	gw, err := s.SaveGateway(Gateway{Name: "bastion", Address: "bastion", User: "me", CredentialID: cr.ID})
 	if err != nil {
 		t.Fatal(err)
 	}
-	path, err := s.JumpPath(a.ID)
-	if err != nil || len(path) != 2 || path[0].ID != c.ID || path[1].ID != b.ID {
-		t.Fatalf("path %v %v", path, err)
-	}
-	// c through a: a loop.
-	c.JumpChain = []string{a.ID}
-	if _, err := s.Update(c); !errors.Is(err, ErrJumpLoop) {
-		t.Fatalf("loop saved: %v", err)
-	}
-	b.JumpChain = []string{b.ID}
-	if _, err := s.Update(b); !errors.Is(err, ErrJumpLoop) {
-		t.Fatalf("self jump saved: %v", err)
+	a, err := s.Add(Host{Name: "a", Address: "a", User: "u", GatewayID: gw.ID, ProxyID: px.ID})
+	if err != nil {
+		t.Fatal(err)
 	}
 	var inUse *InUseError
 	if err := s.DeleteProxy(px.ID); !errors.As(err, &inUse) || inUse.Hosts[0] != a.ID {
 		t.Fatalf("delete proxy in use: %v", err)
 	}
-	if err := s.Delete(b.ID); !errors.As(err, &inUse) {
-		t.Fatalf("delete jump host in use: %v", err)
+	if us := s.GatewayUsers(gw.ID); len(us) != 1 || us[0].ID != a.ID {
+		t.Fatalf("gateway users %v", us)
+	}
+	if err := s.DeleteCredential(cr.ID); !errors.As(err, &inUse) || len(inUse.Gateways) != 1 || inUse.Gateways[0] != gw.ID {
+		t.Fatalf("delete a credential a gateway uses: %v", err)
 	}
 	if _, err := s.SaveProxy(Proxy{Name: "x", Kind: "ftp", Address: "p"}); err == nil {
 		t.Error("unknown proxy kind")

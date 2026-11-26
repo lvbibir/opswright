@@ -714,7 +714,7 @@ func (a *App) hostPanel(c *ui.Context, m locales.Messages, tok theme.Tokens) {
 				a.Connect(h.ID, openAt{})
 			}
 			ui.Spacer(c)
-			if (IconButton{Icon: icons.Folder, Label: m.OpenFiles(), Disabled: local || !h.SSH()}).Clicked(c, "hfiles") {
+			if (IconButton{Icon: icons.Folder, Label: m.OpenFiles(), Disabled: local || !h.SSH() || !a.gatewaySFTP(h)}).Clicked(c, "hfiles") {
 				a.OpenFiles(h.ID, openAt{}, nil)
 			}
 			fav := m.AddFavorite()
@@ -745,10 +745,9 @@ func (a *App) hostPanel(c *ui.Context, m locales.Messages, tok theme.Tokens) {
 	if px, ok := a.proxyOf(h); ok {
 		proxy = px.Name
 	}
-	var jumps []string
-	path, _ := a.store.JumpPath(h.ID)
-	for _, j := range path {
-		jumps = append(jumps, a.pv(j.Label()))
+	jump := m.GatewayNone()
+	if gw, ok := a.gatewayFor(h); ok {
+		jump = a.pv(gw.Label())
 	}
 	panes := 0
 	for _, o := range a.conns {
@@ -770,8 +769,8 @@ func (a *App) hostPanel(c *ui.Context, m locales.Messages, tok theme.Tokens) {
 			ui.Text(c, a.authText(m, h)).FontSize(theme.Footnote)
 		})
 		ui.Column(c).Gap(2).FillWidth().Children(func() {
-			ui.Text(c, m.JumpHosts()).FontSize(theme.Caption).TextColor(tok.TextMuted)
-			ui.Text(c, or(strings.Join(jumps, " → "))).FontSize(theme.Footnote)
+			ui.Text(c, m.Gateway()).FontSize(theme.Caption).TextColor(tok.TextMuted)
+			ui.Text(c, jump).FontSize(theme.Footnote)
 		})
 	})
 }

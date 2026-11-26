@@ -37,6 +37,7 @@ const (
 	prefAgents      prefPage = "agents"
 	prefCredentials prefPage = "credentials"
 	prefProxies     prefPage = "proxies"
+	prefGateways    prefPage = "gateways"
 	prefKnownHosts  prefPage = "knownhosts"
 	prefBackup      prefPage = "backup"
 	prefShortcuts   prefPage = "shortcuts"
@@ -72,6 +73,7 @@ func prefGroups(m locales.Messages) []prefGroup {
 		{m.SettingsGroupManage(), []prefItem{
 			{prefCredentials, icons.Key, m.Credentials(), m.CredentialsDesc()},
 			{prefProxies, icons.Proxy, m.Proxies(), m.ProxiesDesc()},
+			{prefGateways, icons.JumpHost, m.Gateways(), m.GatewaysDesc()},
 			{prefKnownHosts, icons.HostKey, m.KnownHosts(), m.KnownHostsDesc()},
 			{prefBackup, icons.Backup, m.BackupSection(), m.BackupDesc()},
 		}},
@@ -286,6 +288,8 @@ func (a *App) settingsPage(c *ui.Context, m locales.Messages, tok theme.Tokens) 
 				a.localKeysSection(c, m, tok, &s, &changed)
 			case prefProxies:
 				a.proxiesSection(c, m, tok)
+			case prefGateways:
+				a.gatewaysSection(c, m, tok)
 			case prefKnownHosts:
 				a.knownHostsPage(c, m, tok)
 			case prefBackup:

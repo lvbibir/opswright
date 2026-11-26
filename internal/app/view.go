@@ -123,6 +123,7 @@ func (a *App) View(c *ui.Context) {
 	a.snippetSheets(c, m)
 	a.credView(c, m)
 	a.proxyView(c, m)
+	a.gatewayView(c, m)
 	a.targetView(c, m)
 	a.remoteListView(c, m)
 	a.backupView(c, m)

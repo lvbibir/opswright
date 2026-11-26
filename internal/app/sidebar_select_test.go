@@ -118,21 +118,19 @@ func TestMultiSelectMove(t *testing.T) {
 	}
 }
 
-// TestMultiSelectDelete: the hosts checked go, one jumped through by
-// another checked after it, then the groups checked as a whole with their
-// subgroups; a group partly checked stays with its hosts unchecked, and a
-// host used by one kept is not deleted.
+// TestMultiSelectDelete: the hosts checked go, one used by a forward that
+// keeps it is blocked, then the groups checked as a whole with their
+// subgroups; a group partly checked stays with its hosts unchecked.
 func TestMultiSelectDelete(t *testing.T) {
 	a, _ := newTestApp(t)
 	bastion := addGroupedHost(t, a, "bastion", "Prod")
-	inner, err := a.store.Add(assets.Host{Name: "inner", Address: "inner", User: "u", Group: "Prod/Web", JumpChain: []string{bastion.ID}})
+	inner, err := a.store.Add(assets.Host{Name: "inner", Address: "inner", User: "u", Group: "Prod/Web"})
 	if err != nil {
 		t.Fatal(err)
 	}
 	kept := addGroupedHost(t, a, "kept", "Prod/Web")
 	gate := addGroupedHost(t, a, "gate", "")
-	user, err := a.store.Add(assets.Host{Name: "user", Address: "user", User: "u", JumpChain: []string{gate.ID}})
-	if err != nil {
+	if _, err := a.store.AddForward(assets.Forward{Name: "fwd", Kind: assets.ForwardLocal, HostID: gate.ID, ListenPort: 15432, TargetAddr: "db", TargetPort: 5432}); err != nil {
 		t.Fatal(err)
 	}
 	addGroupedHost(t, a, "other", "Dev")
@@ -142,7 +140,7 @@ func TestMultiSelectDelete(t *testing.T) {
 	a.pickHost(kept.ID, false)
 	a.pickHost(gate.ID, true)
 	if err := a.DeletePicked(); err == nil {
-		t.Fatal("a host still jumped through was deleted without error")
+		t.Fatal("a host still used by a forward was deleted without error")
 	}
 	for _, id := range []string{bastion.ID, inner.ID} {
 		if _, ok := a.store.Get(id); ok {
@@ -150,10 +148,7 @@ func TestMultiSelectDelete(t *testing.T) {
 		}
 	}
 	if _, ok := a.store.Get(gate.ID); !ok {
-		t.Fatal("host jumped through by a kept host deleted")
-	}
-	if _, ok := a.store.Get(user.ID); !ok {
-		t.Fatal("unchecked host deleted")
+		t.Fatal("host used by a forward deleted")
 	}
 	if h, ok := a.store.Get(kept.ID); !ok || h.Group != "Prod/Web" {
 		t.Fatalf("unchecked host of a partly checked group: %+v %v", h, ok)

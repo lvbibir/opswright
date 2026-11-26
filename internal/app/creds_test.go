@@ -170,25 +170,25 @@ func TestOldDataDiscarded(t *testing.T) {
 	}
 }
 
-// TestDeleteHostInUse: a host that another jumps through is not deleted,
+// TestDeleteHostInUse: a host a port forward enters by is not deleted,
 // and the toast names who uses it.
 func TestDeleteHostInUse(t *testing.T) {
 	a, tt := newTestApp(t)
-	bastion, err := a.Store().Add(assets.Host{Name: "bastion", Address: "b.example", User: "root"})
+	box, err := a.Store().Add(assets.Host{Name: "box", Address: "b.example", User: "root"})
 	if err != nil {
 		t.Fatal(err)
 	}
-	if _, err := a.Store().Add(assets.Host{Name: "db", Address: "10.0.0.9", User: "root", JumpChain: []string{bastion.ID}}); err != nil {
+	if _, err := a.Store().AddForward(assets.Forward{Name: "db", Kind: assets.ForwardLocal, HostID: box.ID, ListenPort: 15432, TargetAddr: "db", TargetPort: 5432}); err != nil {
 		t.Fatal(err)
 	}
-	a.deleteID, a.deleting = bastion.ID, true
+	a.deleteID, a.deleting = box.ID, true
 	tt.Frame()
-	if !tt.HasText("Delete bastion? Its credential is kept for other hosts.") {
+	if !tt.HasText("Delete box? Its credential is kept for other hosts.") {
 		t.Fatalf("confirm: %q", tt.Texts())
 	}
 	mustClick(t, tt, "Delete")
 	tt.Frame()
-	if _, ok := a.Store().Get(bastion.ID); !ok {
+	if _, ok := a.Store().Get(box.ID); !ok {
 		t.Fatal("deleted a host in use")
 	}
 	if !tt.HasText("Still in use by db.") {

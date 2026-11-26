@@ -112,7 +112,7 @@ func TestSettingsIndexCoversPages(t *testing.T) {
 	}
 	// What a page shows of the user's data or of how things stand, rather
 	// than a setting.
-	status := map[string]bool{"": true, m.NoCredentials(): true, m.NoProxies(): true, m.NoBackupTargets(): true,
+	status := map[string]bool{"": true, m.NoCredentials(): true, m.NoProxies(): true, m.NoGateways(): true, m.NoBackupTargets(): true,
 		m.HighlightNoRules(): true, m.UpdatesDisabled(): true}
 	for _, p := range a.settings.AIProviders {
 		status[providerLabel(p)] = true

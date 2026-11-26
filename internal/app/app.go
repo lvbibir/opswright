@@ -16,7 +16,6 @@ import (
 	"reflect"
 	"slices"
 	"strconv"
-	"strings"
 	"sync"
 	"sync/atomic"
 	"time"
@@ -412,6 +411,7 @@ type App struct {
 	editorHold  focusHold
 	credHold    focusHold
 	proxyHold   focusHold
+	gatewayHold focusHold
 	installHold focusHold
 	// challenges are the rounds of login questions (one-time passwords)
 	// waiting for the user, the first in the sheet; see challenge.go
@@ -427,6 +427,9 @@ type App struct {
 	// proxyForm is the proxy sheet open, from settings or the host editor
 	proxyForm    *proxyForm
 	proxyEditing bool
+	// gatewayForm is the gateway (jump server) sheet open, from settings
+	gatewayForm    *gatewayForm
+	gatewayEditing bool
 	// proxyClients are the HTTP clients of proxyClient by proxy choice,
 	// under mu
 	proxyClients map[string]*http.Client
@@ -1065,6 +1068,11 @@ func (a *App) OpenFiles(hostID string, at openAt, from *conn) (int, error) {
 }
 
 func (a *App) open(hostID string, kind layout.Kind, at openAt, from *conn) (int, error) {
+	if kind == layout.Files {
+		if h, ok := a.host(hostID); ok && !a.gatewaySFTP(h) {
+			return 0, errGatewayNoFiles
+		}
+	}
 	if ex := a.singleAt(kind, at); ex != nil {
 		return a.reuse(ex, hostID, 0)
 	}
@@ -1218,11 +1226,12 @@ func (a *App) connectionNeedsSecrets(h assets.Host) bool {
 	if h.SSH() && h.Startup {
 		return true // its startup commands are typed once the shell starts
 	}
-	path, _ := a.store.JumpPath(h.ID)
-	path = append(path, h)
+	if px, ok := a.store.Proxy(h.ProxyID); ok && px.User != "" {
+		return true
+	}
 	a.mu.Lock()
 	defer a.mu.Unlock()
-	for _, hop := range path {
+	for _, hop := range a.loginHops(h) {
 		switch hop.Auth {
 		case assets.AuthKey:
 			return true
@@ -1236,16 +1245,93 @@ func (a *App) connectionNeedsSecrets(h assets.Host) bool {
 				return true
 			}
 		}
-		if px, ok := a.store.Proxy(hop.ProxyID); ok && px.User != "" {
-			return true
-		}
 	}
 	return false
 }
 
+// gatewayFor returns the gateway h is reached through, when it names one
+// that still exists.
+func (a *App) gatewayFor(h assets.Host) (assets.Gateway, bool) {
+	if h.GatewayID == "" {
+		return assets.Gateway{}, false
+	}
+	return a.store.Gateway(h.GatewayID)
+}
+
+// gatewayLogin is a gateway as the host that logs in for it, for the
+// connection's own checks and for error messages.
+func gatewayLogin(gw assets.Gateway) assets.Host {
+	return assets.Host{ID: gw.ID, Name: gw.Label(), Address: gw.Address, Port: gw.Port, User: gw.User, Auth: assets.AuthCredential, CredentialID: gw.CredentialID}
+}
+
+// loginHops are the hosts that authenticate for h: the gateway (when
+// there is one) and, unless a gateway routes h, h itself.
+func (a *App) loginHops(h assets.Host) []assets.Host {
+	gw, ok := a.gatewayFor(h)
+	if !ok {
+		return []assets.Host{h}
+	}
+	if gw.DirectTCPIP {
+		return []assets.Host{gatewayLogin(gw), h}
+	}
+	return []assets.Host{gatewayLogin(gw)}
+}
+
+// gatewayHop is the gateway a forwarded connection to h passes through,
+// for the error that names the hop it was tried through.
+func (a *App) gatewayHop(h assets.Host) (assets.Host, bool) {
+	gw, ok := a.gatewayFor(h)
+	if !ok || !gw.DirectTCPIP {
+		return assets.Host{}, false
+	}
+	return gatewayLogin(gw), true
+}
+
+// gatewayExecChannel reports whether commands may run on a host's
+// connection over the exec channel: true for a host reached directly or
+// forwarded (its own sshd), and for a routed gateway only when it allows
+// exec. Without it, commands run over a shell runner instead.
+func (a *App) gatewayExecChannel(h assets.Host) bool {
+	gw, ok := a.gatewayFor(h)
+	return !ok || gw.DirectTCPIP || gw.Exec
+}
+
+// gatewaySFTP reports whether a host's files may be reached over the
+// sftp subsystem: true for a host reached directly or forwarded, and for
+// a routed gateway only when it allows sftp.
+func (a *App) gatewaySFTP(h assets.Host) bool {
+	gw, ok := a.gatewayFor(h)
+	return !ok || gw.DirectTCPIP || gw.SFTP
+}
+
+// errGatewayNoFiles is a files pane on a host whose gateway allows no
+// sftp: the pane is not opened rather than failing inside it.
+var errGatewayNoFiles = errors.New("app: the gateway this host uses allows no file access")
+
+// openErrText explains an open error in the user's language.
+func openErrText(m locales.Messages, err error) string {
+	if errors.Is(err, errGatewayNoFiles) {
+		return m.GatewayNoFiles()
+	}
+	return m.ErrGeneric(err.Error())
+}
+
+// gatewayCredentials is the gateway's login credentials: its credential's
+// secret, read off the UI thread. The user name is left to the hop (the
+// gateway's account, or the login name a routed gateway composes), so the
+// credential's own user never overrides it.
+func (a *App) gatewayCredentials(c *conn, gw assets.Gateway) (session.Credentials, error) {
+	cr, err := a.credentials(c, assets.Host{ID: gw.ID, Auth: assets.AuthCredential, CredentialID: gw.CredentialID})
+	if err != nil {
+		return cr, err
+	}
+	cr.User = ""
+	return cr, nil
+}
+
 // hostConfig is how to reach h, on its shared connection, logging in
-// with creds: through its jump hosts, each logging in with its own
-// credentials (typed ones held for c), and the proxy of the first hop.
+// with creds: directly, or through its gateway, which forwards to the
+// host (DirectTCPIP) or carries it by its login name.
 func (a *App) hostConfig(h assets.Host, c *conn, creds func(context.Context) (session.Credentials, error)) session.Config {
 	cfg := session.Config{
 		Pool:        a.pool,
@@ -1259,24 +1345,28 @@ func (a *App) hostConfig(h assets.Host, c *conn, creds func(context.Context) (se
 		Credentials: creds,
 		Ask:         a.challengeAsker(c),
 	}
-	path, err := a.store.JumpPath(h.ID)
-	if err != nil && !errors.Is(err, assets.ErrNotFound) {
-		cfg.Dial = func(context.Context, string, string) (net.Conn, error) { return nil, err }
-		return cfg
+	if gw, ok := a.gatewayFor(h); ok {
+		gwCreds := func(context.Context) (session.Credentials, error) { return a.gatewayCredentials(c, gw) }
+		if gw.DirectTCPIP {
+			// Forward to the host's own sshd, the host logging in itself.
+			cfg.Jumps = []session.Hop{{
+				Name: gw.Label(), ID: gw.ID, Addr: gw.Addr(), User: gw.User, HostKey: a.known.Callback(),
+				Credentials: gwCreds,
+			}}
+		} else {
+			// Route: one connection to the gateway, logging in with the
+			// composed name; the session it gives is the host's.
+			cfg.Addr = gw.Addr()
+			cfg.User = gw.LoginName(h.User, h.Address)
+			cfg.Credentials = gwCreds
+		}
+	} else if h.GatewayID != "" {
+		cfg.Dial = func(context.Context, string, string) (net.Conn, error) {
+			return nil, &assets.FieldError{Field: "gateway", Reason: "unknown"}
+		}
 	}
-	for _, j := range path {
-		cfg.Jumps = append(cfg.Jumps, session.Hop{
-			Name: j.Label(), ID: j.ID, Addr: j.Addr(), User: j.User, HostKey: a.known.Callback(),
-			Credentials: func(context.Context) (session.Credentials, error) { return a.credentials(c, j) },
-		})
-	}
-	// The proxy is the host's; with none, the first jump host's own, as
-	// that is how that host is reached.
-	proxyID := h.ProxyID
-	if proxyID == "" && len(path) > 0 {
-		proxyID = path[0].ProxyID
-	}
-	if px, ok := a.store.Proxy(proxyID); ok {
+	// The proxy dials the connection: the first hop, here the gateway.
+	if px, ok := a.store.Proxy(h.ProxyID); ok {
 		cfg.Proxy = a.proxyDialer(px)
 	}
 	return cfg
@@ -1301,20 +1391,28 @@ func (a *App) proxyDialer(px assets.Proxy) *netproxy.Dialer {
 	}
 }
 
-// poolKey is the identity of a host's shared connection: the host and
-// every jump host before it, each with who and where it logs in as, how,
-// and through which proxy, so that editing any of them connects anew.
+// poolKey is the identity of a host's shared connection: the host, the
+// gateway before it with its capabilities, each with who and where it
+// logs in as, how, and through which proxy, so that editing any of them
+// connects anew.
 func (a *App) poolKey(h assets.Host) string {
 	key := a.hopKey(h)
-	if len(h.JumpChain) > 0 {
-		path, err := a.store.JumpPath(h.ID)
-		if err != nil || h.ID == "" {
-			// Not saved, or a bad chain: the IDs, as the dial will fail.
-			return key + "|" + strings.Join(h.JumpChain, ",")
-		}
-		for _, j := range path {
-			key += "|" + a.hopKey(j)
-		}
+	if gw, ok := a.gatewayFor(h); ok {
+		key += "|gw:" + a.gatewayKey(gw)
+	} else if h.GatewayID != "" {
+		key += "|gw!" + h.GatewayID
+	}
+	return key
+}
+
+// gatewayKey is the gateway part of poolKey: who it logs in as, how, and
+// what its connection can do.
+func (a *App) gatewayKey(gw assets.Gateway) string {
+	key := gw.ID + "|" + gw.User + "@" + gw.Addr() + "|" + gw.CredentialID
+	key += "|f" + strconv.FormatBool(gw.DirectTCPIP) + "e" + strconv.FormatBool(gw.Exec) + "s" + strconv.FormatBool(gw.SFTP)
+	key += "|" + gw.Login + "|" + gw.Updated.String()
+	if cr, ok := a.store.Credential(gw.CredentialID); ok {
+		key += ":" + cr.User + ":" + string(cr.Kind)
 	}
 	return key
 }

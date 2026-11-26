@@ -16,11 +16,11 @@ func fieldIs(err error, field, reason string) bool {
 // TestStreamHostNormalize: Telnet and serial hosts lose what only SSH
 // has, get their own defaults, and say where they are.
 func TestStreamHostNormalize(t *testing.T) {
-	tn := Host{Protocol: ProtoTelnet, Address: " switch.lan ", User: "admin", JumpChain: []string{"x"}, CwdFollow: true,
+	tn := Host{Protocol: ProtoTelnet, Address: " switch.lan ", User: "admin", GatewayID: "x", CwdFollow: true,
 		Metrics: MetricsOn, AskPassphrase: true, Serial: &SerialLine{Device: "COM1"}, AIPolicy: AIPolicy{Mode: "full"},
 		TerminalDir: "/srv", RemoteDir: "/srv", LocalDir: "/tmp", Tmux: "main", SFTPSudo: true, FileProtocol: FileSCP}
 	tn.Normalize()
-	if tn.Port != 23 || tn.Auth != AuthNone || tn.JumpChain != nil || tn.CwdFollow || tn.Metrics != MetricsFollow ||
+	if tn.Port != 23 || tn.Auth != AuthNone || tn.GatewayID != "" || tn.CwdFollow || tn.Metrics != MetricsFollow ||
 		tn.AskPassphrase || tn.Serial != nil || tn.AIPolicy.Mode != "" || tn.TerminalDir != "" || tn.RemoteDir != "" || tn.LocalDir != "" || tn.Tmux != "" || tn.SFTPSudo || tn.FileProtocol != FileAuto {
 		t.Fatalf("telnet %+v", tn)
 	}
@@ -117,23 +117,23 @@ func TestStreamHostRefs(t *testing.T) {
 	if _, err := s.SaveCredential(pw); !fieldIs(err, "kind", "password only") {
 		t.Fatalf("a telnet host's credential became a key: %v", err)
 	}
-	if _, err := s.Add(Host{Address: "web", User: "u", JumpChain: []string{tn.ID}}); !fieldIs(err, "jump", "not ssh") {
-		t.Fatalf("jump through telnet: %v", err)
-	}
 	if _, err := s.AddForward(Forward{Kind: ForwardDynamic, HostID: tn.ID, ListenPort: 1080}); !fieldIs(err, "host", "not ssh") {
 		t.Fatalf("forward on telnet: %v", err)
 	}
 
-	bastion, _ := s.Add(Host{Address: "bastion", User: "u"})
-	web, err := s.Add(Host{Address: "web", User: "u", JumpChain: []string{bastion.ID}})
+	// A host through a gateway may still become a stream host, dropping
+	// the gateway (a stream host is reached directly).
+	cr, _ := s.SaveCredential(Credential{Name: "gwpw", Kind: CredPassword})
+	gw, _ := s.SaveGateway(Gateway{Name: "gw", Address: "bastion", User: "u", CredentialID: cr.ID})
+	web, err := s.Add(Host{Address: "web", User: "u", GatewayID: gw.ID})
 	if err != nil {
 		t.Fatal(err)
 	}
-	bastion.Protocol = ProtoTelnet
-	var inUse *InUseError
-	if _, err := s.Update(bastion); !errors.As(err, &inUse) || len(inUse.Hosts) != 1 || inUse.Hosts[0] != web.ID {
-		t.Fatalf("a jump host became telnet: %v", err)
+	web.Protocol = ProtoTelnet
+	if web, err = s.Update(web); err != nil || web.GatewayID != "" {
+		t.Fatalf("a host through a gateway became telnet: %+v %v", web, err)
 	}
+	var inUse *InUseError
 	fw, _ := s.Add(Host{Address: "fw", User: "u"})
 	if _, err := s.AddForward(Forward{Kind: ForwardDynamic, HostID: fw.ID, ListenPort: 1081}); err != nil {
 		t.Fatal(err)

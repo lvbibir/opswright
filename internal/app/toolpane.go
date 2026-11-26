@@ -79,12 +79,40 @@ func (a *App) ShowTool(k layout.Kind) {
 	}
 }
 
+// toolCanRun reports whether a tool pane may open on the focused pane's
+// host. The monitor, the process usage, the command history, Docker and
+// tmux run commands on it, so a connection that allows none (a gateway
+// that routes and refuses the exec channel) cannot show them.
+func (a *App) toolCanRun(k layout.Kind) bool {
+	switch k {
+	case layout.Monitor, layout.Usage, layout.History, layout.Docker, layout.Tmux:
+	default:
+		return true
+	}
+	if a.toolPane(k) != nil {
+		return true // already open: the click closes it
+	}
+	cn := a.focused()
+	if cn == nil {
+		return true
+	}
+	h := cn.host
+	if cur, ok := a.host(cn.host.ID); ok {
+		h = cur
+	}
+	return a.gatewayExecChannel(h)
+}
+
 // ToggleTool closes the tool pane of kind k when it is in the active tab;
 // else it opens it, or brings it from the tab it is in, beside the
 // session the tab works on (see railAnchor), or under one of the rail's once the tab shows enough of
 // them (see railUnder), or, with the rail's panes as tabs, in the place
 // of the one the tab shows (see railOld).
 func (a *App) ToggleTool(k layout.Kind) {
+	if !a.toolCanRun(k) {
+		a.toast(func(m locales.Messages) ui.Toast { return ui.Toast{Title: m.ToolUnsupported(), Type: "error"} })
+		return
+	}
 	t := a.ws.ActiveTab()
 	a.settleFocus(t)
 	defer func() { a.settleFocus(a.ws.ActiveTab()) }()

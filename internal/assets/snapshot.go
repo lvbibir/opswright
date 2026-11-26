@@ -18,6 +18,7 @@ type Snapshot struct {
 	Hosts       []Host               `json:"hosts"`
 	Credentials []Credential         `json:"credentials"`
 	Proxies     []Proxy              `json:"proxies"`
+	Gateways    []Gateway            `json:"gateways,omitempty"`
 	Forwards    []Forward            `json:"forwards"`
 	Groups      []string             `json:"groups,omitempty"`
 	GroupOrder  []string             `json:"groupOrder,omitempty"`
@@ -33,7 +34,7 @@ func (s *Store) Snapshot() Snapshot {
 	if len(s.groupOrder) > 0 {
 		order = s.groupNames()
 	}
-	return Snapshot{Hosts: slices.Clone(s.hosts), Credentials: slices.Clone(s.creds), Proxies: slices.Clone(s.proxies), Forwards: slices.Clone(s.forwards), Groups: slices.Clone(s.groups), GroupOrder: order, GroupLooks: maps.Clone(s.groupLooks), Snippets: slices.Clone(s.snippets)}
+	return Snapshot{Hosts: slices.Clone(s.hosts), Credentials: slices.Clone(s.creds), Proxies: slices.Clone(s.proxies), Gateways: slices.Clone(s.gateways), Forwards: slices.Clone(s.forwards), Groups: slices.Clone(s.groups), GroupOrder: order, GroupLooks: maps.Clone(s.groupLooks), Snippets: slices.Clone(s.snippets)}
 }
 
 // ValidID reports whether id can name an entry: what NewID makes, and no
@@ -94,11 +95,11 @@ func (s *Store) RestoreIfHostsUnchanged(in Snapshot, expected []Host) error {
 }
 
 func (s *Store) restoreLocked(in Snapshot) error {
-	h, c, p, f, g := slices.Clone(s.hosts), slices.Clone(s.creds), slices.Clone(s.proxies), slices.Clone(s.forwards), slices.Clone(s.groups)
+	h, c, p, gw, f, g := slices.Clone(s.hosts), slices.Clone(s.creds), slices.Clone(s.proxies), slices.Clone(s.gateways), slices.Clone(s.forwards), slices.Clone(s.groups)
 	n := slices.Clone(s.snippets)
 	order, looks := slices.Clone(s.groupOrder), maps.Clone(s.groupLooks)
 	undo := func() {
-		s.hosts, s.creds, s.proxies, s.forwards, s.groups, s.snippets = h, c, p, f, g, n
+		s.hosts, s.creds, s.proxies, s.gateways, s.forwards, s.groups, s.snippets = h, c, p, gw, f, g, n
 		s.groupOrder, s.groupLooks = order, looks
 	}
 	if err := s.merge(in); err != nil {
@@ -139,6 +140,22 @@ func (s *Store) merge(in Snapshot) error {
 			return slices.ContainsFunc(s.proxies, func(o Proxy) bool { return o.ID != x.ID && strings.EqualFold(o.Name, n) })
 		})
 		s.proxies = upsert(s.proxies, x, func(p Proxy) string { return p.ID })
+	}
+	for _, x := range in.Gateways {
+		x.Normalize()
+		if !ValidID(x.ID) {
+			return badID
+		}
+		if err := x.Validate(); err != nil {
+			return err
+		}
+		if s.credIndex(x.CredentialID) < 0 {
+			return &FieldError{"credential", "unknown"}
+		}
+		x.Name = freeName(x.Name, func(n string) bool {
+			return slices.ContainsFunc(s.gateways, func(o Gateway) bool { return o.ID != x.ID && strings.EqualFold(o.Name, n) })
+		})
+		s.gateways = upsert(s.gateways, x, func(g Gateway) string { return g.ID })
 	}
 	for _, x := range in.Hosts {
 		x.Normalize()

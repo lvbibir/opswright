@@ -16,21 +16,13 @@ import (
 )
 
 func TestLayoutRememberedLocalCredentialsWaitForUnlock(t *testing.T) {
-	for _, where := range []string{"target", "jump", "none"} {
+	for _, where := range []string{"target", "none"} {
 		t.Run(where, func(t *testing.T) {
 			dir := t.TempDir()
 			rememberLayoutIn(t, dir)
 			a, _ := appIn(t, dir, nil)
 			h := savedHost(t, a, "target", "127.0.0.1")
 			rememberedHost := h
-			if where == "jump" {
-				jump := savedHost(t, a, "jump", "127.0.0.2")
-				h.JumpChain = []string{jump.ID}
-				if _, err := a.store.Update(h); err != nil {
-					t.Fatal(err)
-				}
-				rememberedHost = jump
-			}
 			// A real encrypted key makes default AuthAsk authentication reach the
 			// network after credential selection; the dial then fails deliberately.
 			pub := homeKey(t, a, "id_ed25519", "test-passphrase")

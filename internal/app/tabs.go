@@ -655,7 +655,7 @@ func (a *App) duplicateTab(m locales.Messages, t *layout.Tab) {
 		kind = layout.Files
 	}
 	if _, err := a.open(cn.host.ID, kind, openAt{}, cn); err != nil {
-		a.toastError(m.ErrGeneric(err.Error()))
+		a.toastError(openErrText(m, err))
 	}
 }
 

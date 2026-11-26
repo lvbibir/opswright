@@ -52,19 +52,16 @@ func (a *App) failedHost(h assets.Host, err error) assets.Host {
 		if j, ok := a.store.Get(he.ID); ok {
 			return j
 		}
+		if gw, ok := a.store.Gateway(he.ID); ok {
+			return gatewayLogin(gw)
+		}
 	}
 	return h
 }
 
-// proxyOf is the proxy the first hop to h goes through.
+// proxyOf is the proxy a host's connection is dialed through.
 func (a *App) proxyOf(h assets.Host) (assets.Proxy, bool) {
-	id := h.ProxyID
-	if id == "" {
-		if path, _ := a.store.JumpPath(h.ID); len(path) > 0 {
-			id = path[0].ProxyID
-		}
-	}
-	return a.store.Proxy(id)
+	return a.store.Proxy(h.ProxyID)
 }
 
 // errText explains a connection error to h in the user's language,
@@ -85,9 +82,6 @@ func (a *App) errText(m locales.Messages, h assets.Host, err error) string {
 		}
 		return m.ErrProxy(name, rootCause(err))
 	}
-	if errors.Is(err, assets.ErrJumpLoop) {
-		return m.ErrJumpLoop()
-	}
 	f := a.failedHost(h, err)
 	text := errText(m, f, err)
 	if via, ok := a.hopBefore(h, err); ok && session.Classify(err) == session.KindNetwork {
@@ -100,17 +94,13 @@ func (a *App) errText(m locales.Messages, h assets.Host, err error) string {
 }
 
 // hopBefore is the hop a failed one was dialled through, for an error on
-// a jump chain past its first hop.
+// a forwarded connection past its first hop.
 func (a *App) hopBefore(h assets.Host, err error) (assets.Host, bool) {
 	var he *session.HopError
 	if !errors.As(err, &he) || he.Index < 1 {
 		return assets.Host{}, false
 	}
-	path, perr := a.store.JumpPath(h.ID)
-	if perr != nil || he.Index-1 >= len(path) {
-		return assets.Host{}, false
-	}
-	return path[he.Index-1], true
+	return a.gatewayHop(h)
 }
 
 // netReason says why a network error happened in plain words, falling

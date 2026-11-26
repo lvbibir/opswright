@@ -39,13 +39,13 @@ type hostForm struct {
 	cwdFollow bool
 	// metricsIdx is 0 follow, 1 on, 2 off.
 	metricsIdx int
-	// proxy is the ID chosen in the proxy select ("" none); jumps the
-	// jump chain's host IDs, first hop first; jumpPick the add select
-	proxy    string
-	jumps    []string
-	jumpPick string
-	jumpList ui.ListState
-	netOpen  bool
+	// proxy is the ID chosen in the proxy select ("" none); gateway the
+	// ID of the gateway (jump server) chosen ("" none); gatewayPick its
+	// label in the select.
+	proxy       string
+	gateway     string
+	gatewayPick string
+	netOpen     bool
 	// termDir, remoteDir and localDir are the host's default folders
 	// (Host.TerminalDir, RemoteDir, LocalDir); dirsOpen shows them.
 	termDir, remoteDir, localDir string
@@ -158,9 +158,9 @@ func (a *App) openEditor(h *assets.Host) {
 			f.emoji = h.Icon
 		}
 		f.metricsIdx = metricsIndex(h.Metrics)
-		f.jumps = slices.Clone(h.JumpChain)
+		f.gateway = h.GatewayID
 		f.proxy = h.ProxyID
-		f.netOpen = f.proxy != "" || len(f.jumps) > 0
+		f.netOpen = f.proxy != "" || f.gateway != ""
 		f.termDir, f.remoteDir, f.localDir = h.TerminalDir, h.RemoteDir, h.LocalDir
 		f.tmux = h.Tmux
 		if h.SSH() && h.Startup {
@@ -270,8 +270,8 @@ func fieldError(m locales.Messages, err error) string {
 		return m.TermTypeInvalid()
 	case fe.Field == "startup":
 		return m.StartupInvalid()
-	case fe.Field == "jump" && fe.Reason == "not ssh":
-		return m.JumpNotSSH()
+	case fe.Field == "gateway":
+		return m.ErrGatewayUnknown()
 	case fe.Field == "host" && fe.Reason == "not ssh":
 		return m.ForwardNotSSH()
 	case fe.Field == "credential" && fe.Reason == "password only":
@@ -321,7 +321,7 @@ func (a *App) SaveForm(m locales.Messages) bool {
 		}
 	}
 	h.ProxyID = f.proxy
-	h.JumpChain = slices.Clone(f.jumps)
+	h.GatewayID = f.gateway
 	h.TerminalDir, h.RemoteDir, h.LocalDir = f.termDir, f.remoteDir, f.localDir
 	h.Tmux = strings.TrimSpace(f.tmux)
 	h.Encoding = string(f.encoding)
@@ -367,10 +367,6 @@ func (a *App) SaveForm(m locales.Messages) bool {
 		return false
 	}
 	h, err = a.saveHostForm(m, f, h)
-	if errors.Is(err, assets.ErrJumpLoop) {
-		f.err, f.netOpen = m.ErrJumpLoop(), true
-		return false
-	}
 	if errors.Is(err, errCostAsked) {
 		return false
 	}
@@ -432,6 +428,12 @@ func (a *App) inUseText(m locales.Messages, err error) string {
 	for _, id := range iu.Forwards {
 		if f, ok := a.store.Forward(id); ok {
 			id = f.Label()
+		}
+		names = append(names, id)
+	}
+	for _, id := range iu.Gateways {
+		if g, ok := a.store.Gateway(id); ok {
+			id = g.Label()
 		}
 		names = append(names, id)
 	}
@@ -610,8 +612,9 @@ func (a *App) editorView(c *ui.Context, m locales.Messages) {
 	}
 }
 
-// networkFields are the editor's network section: the proxy of the first
-// hop, and the jump hosts dialed through in order, which drag reorders.
+// networkFields are the editor's network section: the proxy the
+// connection is dialed through, and the gateway (jump server) that
+// reaches the host.
 func (a *App) networkFields(c *ui.Context, m locales.Messages, tok theme.Tokens, f *hostForm) {
 	ui.Column(c).Gap(10).FillWidth().Margin(8, 0, 0, 0).Children(func() {
 		ui.Row(c).Gap(10).AlignItems(ui.Center).Children(func() {
@@ -625,54 +628,37 @@ func (a *App) networkFields(c *ui.Context, m locales.Messages, tok theme.Tokens,
 					}
 				}}).Grow(1)
 		})
-		// Telnet goes through a proxy only: jump hosts are SSH.
+		// Telnet goes through a proxy only: a gateway is SSH.
 		if f.protocol() != assets.ProtoSSH {
 			return
 		}
-		ui.Text(c, m.FieldJumpHosts()).FontSize(theme.Footnote).TextColor(tok.TextMuted)
-		// Row actions replace f.jumps while List still uses this build's
-		// count, so all row callbacks must read the same stable slice.
-		jumps := f.jumps
-		if len(jumps) == 0 {
-			ui.Text(c, m.NoJumpHosts()).FontSize(theme.Footnote).TextColor(tok.TextMuted)
-		} else {
-			f.jumpList.Key = func(i int) any { return jumps[i] }
-			f.jumpList.Label = func(i int) string { return a.hostLabel(jumps[i]) }
-			f.jumpList.Reorder = func(rows []int, to int) { f.jumps = moveRows(jumps, rows, to) }
-			// More than five scroll, the remove buttons clear of the bar.
-			end := float32(4)
-			if len(jumps) > 5 {
-				end += scrollGutter
-			}
-			ui.List(c.Key("f:jumps"), &f.jumpList, len(jumps), func(i int) {
-				id := jumps[i]
-				ui.Row(c.Key("jump:"+id)).Height(34).Gap(8).Padding(0, end, 0, 8).AlignItems(ui.Center).FillWidth().Children(func() {
-					ui.Text(c, strconv.Itoa(i+1)).FontSize(theme.Caption).TextColor(tok.TextMuted).Width(14)
-					tile(c, icons.JumpHost, tok.Tint(id), 20)
-					ui.Text(c, a.hostLabel(id)).FontSize(theme.Body).SingleLine().Grow(1).Shrink(1)
-					if iconButton(c, "jump:rm:"+id, icons.Close, m.RemoveJumpHost()) {
-						f.jumps = slices.DeleteFunc(slices.Clone(f.jumps), func(s string) bool { return s == id })
-					}
-				})
-			}).Height(float32(34*min(len(jumps), 5))).FillWidth().Radius(theme.RadiusControl).Border(1, tok.Line).Background(tok.Fill)
-		}
-		var pick []string
-		var pickIDs []string
-		for _, h := range a.store.List() {
-			if h.ID != f.orig.ID && h.SSH() && !slices.Contains(f.jumps, h.ID) {
-				pick, pickIDs = append(pick, h.Label()), append(pickIDs, h.ID)
-			}
-		}
-		if len(pick) > 0 {
-			f.jumpPick = m.AddJumpHost()
-			if formSelect(c.Key("f:jumpadd"), &f.jumpPick, append([]string{m.AddJumpHost()}, pick...)).Label(m.AddJumpHost()).FillWidth().Changed() {
-				if i := slices.Index(pick, f.jumpPick); i >= 0 {
-					f.jumps = append(slices.Clone(f.jumps), pickIDs[i])
-				}
-				f.jumpPick = m.AddJumpHost()
-			}
-		}
+		ui.Row(c).Gap(10).AlignItems(ui.Center).Children(func() {
+			ui.Text(c, m.Gateway()).FontSize(theme.Footnote).TextColor(tok.TextMuted).Width(92)
+			a.gatewaySelect(c, m, f)
+		})
 	})
+}
+
+// gatewaySelect is the editor's gateway picker: the jump server the host
+// is reached through, or none.
+func (a *App) gatewaySelect(c *ui.Context, m locales.Messages, f *hostForm) {
+	opts := []string{m.GatewayNone()}
+	ids := []string{""}
+	for _, g := range a.store.Gateways() {
+		opts, ids = append(opts, g.Label()), append(ids, g.ID)
+	}
+	label := m.GatewayNone()
+	for i, id := range ids {
+		if id == f.gateway {
+			label = opts[i]
+		}
+	}
+	f.gatewayPick = label
+	if formSelect(c.Key("f:gateway"), &f.gatewayPick, opts).Label(m.Gateway()).Grow(1).Changed() {
+		if i := slices.Index(opts, f.gatewayPick); i >= 0 {
+			f.gateway = ids[i]
+		}
+	}
 }
 
 // dirFields are the editor's default folders: where the host's terminal
@@ -831,30 +817,4 @@ func (a *App) transfersField(c *ui.Context, m locales.Messages, tok theme.Tokens
 			ui.Text(c, hint).FontSize(theme.Caption).TextColor(tok.TextMuted)
 		})
 	})
-}
-
-// hostLabel is the label of the host of id, or id when it is gone.
-func (a *App) hostLabel(id string) string {
-	if h, ok := a.store.Get(id); ok {
-		return h.Label()
-	}
-	return id
-}
-
-// moveRows moves the rows of s (in order) to before index to.
-func moveRows[T any](s []T, rows []int, to int) []T {
-	var moved, rest []T
-	before := 0
-	for i, v := range s {
-		if slices.Contains(rows, i) {
-			moved = append(moved, v)
-			if i < to {
-				before++
-			}
-		} else {
-			rest = append(rest, v)
-		}
-	}
-	to -= before
-	return slices.Concat(rest[:to], moved, rest[to:])
 }

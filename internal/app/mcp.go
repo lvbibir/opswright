@@ -375,14 +375,14 @@ func (a *App) mcpHosts(_ context.Context, raw json.RawMessage) (string, error) {
 }
 
 // mcpLogin is how h logs in for an agent: only what is saved, never what
-// was typed this run. Every hop of h's jump chain is checked up front, as
-// the pool may already hold a connection the user typed a password for.
+// was typed this run. The gateway (and the host, when the gateway
+// forwards) is checked up front, as the pool may already hold a
+// connection the user typed a password for.
 func (a *App) mcpLogin(h assets.Host) error {
-	path, err := a.store.JumpPath(h.ID)
-	if err != nil {
-		return err
+	if _, ok := a.gatewayFor(h); h.GatewayID != "" && !ok {
+		return errMCPNeedsInput
 	}
-	for _, hop := range append(path, h) {
+	for _, hop := range a.loginHops(h) {
 		switch hop.Auth {
 		case assets.AuthAgent, assets.AuthNone:
 		case assets.AuthPassword, assets.AuthKey:

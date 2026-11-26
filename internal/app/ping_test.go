@@ -53,7 +53,15 @@ func TestPingHosts(t *testing.T) {
 		t.Fatal(err)
 	}
 	proxied := add(assets.Host{Name: "proxied", Address: "127.0.0.1", Port: port, ProxyID: px.ID})
-	jumped := add(assets.Host{Name: "jumped", Address: "127.0.0.1", Port: port, JumpChain: []string{up.ID}})
+	cr, err := a.store.SaveCredential(assets.Credential{Name: "gw", Kind: assets.CredPassword})
+	if err != nil {
+		t.Fatal(err)
+	}
+	gw, err := a.store.SaveGateway(assets.Gateway{Name: "gw", Address: "127.0.0.1", Port: port, User: "u", CredentialID: cr.ID})
+	if err != nil {
+		t.Fatal(err)
+	}
+	jumped := add(assets.Host{Name: "jumped", Address: "127.0.0.1", Port: port, GatewayID: gw.ID})
 
 	// Nothing is measured on its own, even as the hosts show.
 	tt.Frame()

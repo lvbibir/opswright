@@ -256,6 +256,37 @@ func (s *Session) Latency() (time.Duration, bool) {
 	return s.latency, s.latencyOK
 }
 
+// Ping measures one SSH keepalive round trip to the server, for the
+// latency of a host reached through a gateway, which a direct probe
+// cannot reach: the shell is untouched. It reports an error when the
+// session is not connected, the server does not answer, or ctx ends.
+func (s *Session) Ping(ctx context.Context) (time.Duration, error) {
+	s.mu.Lock()
+	client, connected := s.client, s.status.State == Connected
+	s.mu.Unlock()
+	if client == nil || !connected {
+		return 0, errors.New("session: not connected")
+	}
+	if ctx == nil {
+		ctx = context.Background()
+	}
+	start := time.Now()
+	reply := make(chan error, 1)
+	go func() {
+		_, _, err := client.SendRequest("keepalive@openssh.com", true, nil)
+		reply <- err
+	}()
+	select {
+	case err := <-reply:
+		if err != nil {
+			return 0, err
+		}
+		return time.Since(start), nil
+	case <-ctx.Done():
+		return 0, ctx.Err()
+	}
+}
+
 func (s *Session) changed() {
 	if s.OnChange != nil {
 		s.OnChange()

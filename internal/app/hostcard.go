@@ -1,7 +1,6 @@
 package app
 
 import (
-	"strings"
 	"time"
 
 	"github.com/egoist/mygo/ui"
@@ -86,12 +85,8 @@ func (a *App) hostCard(c *ui.Context, m locales.Messages, tok theme.Tokens, anch
 			if px, ok := a.proxyOf(h); ok {
 				fact(m.FieldProxy(), px.Name, none, 1)
 			}
-			if path, _ := a.store.JumpPath(h.ID); len(path) > 0 {
-				var jumps []string
-				for _, j := range path {
-					jumps = append(jumps, a.pv(j.Label()))
-				}
-				fact(m.JumpHosts(), strings.Join(jumps, " → "), none, 2)
+			if gw, ok := a.gatewayFor(h); ok {
+				fact(m.Gateway(), a.pv(gw.Label()), none, 2)
 			}
 			if st, ok := a.hostState(h.ID); ok {
 				fact(m.FieldStatus(), a.pv(a.statusText(m, h, session.Status{State: st}, now)), stateColor(tok, st), 1)

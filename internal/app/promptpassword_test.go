@@ -155,50 +155,35 @@ func TestPromptPasswordSaveFailures(t *testing.T) {
 	}
 }
 
-func TestPromptPasswordSavesJumpOwner(t *testing.T) {
+// TestGatewayConnectUsesCredential: a host through a gateway logs in with
+// the gateway's saved credential, forwarding to the real host, without
+// prompting.
+func TestGatewayConnectUsesCredential(t *testing.T) {
 	bastion, _ := keyServer(t)
 	target, _ := keyServer(t)
 	bastion.DirectTCPIP = true
 	a, tt := newTestApp(t)
-	b := addSrvHost(t, a, bastion, "jump", assets.AuthAsk, "")
+	a.known.Add(bastion.Addr, bastion.HostKey.PublicKey())
+	gw := addGateway(t, a, bastion, "bastion", "pw", true)
 	h := addSrvHost(t, a, target, "target", assets.AuthPassword, "")
 	if err := a.kc.Set(keychain.Host(h.ID, keychain.Password), []byte("pw")); err != nil {
 		t.Fatal(err)
 	}
-	h.JumpChain = []string{b.ID}
-	h, err := a.store.Update(h)
-	if err != nil {
+	h.GatewayID = gw.ID
+	var err error
+	if h, err = a.store.Update(h); err != nil {
 		t.Fatal(err)
 	}
 	id, err := a.Connect(h.ID, openAt{})
 	if err != nil {
 		t.Fatal(err)
 	}
-	waitFor(t, tt, "jump password prompt", func() bool { return a.prompting })
-	if a.prompt.host.ID != b.ID {
-		t.Fatal("prompted wrong owner", a.prompt.host.ID)
-	}
-	a.prompt.value, a.prompt.savePassword = "pw", true
-	a.submitPrompt(en)
-	waitFor(t, tt, "saved jump retry connected", func() bool { return a.conns[id].s.Status().State == session.Connected })
-	saved, _ := a.store.Get(b.ID)
-	if saved.Auth != assets.AuthPassword {
-		t.Fatal("jump auth not saved", saved)
-	}
-	if value, err := a.kc.Get(keychain.Host(b.ID, keychain.Password)); err != nil || string(value) != "pw" {
-		t.Fatal("jump password not saved", err)
-	}
-	a.CloseSession(id)
-	a.mu.Lock()
-	clear(a.typed)
-	a.mu.Unlock()
-	id, err = a.Connect(h.ID, openAt{})
-	if err != nil {
-		t.Fatal(err)
-	}
 	waitConnected(t, a, tt, id)
 	if a.prompting {
-		t.Fatal("saved jump prompted again")
+		t.Fatal("prompted for the gateway's credential")
+	}
+	if bastion.Tunnels() < 1 {
+		t.Fatal("did not go through the gateway")
 	}
 }
 

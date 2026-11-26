@@ -7,14 +7,18 @@ import (
 
 	"github.com/egoist/mygo/ui"
 	"github.com/lvbibir/opswright/internal/assets"
+	"github.com/lvbibir/opswright/internal/layout"
+	"github.com/lvbibir/opswright/internal/session"
 	"github.com/lvbibir/opswright/internal/theme"
 	"github.com/lvbibir/opswright/locales"
 )
 
 // The sidebar shows how far each host is: how long a TCP connection to
-// its SSH or Telnet port takes, the name looked up first. The hosts are
+// its SSH or Telnet port takes, the name looked up first; a host reached
+// through a gateway is measured instead by an SSH keepalive round trip on
+// a session of its own, through the gateway to the host. Hosts are
 // measured only when the user asks, never on their own. A host reached
-// through jump hosts or a proxy, or on a serial port, is not.
+// through a proxy, or on a serial port, is not.
 
 const (
 	pingTimeout = 3 * time.Second
@@ -43,13 +47,45 @@ type pingState struct {
 // pingAddr is where h is measured, false for a host not reached straight
 // from here.
 func (a *App) pingAddr(h assets.Host) (string, bool) {
-	if h.Protocol == assets.ProtoSerial || h.Address == "" || len(h.JumpChain) > 0 {
+	if h.Protocol == assets.ProtoSerial || h.Address == "" || h.GatewayID != "" {
 		return "", false
 	}
 	if _, ok := a.proxyOf(h); ok {
 		return "", false
 	}
 	return h.Addr(), true
+}
+
+// pingSession is h's connected terminal session, for a host reached
+// through a gateway: its SSH keepalive round trip is the real latency to
+// the host.
+func (a *App) pingSession(h assets.Host) *conn {
+	if h.GatewayID == "" {
+		return nil
+	}
+	for _, cn := range a.conns {
+		if cn != nil && cn.kind == layout.Terminal && cn.host.ID == h.ID &&
+			cn.s != nil && cn.s.Status().State == session.Connected {
+			return cn
+		}
+	}
+	return nil
+}
+
+// pingSessionKey is what a host measured through its session is keyed by.
+const pingSessionKey = "session"
+
+// pingKey is what h is measured by: its address when it is reached
+// straight from here, pingSessionKey with a session when it is reached
+// through a gateway, "" for neither.
+func (a *App) pingKey(h assets.Host) (string, *conn) {
+	if addr, ok := a.pingAddr(h); ok {
+		return addr, nil
+	}
+	if cn := a.pingSession(h); cn != nil {
+		return pingSessionKey, cn
+	}
+	return "", nil
 }
 
 // PingAll measures every host that can be, and forgets the hosts gone.
@@ -77,15 +113,15 @@ func (a *App) pinging() bool {
 }
 
 // pingHost measures h, unless it is already being measured; the result
-// it had stays meanwhile, should its address be the same.
+// it had stays meanwhile, should what it is measured by be the same.
 func (a *App) pingHost(h assets.Host) {
-	addr, ok := a.pingAddr(h)
+	key, cn := a.pingKey(h)
 	r := a.ping.res[h.ID]
-	if !ok || r.busy {
+	if key == "" || r.busy {
 		return
 	}
-	if r.addr != addr {
-		r = pingResult{addr: addr}
+	if r.addr != key {
+		r = pingResult{addr: key}
 	}
 	r.busy = true
 	if a.ping.res == nil {
@@ -105,11 +141,19 @@ func (a *App) pingHost(h assets.Host) {
 		case <-ctx.Done():
 			return
 		}
-		d, err := measurePing(ctx, dial, addr)
+		var d time.Duration
+		var err error
+		if cn != nil {
+			pctx, cancel := context.WithTimeout(ctx, pingTimeout)
+			d, err = cn.s.Ping(pctx)
+			cancel()
+		} else {
+			d, err = measurePing(ctx, dial, key)
+		}
 		<-sem
 		a.post(func() {
 			if _, ok := a.ping.res[h.ID]; ok {
-				a.ping.res[h.ID] = pingResult{addr: addr, d: d, ok: err == nil}
+				a.ping.res[h.ID] = pingResult{addr: key, d: d, ok: err == nil}
 			}
 		})
 	}()
@@ -138,12 +182,12 @@ func measurePing(ctx context.Context, dial func(ctx context.Context, network, ad
 	return d, nil
 }
 
-// pingOf is the latency of h to show, false for a host not measured at
-// its address: never, or not since it was given another.
+// pingOf is the latency of h to show, false for a host not measured by
+// what it is now measured by: never, or not since that changed.
 func (a *App) pingOf(h assets.Host) (pingResult, bool) {
-	addr, ok := a.pingAddr(h)
+	key, _ := a.pingKey(h)
 	r, seen := a.ping.res[h.ID]
-	if !ok || !seen || r.addr != addr {
+	if key == "" || !seen || r.addr != key {
 		return pingResult{}, false
 	}
 	return r, true

@@ -61,7 +61,7 @@ func (a *App) following(cn *conn) bool {
 	if !ok {
 		h = cn.host
 	}
-	return cn.kind == layout.Files && h.CwdFollow && !cn.fs.noFollow
+	return cn.kind == layout.Files && h.CwdFollow && a.gatewayExecChannel(h) && !cn.fs.noFollow
 }
 
 // followDir is the folder a shell reported, cleaned ("/a/b/../c/" is

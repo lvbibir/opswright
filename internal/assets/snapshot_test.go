@@ -5,7 +5,7 @@ import (
 	"testing"
 )
 
-// backupOf is a store with a credential, a proxy, a jump host, a host
+// backupOf is a store with a credential, a proxy, a gateway, a host
 // using all three and a forward on it, and the snapshot of it.
 func backupOf(t *testing.T) (*Store, Snapshot) {
 	t.Helper()
@@ -18,8 +18,11 @@ func backupOf(t *testing.T) (*Store, Snapshot) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	bastion, _ := s.Add(Host{Name: "bastion", Address: "10.0.0.1", User: "ops"})
-	web, err := s.Add(Host{Name: "web", Address: "10.0.0.5", User: "deploy", Group: "Prod", Auth: AuthCredential, CredentialID: cred.ID, ProxyID: px.ID, JumpChain: []string{bastion.ID}})
+	gw, err := s.SaveGateway(Gateway{Name: "bastion", Address: "10.0.0.1", User: "ops", CredentialID: cred.ID})
+	if err != nil {
+		t.Fatal(err)
+	}
+	web, err := s.Add(Host{Name: "web", Address: "10.0.0.5", User: "deploy", Group: "Prod", Auth: AuthCredential, CredentialID: cred.ID, ProxyID: px.ID, GatewayID: gw.ID})
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -39,12 +42,12 @@ func TestRestoreIntoEmpty(t *testing.T) {
 	}
 	re, _ := Open(path)
 	got := re.Snapshot()
-	if len(got.Hosts) != 2 || len(got.Credentials) != 1 || len(got.Proxies) != 1 || len(got.Forwards) != 1 {
+	if len(got.Hosts) != 1 || len(got.Credentials) != 1 || len(got.Proxies) != 1 || len(got.Gateways) != 1 || len(got.Forwards) != 1 {
 		t.Fatalf("restored %+v", got)
 	}
 	for _, h := range snap.Hosts {
 		r, ok := re.Get(h.ID)
-		if !ok || r.Name != h.Name || !r.Created.Equal(h.Created) || len(r.JumpChain) != len(h.JumpChain) {
+		if !ok || r.Name != h.Name || !r.Created.Equal(h.Created) || r.GatewayID != h.GatewayID {
 			t.Fatalf("host %s restored as %+v", h.Name, r)
 		}
 	}
@@ -80,7 +83,7 @@ func TestRestoreMerges(t *testing.T) {
 	if cr, _ := s.Credential(snap.Credentials[0].ID); cr.Name != "deploy (2)" {
 		t.Fatalf("second restore renamed to %q", cr.Name)
 	}
-	if s.Len() != 3 {
+	if s.Len() != 2 {
 		t.Fatalf("%d hosts", s.Len())
 	}
 }
@@ -91,20 +94,13 @@ func TestRestoreAllOrNothing(t *testing.T) {
 	_, snap := backupOf(t)
 	for name, broken := range map[string]func(sn *Snapshot){
 		"missing credential": func(sn *Snapshot) { sn.Credentials = nil },
-		"missing jump host": func(sn *Snapshot) {
-			for i, h := range sn.Hosts {
-				if h.Name == "bastion" {
-					sn.Hosts = append(sn.Hosts[:i:i], sn.Hosts[i+1:]...)
-					break
-				}
-			}
-		},
-		"bad id":       func(sn *Snapshot) { sn.Proxies[0].ID = "../x" },
-		"invalid host": func(sn *Snapshot) { sn.Hosts[0].Address = "" },
-		"forward host": func(sn *Snapshot) { sn.Forwards[0].HostID = "gone" },
+		"missing gateway":    func(sn *Snapshot) { sn.Gateways = nil },
+		"bad id":             func(sn *Snapshot) { sn.Proxies[0].ID = "../x" },
+		"invalid host":       func(sn *Snapshot) { sn.Hosts[0].Address = "" },
+		"forward host":       func(sn *Snapshot) { sn.Forwards[0].HostID = "gone" },
 	} {
 		t.Run(name, func(t *testing.T) {
-			sn := Snapshot{Hosts: append([]Host(nil), snap.Hosts...), Credentials: append([]Credential(nil), snap.Credentials...), Proxies: append([]Proxy(nil), snap.Proxies...), Forwards: append([]Forward(nil), snap.Forwards...)}
+			sn := Snapshot{Hosts: append([]Host(nil), snap.Hosts...), Credentials: append([]Credential(nil), snap.Credentials...), Proxies: append([]Proxy(nil), snap.Proxies...), Gateways: append([]Gateway(nil), snap.Gateways...), Forwards: append([]Forward(nil), snap.Forwards...)}
 			broken(&sn)
 			s, _ := Open("")
 			keep, _ := s.Add(Host{Name: "keep", Address: "h", User: "u"})
@@ -112,7 +108,7 @@ func TestRestoreAllOrNothing(t *testing.T) {
 				t.Fatal("restored")
 			}
 			got := s.Snapshot()
-			if len(got.Hosts) != 1 || got.Hosts[0].ID != keep.ID || len(got.Credentials)+len(got.Proxies)+len(got.Forwards) != 0 {
+			if len(got.Hosts) != 1 || got.Hosts[0].ID != keep.ID || len(got.Credentials)+len(got.Proxies)+len(got.Gateways)+len(got.Forwards) != 0 {
 				t.Fatalf("partly restored: %+v", got)
 			}
 		})
