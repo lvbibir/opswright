@@ -1366,6 +1366,7 @@
   "snippetFailureDetail": "{stage}：{reason}",
   "snippetInsertAction": "仅插入 {name}",
   "snippetSendAction": "发送 {name} 并回车",
+  "quickCommands": "快捷命令",
   "aiFormat": "接口格式",
   "aiFormatChat": "Chat Completions",
   "aiFormatResponses": "Responses",

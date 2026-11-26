@@ -104,14 +104,10 @@ func (a *App) snippetIntro(c *ui.Context, m locales.Messages, tok theme.Tokens) 
 
 // snippetList is the search, the groups' tabs and the entries matching.
 func (a *App) snippetList(c *ui.Context, m locales.Messages, tok theme.Tokens, all []assets.Snippet) {
-	var hits []snippetHit
+	hits := a.snippetHits(m, all, a.snippets.query)
 	counts := map[string]int{}
-	for _, n := range all {
-		body, err := a.snippetContent(n.ID)
-		if a.snippetMatches(m, n, body) {
-			hits = append(hits, snippetHit{n, body, err})
-			counts[n.Group]++
-		}
+	for _, h := range hits {
+		counts[h.n.Group]++
 	}
 	groups := a.snippetGroups()
 	ui.Column(c).FillWidth().Shrink(0).Padding(0, theme.Space(3), theme.Space(2), theme.Space(3)).Gap(theme.Space(2)).Children(func() {
@@ -288,10 +284,23 @@ func snippetGroupName(g string) string {
 	return g
 }
 
-// snippetMatches reports whether the search matches an entry, by name,
-// group or body; the group chosen filters apart.
-func (a *App) snippetMatches(m locales.Messages, n assets.Snippet, body string) bool {
-	return strings.Contains(strings.ToLower(n.Name+"\n"+snippetGroupTitle(m, n.Group)+"\n"+body), strings.ToLower(strings.TrimSpace(a.snippets.query)))
+// snippetHits are the entries of all the query matches, each with its body
+// as read, in the order they are listed.
+func (a *App) snippetHits(m locales.Messages, all []assets.Snippet, query string) []snippetHit {
+	var hits []snippetHit
+	for _, n := range all {
+		body, err := a.snippetContent(n.ID)
+		if snippetMatchesQuery(m, n, body, query) {
+			hits = append(hits, snippetHit{n, body, err})
+		}
+	}
+	return hits
+}
+
+// snippetMatchesQuery reports whether the query matches an entry, by name,
+// group or body; a blank query matches everything.
+func snippetMatchesQuery(m locales.Messages, n assets.Snippet, body, query string) bool {
+	return strings.Contains(strings.ToLower(n.Name+"\n"+snippetGroupTitle(m, n.Group)+"\n"+body), strings.ToLower(strings.TrimSpace(query)))
 }
 
 // snippetRow is an entry: its tile, name and first line, with its action

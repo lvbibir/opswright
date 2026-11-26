@@ -336,11 +336,10 @@ func TestSnippetUIDefaultGroup(t *testing.T) {
 	a.snippets.showing = false
 	tt.Frame()
 	a.snippets.grouped, a.snippets.group = false, ""
-	if !a.snippetMatches(m, n, "") || !a.snippetMatches(m, assets.Snippet{Name: "x"}, "") {
+	if !snippetMatchesQuery(m, n, "", "") || !snippetMatchesQuery(m, assets.Snippet{Name: "x"}, "", "") {
 		t.Fatal("blank query")
 	}
-	a.snippets.query = "default"
-	if !a.snippetMatches(m, n, "echo plain") || a.snippetMatches(m, assets.Snippet{Name: "named", Group: "Ops"}, "echo named") {
+	if !snippetMatchesQuery(m, n, "echo plain", "default") || snippetMatchesQuery(m, assets.Snippet{Name: "named", Group: "Ops"}, "echo named", "default") {
 		t.Fatal("default group search")
 	}
 }

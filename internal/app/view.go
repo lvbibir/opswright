@@ -133,6 +133,7 @@ func (a *App) View(c *ui.Context) {
 	a.installView(c, m)
 	a.quickView(c, m)
 	a.paletteView(c, m)
+	a.quickCommandsView(c, m)
 	a.promptsView(c, m)
 	a.oscAskView(c, m)
 	a.xferAskView(c, m)

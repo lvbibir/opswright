@@ -13798,6 +13798,16 @@ func (msgs Messages) SnippetSendAction(name string) string {
 	return Catalog.Format(msgs.locale, "snippetSendAction", map[string]any{"name": name})
 }
 
+// QuickCommands says "Quick Commands"
+// in the language the app shows.
+func QuickCommands() string { return In(i18n.Locale()).QuickCommands() }
+
+// QuickCommands says "Quick Commands"
+// in the language of msgs.
+func (msgs Messages) QuickCommands() string {
+	return Catalog.Format(msgs.locale, "quickCommands", nil)
+}
+
 // AiFormat says "API format"
 // in the language the app shows.
 func AiFormat() string { return In(i18n.Locale()).AiFormat() }

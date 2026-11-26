@@ -359,6 +359,8 @@ type App struct {
 	pref       prefPage
 	prefSearch prefSearchState
 	snippets   snippetState
+	// quickCmd is the quick commands picker the app shortcut opens.
+	quickCmd pickerState
 	// bc is the broadcast panel's state.
 	bc broadcastState
 	// tabStart is the first tab the title bar shows when not all fit, the
@@ -534,7 +536,7 @@ type App struct {
 	quicking  bool
 	quickHold focusHold
 	// palette is the command palette, open while palette.open
-	palette paletteState
+	palette pickerState
 	// recording is the action whose shortcut is being recorded, and
 	// recordErr why the last key pressed for it could not be its shortcut
 	recording, recordErr string

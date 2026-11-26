@@ -16,6 +16,7 @@ func TestShortcutRule(t *testing.T) {
 	quick, _ := actionOf(actQuickConnect)
 	save, _ := actionOf(actSaveFile)
 	stop, _ := actionOf(actStopAI)
+	qcmd, _ := actionOf(actQuickCommands)
 	tab1, _ := actionOf(actTab + "1")
 	next, _ := actionOf(actNextTab)
 	prev, _ := actionOf(actPrevTab)
@@ -49,6 +50,12 @@ func TestShortcutRule(t *testing.T) {
 		{prev, k(ui.Ctrl|ui.Alt, ui.KeyTab), ruleMods},
 		{quick, k(ui.Ctrl, ui.KeyTab), ruleMods},
 		{tab1, k(ui.Ctrl, ui.KeyTab), ruleMods},
+		// Quick commands may take Ctrl+M, its default, which no other
+		// action may: the terminal keeps the rest of plain Ctrl.
+		{qcmd, qcmd.def, ruleOK},
+		{qcmd, k(ui.Ctrl, ui.KeyM), ruleOK},
+		{qcmd, k(ui.Ctrl, ui.KeyN), ruleMods},
+		{quick, k(ui.Ctrl, ui.KeyM), ruleMods},
 	} {
 		if got := shortcutRule(tc.ac, tc.k); got != tc.want {
 			t.Errorf("%s %s: %v, want %v", tc.ac.id, tc.k, got, tc.want)

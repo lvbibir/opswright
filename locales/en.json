@@ -1366,6 +1366,7 @@
   "snippetFailureDetail": "{stage}: {reason}",
   "snippetInsertAction": "Insert {name} only",
   "snippetSendAction": "Send {name} and press Enter",
+  "quickCommands": "Quick Commands",
   "aiFormat": "API format",
   "aiFormatChat": "Chat Completions",
   "aiFormatResponses": "Responses",

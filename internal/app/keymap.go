@@ -37,6 +37,7 @@ const (
 	actBroadcast      = "broadcast"
 	actSessionLogs    = "sessionLogs"
 	actHistory        = "commandHistory"
+	actQuickCommands  = "quickCommands"
 	// actTab is the prefix of the actions that show the tab of their
 	// number, 1 to tabJumps; the last shows the last tab.
 	actTab          = "selectTab"
@@ -149,6 +150,7 @@ var actions = append([]action{
 	{actBroadcast, locales.Messages.Broadcast, icons.Broadcast, keymap.Combo{Mods: aiMods, Key: ui.KeyM}, false},
 	{actSessionLogs, locales.Messages.SessionLogs, icons.FileText, keymap.Combo{Mods: aiMods, Key: ui.KeyL}, false},
 	{actHistory, locales.Messages.CommandHistory, icons.History, keymap.Combo{Mods: aiMods, Key: ui.KeyH}, false},
+	{actQuickCommands, locales.Messages.QuickCommands, icons.API, keymap.Combo{Mods: ui.Ctrl, Key: ui.KeyM}, false},
 	{actCompletePath, locales.Messages.CompletePath, icons.PathList, keymap.Combo{Mods: appMods, Key: ui.KeyJ}, false},
 	{actLock, locales.Messages.AppLockAction, icons.Lock, keymap.Combo{Mods: appMods, Key: ui.KeyY}, false},
 }, tabActions()...)
@@ -234,6 +236,14 @@ func altDigit(ac action, k keymap.Combo) bool {
 	return tabNumber(ac.id) > 0 && k.Mods == ui.Alt && k.Key >= ui.Key0 && k.Key <= ui.Key9
 }
 
+// quickCommandsKey reports the shortcut of the quick commands action that
+// may go without the window's modifiers: Ctrl+M, its default, which the
+// terminal gives up for the redundant Enter it already sends. Every other
+// action keeps the window's modifiers.
+func quickCommandsKey(ac action, k keymap.Combo) bool {
+	return ac.id == actQuickCommands && k.Mods == ui.Ctrl && k.Key == ui.KeyM
+}
+
 // tabStep reports a shortcut of a tab-cycling action that may go without
 // the window's modifiers: Ctrl+Tab, as other terminals step through their
 // tabs and the terminal leaves it to the app. Ctrl+Shift+Tab, the step
@@ -270,6 +280,8 @@ func shortcutRule(ac action, k keymap.Combo) rule {
 	case altDigit(ac, k):
 		return ruleOK
 	case tabStep(ac, k):
+		return ruleOK
+	case quickCommandsKey(ac, k):
 		return ruleOK
 	case k.Mods&shortcutMods(ac.editor) != shortcutMods(ac.editor):
 		return ruleMods
@@ -415,6 +427,8 @@ func (a *App) runAction(id string) {
 		a.ToggleTool(layout.Logs)
 	case actHistory:
 		a.ToggleTool(layout.History)
+	case actQuickCommands:
+		a.openQuickCommands()
 	case actCompletePath:
 		a.askPathList()
 	default:

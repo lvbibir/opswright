@@ -17,9 +17,10 @@ import (
 // settings page and setting, the themes and color schemes, the hosts to
 // connect to and the snippets to send.
 
-// paletteState is the command palette's: whether it shows, what is typed
+// pickerState is a keyboard list picker's state, shared by the command
+// palette and the quick commands window: whether it shows, what is typed
 // and the row chosen.
-type paletteState struct {
+type pickerState struct {
 	open  bool
 	query string
 	sel   int
@@ -51,7 +52,7 @@ type paletteItem struct {
 
 // openPalette shows the command palette, empty.
 func (a *App) openPalette() {
-	a.palette = paletteState{open: true, gen: a.palette.gen + 1}
+	a.palette = pickerState{open: true, gen: a.palette.gen + 1}
 }
 
 // paletteItems are everything the palette finds, in the order it lists
@@ -102,7 +103,7 @@ func (a *App) paletteItems(m locales.Messages, tok theme.Tokens) []paletteItem {
 	}
 	for _, n := range a.store.Snippets() {
 		add(paletteItem{key: "snippet:" + n.ID, icon: icons.Send, title: n.Name, sub: m.Snippets(), also: n.Group,
-			run: func() { a.paletteSnippet(m, n.ID, n.SendEnter) }})
+			run: func() { a.runPickedSnippet(m, n.ID, n.SendEnter) }})
 	}
 
 	for _, g := range prefGroups(m) {
@@ -232,9 +233,10 @@ func inOrder(s, w string) bool {
 	return true
 }
 
-// paletteSnippet sends a snippet to the focused terminal from the palette,
-// unlocking the secrets first if they are locked.
-func (a *App) paletteSnippet(m locales.Messages, id string, enter bool) {
+// runPickedSnippet sends a snippet to the focused terminal from a picker
+// (the command palette or quick commands), unlocking the secrets first if
+// they are locked, and reporting a failure as a toast.
+func (a *App) runPickedSnippet(m locales.Messages, id string, enter bool) {
 	if !a.unlocked() {
 		return
 	}
