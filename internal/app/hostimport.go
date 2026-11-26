@@ -349,7 +349,10 @@ func (a *App) importView(c *ui.Context, m locales.Messages) {
 	tok := currentTokens(c)
 	actions := importActions(m)
 	sheet(stickyModal(c, &a.importing, func() {
-		ui.Column(c).Gap(12).Width(820).Children(func() {
+		// Shrink and MinHeight let the preview give way when the window is
+		// short, so that the buttons stay on it: a list longer than the
+		// space left scrolls instead of pushing them out.
+		ui.Column(c).Gap(12).Width(820).Shrink(1).MinHeight(0).Children(func() {
 			ui.Row(c).Gap(12).AlignItems(ui.Center).Children(func() {
 				tile(c, icons.Import, theme.Brand, 36)
 				ui.Column(c).Gap(1).Shrink(1).Grow(1).Children(func() {
@@ -373,7 +376,7 @@ func (a *App) importView(c *ui.Context, m locales.Messages) {
 			n, out := a.importCounts(m, f)
 			if len(f.rows) > 0 {
 				ui.Text(c, m.ImportSummary(strconv.Itoa(n), strconv.Itoa(out))).FontSize(theme.Body).FontWeight(500)
-				sheetScroll(ui.Scroll(c.Key("imp:rows")).MaxHeight(340)).Children(func() {
+				sheetScroll(ui.Scroll(c.Key("imp:rows")).Shrink(1).MinHeight(0).MaxHeight(340)).Children(func() {
 					ui.Column(c).Gap(6).FillWidth().Children(func() {
 						for i, r := range f.rows {
 							a.importRowView(c, m, tok, actions, i, r)
