@@ -340,7 +340,7 @@ func (a *App) SaveForm(m locales.Messages) bool {
 			return false
 		}
 	}
-	h.Startup = startupText(f) != ""
+	h.Startup = startupText(f.startup) != ""
 	h.OSC52 = osc52CodeFrom(m, f)
 	mode := ""
 	if f.aiIdx >= 0 && f.aiIdx < 4 {
@@ -729,17 +729,17 @@ func (a *App) addStartupSnippet(m locales.Messages, f *hostForm, id string) {
 	f.startupGen++
 }
 
-// startupText is the editor's startup commands as saved: one per line,
-// without the blank lines.
-func startupText(f *hostForm) string { return strings.Join(assets.StartupLines(f.startup), "\n") }
+// startupText is startup commands as saved: one per line, without the
+// blank lines.
+func startupText(text string) string { return strings.Join(assets.StartupLines(text), "\n") }
 
 // startupChanges are what saving h does to its startup commands: write
 // them when they are new or changed, delete them when they are gone.
 func startupChanges(f *hostForm, h assets.Host) []keychain.Change {
 	key := keychain.HostStartup(h.ID)
-	text := startupText(f)
+	text := startupText(f.startup)
 	switch {
-	case h.Startup && (f.isNew || !f.orig.Startup || text != strings.Join(assets.StartupLines(f.startupOrig), "\n")):
+	case h.Startup && (f.isNew || !f.orig.Startup || text != startupText(f.startupOrig)):
 		return []keychain.Change{{Key: key, Value: []byte(text)}}
 	case !h.Startup && f.orig.Startup && !f.isNew:
 		return []keychain.Change{{Key: key, Delete: true}}
