@@ -24,7 +24,7 @@ type hostTools struct {
 	a         *App
 	c         *conn
 	host      assets.Host
-	run       *remote.Runner
+	run       commandRunner
 	files     *remote.Files
 	sftp      *sftpsvc.Client
 	release   func()
@@ -68,36 +68,59 @@ func (h *hostTools) end() {
 }
 
 func (h *hostTools) connect(ctx context.Context) error {
-	if h.run != nil {
-		if h.wantBegin {
+	if h.release != nil {
+		if h.wantBegin && h.run != nil {
 			h.run.BeginTurn()
 			h.wantBegin = false
 		}
 		return nil
 	}
-	cfg := h.a.hostConfig(h.host, h.c, func(context.Context) (session.Credentials, error) {
-		return h.a.credentials(h.c, h.host)
-	})
-	client, release, err := h.a.pool.Acquire(ctx, h.a.poolKey(h.host), cfg)
-	if err != nil {
-		return err
+	// What the connection allows: a host reached directly or through a
+	// forwarding gateway has its own sshd (exec and sftp); a gateway that
+	// only routes runs commands over a shell of its own when it refuses the
+	// exec channel, and reaches files by sftp only when it allows it.
+	execCh, filesOK := h.a.gatewayExecChannel(h.host), h.a.gatewaySFTP(h.host)
+	if execCh || filesOK {
+		cfg := h.a.hostConfig(h.host, h.c, func(context.Context) (session.Credentials, error) {
+			return h.a.credentials(h.c, h.host)
+		})
+		client, release, err := h.a.pool.Acquire(ctx, h.a.poolKey(h.host), cfg)
+		if err != nil {
+			return err
+		}
+		h.release = release
+		if filesOK {
+			files, err := remote.OpenFilesContext(ctx, client)
+			if err != nil {
+				h.end()
+				return err
+			}
+			h.files = files
+			sftp, err := sftpsvc.NewContext(ctx, client)
+			if err != nil {
+				h.end()
+				return err
+			}
+			h.sftp = sftp
+		}
+		if execCh {
+			h.run = remote.New(client, remote.Options{})
+		}
 	}
-	files, err := remote.OpenFilesContext(ctx, client)
-	if err != nil {
-		release()
-		return err
+	if !execCh {
+		run, release, err := h.a.dialShellRunner(ctx, h.host, h.c)
+		if err != nil {
+			h.end()
+			return err
+		}
+		h.run = run
+		if h.release != nil {
+			h.release = joinRelease(h.release, release)
+		} else {
+			h.release = release
+		}
 	}
-	sftp, err := sftpsvc.NewContext(ctx, client)
-	if err != nil {
-		files.Close()
-		release()
-		return err
-	}
-	h.run = remote.New(client, remote.Options{})
-	h.files = files
-	h.sftp = sftp
-	h.release = release
-	if h.wantBegin {
+	if h.wantBegin && h.run != nil {
 		h.run.BeginTurn()
 		h.wantBegin = false
 	}
@@ -119,6 +142,9 @@ func (h *hostTools) ReadFile(ctx context.Context, p string) (string, bool, error
 			return "", false, ctx.Err()
 		}
 		return "", false, err
+	}
+	if h.files == nil {
+		return "", false, errors.New("this host's jump server does not allow file access")
 	}
 	b, ver, err := h.files.ReadContext(ctx, p, 1<<20)
 	if errors.Is(err, fs.ErrNotExist) {
@@ -159,6 +185,12 @@ func (h *hostTools) Call(ctx context.Context, name string, raw json.RawMessage) 
 		}
 	default:
 		return "unknown tool " + name, 1, nil
+	}
+	switch name {
+	case "list_dir", "read_file", "search_files", "write_file":
+		if h.sftp == nil {
+			return "this host's jump server does not allow file access", 1, nil
+		}
 	}
 	switch name {
 	case "list_dir":
@@ -329,6 +361,9 @@ func joinOut(a, b string) string {
 func (h *hostTools) ResolvePath(ctx context.Context, p string) (string, error) {
 	if err := h.connect(ctx); err != nil {
 		return "", err
+	}
+	if h.files == nil {
+		return "", errors.New("this host's jump server does not allow file access")
 	}
 	return h.files.ResolvePath(ctx, p)
 }
