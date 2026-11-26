@@ -100,11 +100,9 @@ func (a *App) selectTabNumber(n int) {
 // stepTabNumber shows the tab d after the one shown, d before it for a
 // negative d, around the ends, as Ctrl+Tab and Ctrl+Shift+Tab step.
 func (a *App) stepTabNumber(d int) {
-	n := len(a.ws.Tabs)
-	if n < 2 {
-		return
+	if n := len(a.ws.Tabs); n > 1 {
+		a.showWorkspaceTab((a.ws.Active + d + n) % n)
 	}
-	a.showWorkspaceTab(((max(a.ws.Active, 0)+d)%n + n) % n)
 }
 
 // showWorkspaceTab shows the workspace tab at i, with the keyboard going
@@ -133,8 +131,8 @@ var actions = append([]action{
 	{actCommandPalette, locales.Messages.CommandPalette, icons.Command, keymap.Combo{Mods: aiMods, Key: ui.KeyP}, false},
 	{actQuickConnect, locales.Messages.QuickConnect, icons.Quick, keymap.Combo{Mods: appMods, Key: ui.KeyK}, false},
 	{actNewTab, locales.Messages.NewTab, icons.Add, keymap.Combo{Mods: appMods, Key: ui.KeyT}, false},
-	{actNextTab, locales.Messages.NextTab, icons.NextTab, keymap.Combo{Mods: ui.Ctrl, Key: ui.KeyTab}, false},
-	{actPrevTab, locales.Messages.PreviousTab, icons.PrevTab, keymap.Combo{Mods: ui.Ctrl | ui.Shift, Key: ui.KeyTab}, false},
+	{actNextTab, locales.Messages.NextTab, icons.Next, keymap.Combo{Mods: ui.Ctrl, Key: ui.KeyTab}, false},
+	{actPrevTab, locales.Messages.PreviousTab, icons.Previous, keymap.Combo{Mods: ui.Ctrl | ui.Shift, Key: ui.KeyTab}, false},
 	{actClosePane, locales.Messages.ClosePane, icons.Close, keymap.Combo{Mods: appMods, Key: ui.KeyW}, false},
 	{actSplitRight, locales.Messages.SplitRight, icons.SplitRight, keymap.Combo{Mods: appMods, Key: ui.KeyD}, false},
 	{actSplitDown, locales.Messages.SplitDown, icons.SplitDown, keymap.Combo{Mods: appMods, Key: ui.KeyE}, false},
@@ -226,13 +224,14 @@ func altDigit(ac action, k keymap.Combo) bool {
 }
 
 // tabStep reports a shortcut of a tab-cycling action that may go without
-// the window's modifiers: Ctrl+Tab and Ctrl+Shift+Tab, as other terminals
-// step through their tabs, which the terminal then leaves to the app.
+// the window's modifiers: Ctrl+Tab, as other terminals step through their
+// tabs and the terminal leaves it to the app. Ctrl+Shift+Tab, the step
+// the other way, holds the modifiers already.
 func tabStep(ac action, k keymap.Combo) bool {
 	if ac.id != actNextTab && ac.id != actPrevTab {
 		return false
 	}
-	return k.Key == ui.KeyTab && (k.Mods == ui.Ctrl || k.Mods == ui.Ctrl|ui.Shift)
+	return k.Mods == ui.Ctrl && k.Key == ui.KeyTab
 }
 
 // reserved are the shortcuts no action may take: editing text (Select
