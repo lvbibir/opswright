@@ -591,11 +591,11 @@ func TestShellUnansweredFails(t *testing.T) {
 
 func TestCdLine(t *testing.T) {
 	for dir, want := range map[string]string{
-		"/var/www":  " cd '/var/www'\r",
-		"~":         " cd ~\r",
-		"~/a b":     " cd ~/'a b'\r",
-		"/it's":     ` cd '/it'\''s'` + "\r",
-		"rel/$HOME": " cd 'rel/$HOME'\r",
+		"/var/www":  "cd '/var/www'\r",
+		"~":         "cd ~\r",
+		"~/a b":     "cd ~/'a b'\r",
+		"/it's":     `cd '/it'\''s'` + "\r",
+		"rel/$HOME": "cd 'rel/$HOME'\r",
 	} {
 		if got := cdLine(dir); got != want {
 			t.Errorf("cdLine(%q) = %q, want %q", dir, got, want)

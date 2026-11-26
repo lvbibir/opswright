@@ -693,8 +693,7 @@ func (s *Session) enterShell(ctx context.Context, client *ssh.Client, shell *ssh
 	}
 	if s.opts.Start != nil {
 		if cmd := s.opts.Start(ctx, client); cmd != "" {
-			// Its leading space keeps it out of the history, as the cd's.
-			line += " " + cmd + "\r"
+			line += cmd + "\r"
 		}
 	}
 	if line == "" {
@@ -719,8 +718,6 @@ func (s *Session) enterShell(ctx context.Context, client *ssh.Client, shell *ssh
 
 // cdLine is the line changing a shell to dir, single-quoted as POSIX
 // shells and fish read it, with "~" left to the shell to expand.
-// Its leading space keeps it out of the history of shells that ignore
-// such lines.
 func cdLine(dir string) string {
 	arg := ShellQuote(dir)
 	switch {
@@ -729,7 +726,7 @@ func cdLine(dir string) string {
 	case strings.HasPrefix(dir, "~/"):
 		arg = "~/" + ShellQuote(dir[2:])
 	}
-	return " cd " + arg + "\r"
+	return "cd " + arg + "\r"
 }
 
 // ShellQuote is s as one word for a POSIX shell: single-quoted, each

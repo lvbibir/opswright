@@ -22,9 +22,9 @@ func TestStartLine(t *testing.T) {
 	}{
 		{want: ""},
 		{tmux: "tmux a", want: "tmux a"},
-		{startup: []string{"export A=1", "source env"}, want: "export A=1\r source env"},
-		{cd: "cd /srv", startup: []string{"ls"}, tmux: "tmux a", want: "cd /srv\r ls\r tmux a"},
-		{cd: "cd /srv", tmux: "", want: "cd /srv"},
+		{startup: []string{"export A=1", "source env"}, want: "export A=1\rsource env"},
+		{cd: "cd /srv", startup: []string{"ls"}, tmux: "tmux a", want: "cd /srv\rls\rtmux a"},
+		{cd: "cd /srv", want: "cd /srv"},
 	} {
 		if got := startLine(tc.cd, tc.startup, tc.tmux); got != tc.want {
 			t.Errorf("startLine(%q, %q, %q) = %q, want %q", tc.cd, tc.startup, tc.tmux, got, tc.want)

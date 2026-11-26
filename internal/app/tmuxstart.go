@@ -159,8 +159,7 @@ func (a *App) shellStartCmd(c *conn) func(context.Context, *ssh.Client) string {
 
 // startLine is what a starting shell is typed after the cd to its
 // folder: the cd back to where it was, its host's startup commands, then
-// the tmux attach, each on its own line, all but the first led by the
-// space enterShell leads that with, to keep them out of the history.
+// the tmux attach, each on its own line.
 // The startup commands run in the shell outside tmux: typed after an
 // attach, they would reach whatever runs in the session.
 func startLine(cd string, startup []string, tmux string) string {
@@ -170,7 +169,7 @@ func startLine(cd string, startup []string, tmux string) string {
 			parts = append(parts, p)
 		}
 	}
-	return strings.Join(parts, "\r ")
+	return strings.Join(parts, "\r")
 }
 
 // startupLines are the startup commands of c's host, read from the
