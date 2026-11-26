@@ -714,6 +714,26 @@ func (msgs Messages) NewTab() string {
 	return Catalog.Format(msgs.locale, "newTab", nil)
 }
 
+// NextTab says "Next Tab"
+// in the language the app shows.
+func NextTab() string { return In(i18n.Locale()).NextTab() }
+
+// NextTab says "Next Tab"
+// in the language of msgs.
+func (msgs Messages) NextTab() string {
+	return Catalog.Format(msgs.locale, "nextTab", nil)
+}
+
+// PreviousTab says "Previous Tab"
+// in the language the app shows.
+func PreviousTab() string { return In(i18n.Locale()).PreviousTab() }
+
+// PreviousTab says "Previous Tab"
+// in the language of msgs.
+func (msgs Messages) PreviousTab() string {
+	return Catalog.Format(msgs.locale, "previousTab", nil)
+}
+
 // EmptyPane says "Drag a host here, or pick one from the sidebar."
 // in the language the app shows.
 func EmptyPane() string { return In(i18n.Locale()).EmptyPane() }

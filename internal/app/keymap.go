@@ -19,6 +19,8 @@ const (
 	actQuickConnect   = "quickConnect"
 	actCommandPalette = "commandPalette"
 	actNewTab         = "newTab"
+	actNextTab        = "nextTab"
+	actPrevTab        = "previousTab"
 	actClosePane      = "closePane"
 	actSplitRight     = "splitRight"
 	actSplitDown      = "splitDown"
@@ -92,6 +94,22 @@ func (a *App) selectTabNumber(n int) {
 	if i < 0 {
 		return
 	}
+	a.showWorkspaceTab(i)
+}
+
+// stepTabNumber shows the tab d after the one shown, d before it for a
+// negative d, around the ends, as Ctrl+Tab and Ctrl+Shift+Tab step.
+func (a *App) stepTabNumber(d int) {
+	n := len(a.ws.Tabs)
+	if n < 2 {
+		return
+	}
+	a.showWorkspaceTab(((max(a.ws.Active, 0)+d)%n + n) % n)
+}
+
+// showWorkspaceTab shows the workspace tab at i, with the keyboard going
+// to its focused pane.
+func (a *App) showWorkspaceTab(i int) {
 	a.ws.Active = i
 	a.page = pageWorkspace
 	a.focusReq = a.ws.Tabs[i].Focused().ID
@@ -115,6 +133,8 @@ var actions = append([]action{
 	{actCommandPalette, locales.Messages.CommandPalette, icons.Command, keymap.Combo{Mods: aiMods, Key: ui.KeyP}, false},
 	{actQuickConnect, locales.Messages.QuickConnect, icons.Quick, keymap.Combo{Mods: appMods, Key: ui.KeyK}, false},
 	{actNewTab, locales.Messages.NewTab, icons.Add, keymap.Combo{Mods: appMods, Key: ui.KeyT}, false},
+	{actNextTab, locales.Messages.NextTab, icons.NextTab, keymap.Combo{Mods: ui.Ctrl, Key: ui.KeyTab}, false},
+	{actPrevTab, locales.Messages.PreviousTab, icons.PrevTab, keymap.Combo{Mods: ui.Ctrl | ui.Shift, Key: ui.KeyTab}, false},
 	{actClosePane, locales.Messages.ClosePane, icons.Close, keymap.Combo{Mods: appMods, Key: ui.KeyW}, false},
 	{actSplitRight, locales.Messages.SplitRight, icons.SplitRight, keymap.Combo{Mods: appMods, Key: ui.KeyD}, false},
 	{actSplitDown, locales.Messages.SplitDown, icons.SplitDown, keymap.Combo{Mods: appMods, Key: ui.KeyE}, false},
@@ -205,6 +225,16 @@ func altDigit(ac action, k keymap.Combo) bool {
 	return tabNumber(ac.id) > 0 && k.Mods == ui.Alt && k.Key >= ui.Key0 && k.Key <= ui.Key9
 }
 
+// tabStep reports a shortcut of a tab-cycling action that may go without
+// the window's modifiers: Ctrl+Tab and Ctrl+Shift+Tab, as other terminals
+// step through their tabs, which the terminal then leaves to the app.
+func tabStep(ac action, k keymap.Combo) bool {
+	if ac.id != actNextTab && ac.id != actPrevTab {
+		return false
+	}
+	return k.Key == ui.KeyTab && (k.Mods == ui.Ctrl || k.Mods == ui.Ctrl|ui.Shift)
+}
+
 // reserved are the shortcuts no action may take: editing text (Select
 // All, Copy, Paste, Cut, Undo, Redo) and the terminal's copy and paste;
 // for the editor, also closing its tab.
@@ -228,6 +258,8 @@ func shortcutRule(ac action, k keymap.Combo) rule {
 	case !keymap.Bindable(k.Key):
 		return ruleKey
 	case altDigit(ac, k):
+		return ruleOK
+	case tabStep(ac, k):
 		return ruleOK
 	case k.Mods&shortcutMods(ac.editor) != shortcutMods(ac.editor):
 		return ruleMods
@@ -335,6 +367,10 @@ func (a *App) runAction(id string) {
 		} else if id := a.selectedHost(); id != "" {
 			a.Connect(id, openAt{})
 		}
+	case actNextTab:
+		a.stepTabNumber(1)
+	case actPrevTab:
+		a.stepTabNumber(-1)
 	case actClosePane:
 		if a.page == pageWorkspace {
 			a.CloseFocused()

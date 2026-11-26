@@ -68,6 +68,8 @@
   "closePane": "关闭窗格",
   "closeTab": "关闭标签页",
   "newTab": "新建标签页",
+  "nextTab": "下一个标签页",
+  "previousTab": "上一个标签页",
   "emptyPane": "把主机拖到这里，或在侧栏中选择一台。",
   "dropToOpen": "松开以在此打开",
   "welcomeTitle": "欢迎使用 Opswright",

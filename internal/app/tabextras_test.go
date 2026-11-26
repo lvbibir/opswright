@@ -8,9 +8,11 @@ import (
 
 	"github.com/egoist/mygo/ui"
 	"github.com/lvbibir/opswright/internal/keychain"
+	"github.com/lvbibir/opswright/internal/keymap"
 	"github.com/lvbibir/opswright/internal/layout"
 	"github.com/lvbibir/opswright/internal/settings"
 	"github.com/lvbibir/opswright/internal/vt"
+	"github.com/lvbibir/opswright/locales"
 )
 
 // TestTabOfNumber: the first eight numbers show their tab, the ninth the
@@ -24,6 +26,106 @@ func TestTabOfNumber(t *testing.T) {
 		if got := tabOfNumber(tc.n, tc.count); got != tc.want {
 			t.Errorf("tab %d of %d: %d, want %d", tc.n, tc.count, got, tc.want)
 		}
+	}
+}
+
+// TestTabCycle: Ctrl+Tab and Ctrl+Shift+Tab step along the tabs of the
+// connected hosts, around the ends, and the terminal leaves them to the
+// app while Tab and Shift+Tab stay the shell's.
+func TestTabCycle(t *testing.T) {
+	next, _ := actionOf(actNextTab)
+	prev, _ := actionOf(actPrevTab)
+	ctrlTab := keymap.Combo{Mods: ui.Ctrl, Key: ui.KeyTab}
+	shiftTab := keymap.Combo{Mods: ui.Ctrl | ui.Shift, Key: ui.KeyTab}
+	if next.def != ctrlTab || prev.def != shiftTab {
+		t.Fatalf("defaults: %s, %s", next.def, prev.def)
+	}
+	if !isAppShortcut(nil, ui.KeyTab, ui.Ctrl) || !isAppShortcut(nil, ui.KeyTab, ui.Ctrl|ui.Shift) {
+		t.Fatal("Ctrl+Tab and Ctrl+Shift+Tab must reach the app")
+	}
+	if isAppShortcut(nil, ui.KeyTab, 0) || isAppShortcut(nil, ui.KeyTab, ui.Shift) {
+		t.Error("Tab and Shift+Tab must stay the shell's")
+	}
+	if b, ok := EncodeKey(ui.KeyTab, ui.Shift, vt.Modes{}); !ok || string(b) != "\x1b[Z" {
+		t.Errorf("Shift+Tab sends %q", b)
+	}
+
+	// The terminal leaves them to the app: nothing goes to the shell.
+	var sent []byte
+	tv := newTermView(recordTarget{term: vt.New(20, 4), out: &sent}, 13)
+	for _, mods := range []ui.Modifiers{ui.Ctrl, ui.Ctrl | ui.Shift} {
+		down := ui.InputEvent{Kind: ui.InputKeyDown, Key: ui.KeyTab, Mods: mods}
+		if tv.input(down, nil) {
+			t.Errorf("%v+Tab: the terminal took it", mods)
+		}
+		tv.input(ui.InputEvent{Kind: ui.InputKeyUp, Key: ui.KeyTab, Mods: mods}, nil)
+	}
+	if len(sent) != 0 {
+		t.Errorf("sent %q, want nothing", sent)
+	}
+
+	a, tt := newTestApp(t)
+	h := savedHost(t, a, "saved", "127.0.0.1")
+	for range 3 {
+		cn, err := a.makeConn(h.ID, layout.Terminal, 0)
+		if err != nil {
+			t.Fatal(err)
+		}
+		a.ws.Open(cn.item())
+	}
+	// Stepping from the settings page comes back to the workspace.
+	a.ws.Active = 0
+	a.page = pageSettings
+	a.runAction(actNextTab)
+	if a.ws.Active != 1 || a.page != pageWorkspace || a.focusReq != a.ws.Tabs[1].Focused().ID {
+		t.Fatalf("next: active %d, page %v", a.ws.Active, a.page)
+	}
+	a.runAction(actNextTab)
+	a.runAction(actNextTab)
+	if a.ws.Active != 0 {
+		t.Fatalf("next past the last: active %d", a.ws.Active)
+	}
+	a.runAction(actPrevTab)
+	if a.ws.Active != 2 || a.focusReq != a.ws.Tabs[2].Focused().ID {
+		t.Fatalf("previous before the first: active %d", a.ws.Active)
+	}
+
+	// The keyboard itself: the app takes the keys, the shell nothing.
+	a.ws.Active = 0
+	tt.Frame()
+	tt.Key(ui.Ctrl, ui.KeyTab)
+	tt.Frame()
+	if a.ws.Active != 1 {
+		t.Fatalf("Ctrl+Tab: active %d", a.ws.Active)
+	}
+	tt.Key(ui.Ctrl|ui.Shift, ui.KeyTab)
+	tt.Frame()
+	if a.ws.Active != 0 {
+		t.Fatalf("Ctrl+Shift+Tab: active %d", a.ws.Active)
+	}
+
+	// Another action may not take Ctrl+Tab from the shell, and neither
+	// may any take Ctrl+Shift+Tab while the tab actions hold theirs.
+	m := locales.In("en")
+	if p := a.shortcutProblem(m, actQuickConnect, shiftTab); p != m.ShortcutTaken(shortcutText(shiftTab.Mods, shiftTab.Key), m.PreviousTab()) {
+		t.Errorf("Ctrl+Shift+Tab for quick connect: %q", p)
+	}
+
+	// With one tab, or none, there is nowhere to step.
+	b, _ := newTestApp(t)
+	solo := savedHost(t, b, "solo", "127.0.0.1")
+	b.stepTabNumber(1)
+	if b.ws.Active != -1 {
+		t.Fatalf("no tabs: active %d", b.ws.Active)
+	}
+	cn, err := b.makeConn(solo.ID, layout.Terminal, 0)
+	if err != nil {
+		t.Fatal(err)
+	}
+	b.ws.Open(cn.item())
+	b.stepTabNumber(1)
+	if b.ws.Active != 0 {
+		t.Fatalf("one tab: active %d", b.ws.Active)
 	}
 }
 

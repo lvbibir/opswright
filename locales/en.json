@@ -68,6 +68,8 @@
   "closePane": "Close Pane",
   "closeTab": "Close Tab",
   "newTab": "New Tab",
+  "nextTab": "Next Tab",
+  "previousTab": "Previous Tab",
   "emptyPane": "Drag a host here, or pick one from the sidebar.",
   "dropToOpen": "Drop to open here",
   "welcomeTitle": "Welcome to Opswright",

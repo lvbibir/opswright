@@ -18,6 +18,8 @@ func TestRoundTrip(t *testing.T) {
 		{Combo{ui.Super, ui.KeyF1}, "super+f1"},
 		{Combo{ui.Ctrl | ui.Shift, ui.KeyF12}, "ctrl+shift+f12"},
 		{Combo{ui.Super, ui.KeyBracketLeft}, "super+bracketleft"},
+		{Combo{ui.Ctrl, ui.KeyTab}, "ctrl+tab"},
+		{Combo{ui.Ctrl | ui.Shift, ui.KeyTab}, "ctrl+shift+tab"},
 	} {
 		if got := tc.c.String(); got != tc.s {
 			t.Errorf("%+v: %q, want %q", tc.c, got, tc.s)
@@ -34,7 +36,7 @@ func TestRoundTrip(t *testing.T) {
 			t.Errorf("Parse(%q) = %+v", s, c)
 		}
 	}
-	if Bindable(ui.KeyEnter) || Bindable(ui.KeyLeft) || !Bindable(ui.KeyF5) || !Bindable(ui.KeyBackquote) {
+	if Bindable(ui.KeyEnter) || Bindable(ui.KeyLeft) || !Bindable(ui.KeyF5) || !Bindable(ui.KeyBackquote) || !Bindable(ui.KeyTab) {
 		t.Error("Bindable")
 	}
 }

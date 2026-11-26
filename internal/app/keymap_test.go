@@ -17,6 +17,8 @@ func TestShortcutRule(t *testing.T) {
 	save, _ := actionOf(actSaveFile)
 	stop, _ := actionOf(actStopAI)
 	tab1, _ := actionOf(actTab + "1")
+	next, _ := actionOf(actNextTab)
+	prev, _ := actionOf(actPrevTab)
 	k := func(m ui.Modifiers, key ui.Key) keymap.Combo { return keymap.Combo{Mods: m, Key: key} }
 	for _, tc := range []struct {
 		ac   action
@@ -39,6 +41,14 @@ func TestShortcutRule(t *testing.T) {
 		{tab1, k(ui.Alt, ui.KeyA), ruleMods},
 		{tab1, k(ui.Ctrl, ui.Key1), ruleMods},
 		{quick, k(ui.Alt, ui.Key1), ruleMods},
+		// The tab-cycling actions may step with Ctrl+Tab, as the editor's
+		// do; no other action takes that key from the shell.
+		{next, k(ui.Ctrl, ui.KeyTab), ruleOK},
+		{next, k(ui.Ctrl|ui.Shift, ui.KeyTab), ruleOK},
+		{prev, k(ui.Ctrl|ui.Shift, ui.KeyTab), ruleOK},
+		{prev, k(ui.Ctrl|ui.Alt, ui.KeyTab), ruleMods},
+		{quick, k(ui.Ctrl, ui.KeyTab), ruleMods},
+		{tab1, k(ui.Ctrl, ui.KeyTab), ruleMods},
 	} {
 		if got := shortcutRule(tc.ac, tc.k); got != tc.want {
 			t.Errorf("%s %s: %v, want %v", tc.ac.id, tc.k, got, tc.want)

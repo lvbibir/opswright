@@ -167,6 +167,9 @@ var (
 	Next        = Submenu
 	GroupClosed = Submenu
 	Previous    = load("arrow-left-s-line")
+	// NextTab and PrevTab cycle the workspace's tabs.
+	NextTab     = Next
+	PrevTab     = Previous
 	Copy        = load("file-copy-2-line")
 	Compress    = load("file-zip-line")
 	Extract     = load("inbox-unarchive-line")

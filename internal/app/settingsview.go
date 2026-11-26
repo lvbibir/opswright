@@ -745,6 +745,8 @@ func keyCaps(mods ui.Modifiers, key ui.Key) []string {
 		out = append(out, "F"+strconv.Itoa(int(key-ui.KeyF1)+1))
 	case key == ui.KeySpace:
 		out = append(out, "Space")
+	case key == ui.KeyTab:
+		out = append(out, "Tab")
 	case printable[key][0] != 0:
 		out = append(out, string(printable[key][0]))
 	case key == ui.KeyDelete:

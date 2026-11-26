@@ -21,10 +21,11 @@ var mods = []struct {
 	name string
 }{{ui.Ctrl, "ctrl"}, {ui.Alt, "alt"}, {ui.Shift, "shift"}, {ui.Super, "super"}}
 
-// names are the keys a shortcut may use: letters, digits, punctuation
-// and the function keys. The others edit text or move in it.
+// names are the keys a shortcut may use: letters, digits, punctuation,
+// Tab and the function keys. The others edit text or move in it.
 var names = func() map[ui.Key]string {
 	n := map[ui.Key]string{
+		ui.KeyTab:   "tab",
 		ui.KeyMinus: "minus", ui.KeyEqual: "equal", ui.KeyComma: "comma", ui.KeyPeriod: "period",
 		ui.KeySlash: "slash", ui.KeySemicolon: "semicolon", ui.KeyQuote: "quote",
 		ui.KeyBracketLeft: "bracketleft", ui.KeyBracketRight: "bracketright",
