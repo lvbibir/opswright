@@ -24,7 +24,7 @@ const (
 var Kinds = []Kind{Password, PrivateKey, Passphrase}
 
 // The keys of the entries Opswright keeps; there are no others:
-// host/<id>/<kind>, host/<id>/startup, cred/<id>/<kind>, proxy/<id>/password, forward/<id>/password,
+// host/<id>/<kind>, host/<id>/startup, host/<id>/elevate, cred/<id>/<kind>, proxy/<id>/password, forward/<id>/password,
 // snippet/<id>/content, ai/<profileID>/apikey, ai/<agentID>/env/<NAME>,
 // backup/<id>/secret, localkey/<keyID>/passphrase and mcp/token.
 
@@ -37,6 +37,10 @@ func Cred(id string, kind Kind) string { return "cred/" + id + "/" + string(kind
 // HostStartup is the entry of the commands a host's terminals type as
 // their shell starts: host/<id>/startup.
 func HostStartup(id string) string { return "host/" + id + "/startup" }
+
+// HostElevate is the entry of the password a host's terminals type when
+// su asks for it as their shell starts: host/<id>/elevate.
+func HostElevate(id string) string { return "host/" + id + "/elevate" }
 
 // ProxyPassword is the entry of a proxy's password: proxy/<id>/password.
 func ProxyPassword(id string) string { return "proxy/" + id + "/password" }

@@ -1150,6 +1150,7 @@ func (a *App) makeConn(hostID string, kind layout.Kind, link int) (*conn, error)
 		if !opts.Local && !isStream(h) {
 			c.start = &shellStart{host: h.Tmux, dir: h.TerminalDir, startup: h.Startup}
 			opts.Start = a.shellStartCmd(c)
+			opts.Elevate = a.elevateOptions(h)
 		}
 	}
 	c.s = session.New(cfg, opts, 80, 24)
@@ -1227,6 +1228,9 @@ func (a *App) connectionNeedsSecrets(h assets.Host) bool {
 	}
 	if h.SSH() && h.Startup {
 		return true // its startup commands are typed once the shell starts
+	}
+	if h.SSH() && h.TerminalSu {
+		return true // its su password is typed once the shell starts
 	}
 	if px, ok := a.store.Proxy(h.ProxyID); ok && px.User != "" {
 		return true

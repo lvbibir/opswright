@@ -112,7 +112,7 @@ func TestSetGetDelete(t *testing.T) {
 }
 
 func TestKeys(t *testing.T) {
-	if Cred("c1", PrivateKey) != "cred/c1/key" || ProxyPassword("p1") != "proxy/p1/password" || ForwardPassword("f1") != "forward/f1/password" || AIKey("p1") != "ai/p1/apikey" || AIAgentEnv("codex", "API_KEY") != "ai/codex/env/API_KEY" {
+	if Cred("c1", PrivateKey) != "cred/c1/key" || ProxyPassword("p1") != "proxy/p1/password" || ForwardPassword("f1") != "forward/f1/password" || AIKey("p1") != "ai/p1/apikey" || AIAgentEnv("codex", "API_KEY") != "ai/codex/env/API_KEY" || HostStartup("h1") != "host/h1/startup" || HostElevate("h1") != "host/h1/elevate" {
 		t.Fatal("keys changed")
 	}
 }

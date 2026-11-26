@@ -71,6 +71,14 @@ type hostForm struct {
 	sessionLog bool
 	// sftpSudo runs the host's SFTP through sudo (Host.SFTPSudo)
 	sftpSudo bool
+	// terminalSu runs the host's terminals as root with su -
+	// (Host.TerminalSu), suPrompt the prompt they wait for
+	// (Host.TerminalSuPrompt), suPass the password typed then, kept in
+	// the encrypted store; suPassOrig is set when one is saved.
+	terminalSu bool
+	suPrompt   string
+	suPass     string
+	suPassOrig bool
 	// fileProtoIdx is the host's files protocol (Host.FileProtocol), in
 	// fileProtocols
 	fileProtoIdx int
@@ -174,6 +182,10 @@ func (a *App) openEditor(h *assets.Host) {
 		}
 		f.sessionLog = h.SessionLog
 		f.sftpSudo = h.SFTPSudo
+		if h.SSH() {
+			f.terminalSu, f.suPrompt = h.TerminalSu, h.TerminalSuPrompt
+			f.suPassOrig = h.TerminalSu && a.kc.Has(keychain.HostElevate(h.ID))
+		}
 		f.fileProtoIdx = max(slices.Index(fileProtocols, h.FileProtocol), 0)
 		if e := vt.OutputEncoding(h.Encoding); slices.Contains(vt.OutputEncodings(), e) {
 			f.encoding = e
@@ -270,6 +282,10 @@ func fieldError(m locales.Messages, err error) string {
 		return m.TermTypeInvalid()
 	case fe.Field == "startup":
 		return m.StartupInvalid()
+	case fe.Field == "elevatePrompt":
+		return m.TerminalSuInvalid()
+	case fe.Field == "elevate":
+		return m.SuPasswordInvalid()
 	case fe.Field == "gateway":
 		return m.ErrGatewayUnknown()
 	case fe.Field == "host" && fe.Reason == "not ssh":
@@ -328,6 +344,16 @@ func (a *App) SaveForm(m locales.Messages) bool {
 	h.Term = f.term
 	h.SessionLog = f.sessionLog
 	h.SFTPSudo = f.sftpSudo
+	h.TerminalSu, h.TerminalSuPrompt = false, ""
+	if h.SSH() && f.terminalSu {
+		// The prompt is checked with the rest of the host (Validate);
+		// the password is the form's, and is not part of it.
+		if err := assets.ValidateSuPassword(f.suPass); err != nil {
+			f.err = m.SuPasswordInvalid()
+			return false
+		}
+		h.TerminalSu, h.TerminalSuPrompt = true, strings.TrimSpace(f.suPrompt)
+	}
 	h.FileProtocol = fileProtocols[f.fileProtoIdx]
 	h.TransfersOff = !f.transfers
 	if h.SSH() && h.Tmux != "" && !session.TmuxNameOK(h.Tmux) {
@@ -529,6 +555,7 @@ func (a *App) editorView(c *ui.Context, m locales.Messages) {
 							if fileProtocols[f.fileProtoIdx] != assets.FileSCP {
 								sftpSudoField(c, m, tok, f)
 							}
+							a.terminalSuField(c, m, tok, f)
 							ui.Field(c, m.TmuxAutoAttach(), func() {
 								ui.Column(c).Gap(4).FillWidth().Children(func() {
 									formTextInput(c.Key("f:tmux"), &f.tmux).Placeholder(m.TmuxAutoAttachPlaceholder()).Label(m.TmuxAutoAttach()).FillWidth()
@@ -747,6 +774,20 @@ func startupChanges(f *hostForm, h assets.Host) []keychain.Change {
 	return nil
 }
 
+// suChanges are what saving h does to the password its terminals type to
+// su: write the one typed, delete the saved one when the elevation is
+// turned off. A blank field keeps the saved one.
+func suChanges(f *hostForm, h assets.Host) []keychain.Change {
+	key := keychain.HostElevate(h.ID)
+	switch {
+	case h.TerminalSu && f.suPass != "":
+		return []keychain.Change{{Key: key, Value: []byte(f.suPass)}}
+	case !h.TerminalSu && f.orig.TerminalSu && !f.isNew:
+		return []keychain.Change{{Key: key, Delete: true}}
+	}
+	return nil
+}
+
 // encodingField is the output encoding the host's new terminals start
 // with; each open terminal still switches its own.
 func encodingField(c *ui.Context, m locales.Messages, tok theme.Tokens, f *hostForm) {
@@ -778,6 +819,33 @@ func fileProtocolField(c *ui.Context, m locales.Messages, tok theme.Tokens, f *h
 			formSegmented(c.Key("f:fproto"), &f.fileProtoIdx, false, m.FileProtocolAuto(), "SFTP", "SCP").Label(m.FileProtocol())
 			hint := []string{m.FileProtocolAutoHint(), m.FileProtocolSftpHint(), m.FileProtocolScpHint()}[f.fileProtoIdx]
 			ui.Text(c, hint).FontSize(theme.Caption).TextColor(tok.TextMuted)
+		})
+	})
+}
+
+// terminalSuField is whether the host's terminals run su - as their shell
+// starts, with the prompt they wait for and the password they type when
+// it appears. The password is write-only: a saved one shows as a
+// placeholder and is kept unless it is replaced.
+func (a *App) terminalSuField(c *ui.Context, m locales.Messages, tok theme.Tokens, f *hostForm) {
+	ui.Field(c, m.TerminalSu(), func() {
+		ui.Column(c).Gap(6).FillWidth().Children(func() {
+			formCheckbox(c.Key("f:su"), &f.terminalSu, m.TerminalSuOn())
+			ui.Text(c, m.TerminalSuHint()).FontSize(theme.Caption).TextColor(tok.TextMuted)
+			if !f.terminalSu {
+				return
+			}
+			formTextInput(c.Key("f:suprompt"), &f.suPrompt).Placeholder(assets.DefaultSuPrompt).Label(m.TerminalSuPrompt())
+			ui.Text(c, m.TerminalSuPromptHint()).FontSize(theme.Caption).TextColor(tok.TextMuted)
+			ph := ""
+			if f.suPassOrig {
+				ph = m.PasswordUnchanged()
+			}
+			formTextInput(c.Key("f:supass"), &f.suPass).Password().Placeholder(ph).Label(m.TerminalSuPassword())
+			ui.Text(c, m.TerminalSuPasswordHint()).FontSize(theme.Caption).TextColor(tok.TextMuted)
+			if a.unlocked() && f.suPass == "" && !f.suPassOrig {
+				ui.Text(c, m.TerminalSuNeedsPassword()).FontSize(theme.Caption).TextColor(tok.Warning)
+			}
 		})
 	})
 }

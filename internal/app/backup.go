@@ -142,6 +142,9 @@ func backupSecretKeys(snap assets.Snapshot, provs []settings.AIProvider) []strin
 		if h.Startup {
 			out = append(out, keychain.HostStartup(h.ID))
 		}
+		if h.TerminalSu {
+			out = append(out, keychain.HostElevate(h.ID))
+		}
 	}
 	for _, c := range snap.Credentials {
 		for _, k := range keychain.Kinds {
@@ -223,6 +226,11 @@ func (a *App) restoreBackup(m locales.Messages, p backupPayload) error {
 				return errBadBackup
 			}
 		}
+		if v, ok := p.Secrets[keychain.HostElevate(h.ID)]; ok && h.TerminalSu {
+			if err := assets.ValidateSuPassword(string(v)); err != nil {
+				return errBadBackup
+			}
+		}
 	}
 	tx := &secretTx{kc: a.kc}
 	var changes []keychain.Change
@@ -250,6 +258,14 @@ func (a *App) restoreBackup(m locales.Messages, p backupPayload) error {
 	for _, h := range snap.Hosts {
 		key := keychain.HostStartup(h.ID)
 		if previous, exists := a.store.Get(h.ID); exists && previous.Startup && (!h.Startup || len(p.Secrets[key]) == 0) {
+			changes = append(changes, keychain.Change{Key: key, Delete: true})
+		}
+	}
+	// Its su password is replaced the same way: a host restored without
+	// one runs its terminals as the login user.
+	for _, h := range snap.Hosts {
+		key := keychain.HostElevate(h.ID)
+		if previous, exists := a.store.Get(h.ID); exists && previous.TerminalSu && (!h.TerminalSu || len(p.Secrets[key]) == 0) {
 			changes = append(changes, keychain.Change{Key: key, Delete: true})
 		}
 	}

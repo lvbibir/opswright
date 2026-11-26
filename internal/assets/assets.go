@@ -119,6 +119,15 @@ type Host struct {
 	// the tmux attach; the commands are a host-owned secret
 	// (keychain.HostStartup).
 	Startup bool `json:"startup,omitempty"`
+	// TerminalSu is set when an SSH host's terminals run su - as their
+	// shell starts, before the cd to TerminalDir and the tmux attach, so
+	// that the terminal, its startup commands and its tmux session run
+	// as root; the password typed when su asks for it is a host-owned
+	// secret (keychain.HostElevate).
+	TerminalSu bool `json:"elevate,omitempty"`
+	// TerminalSuPrompt is the prompt the terminals wait for before
+	// typing that password; empty is DefaultSuPrompt (SuPrompt).
+	TerminalSuPrompt string `json:"elevatePrompt,omitempty"`
 	// OSC52 overrides the global OSC 52 write policy (allow, ask or
 	// deny). Empty follows the global setting.
 	OSC52 string `json:"osc52,omitempty"`
@@ -218,6 +227,7 @@ func (h *Host) Normalize() {
 	h.User = strings.TrimSpace(h.User)
 	h.Group = CleanGroup(h.Group)
 	h.Tmux = strings.TrimSpace(h.Tmux)
+	h.TerminalSuPrompt = strings.TrimSpace(h.TerminalSuPrompt)
 	if h.Encoding = strings.TrimSpace(h.Encoding); h.Encoding == "UTF-8" {
 		h.Encoding = ""
 	}
@@ -339,7 +349,7 @@ func (h Host) Validate() error {
 	case h.FileProtocol != FileAuto && h.FileProtocol != FileSFTP && h.FileProtocol != FileSCP:
 		return &FieldError{"fileProtocol", "unknown"}
 	}
-	return nil
+	return ValidateSuPrompt(h.TerminalSuPrompt)
 }
 
 // ErrNotFound reports an ID the store does not have.

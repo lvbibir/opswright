@@ -85,6 +85,11 @@ type Options struct {
 	// session; "" types none. It may take its time, and run commands on
 	// client.
 	Start func(ctx context.Context, client *ssh.Client) string
+	// Elevate, when set, is typed before the cd to Dir, and its password
+	// is answered: the shell, its startup commands and its tmux session
+	// run as root. A shell that cannot be elevated goes on as the login
+	// user's.
+	Elevate *Elevate
 }
 
 // Status is a session's state, for the UI.
@@ -550,7 +555,7 @@ func (s *Session) connect(ctx context.Context) error {
 		s.broken(client)
 		client.Close()
 	})
-	shell, stdin, tagged, err := s.startShell(client)
+	shell, stdin, elevate, tagged, err := s.startShell(client)
 	if !watch.Stop() {
 		if err == nil {
 			shell.Close()
@@ -572,8 +577,8 @@ func (s *Session) connect(ctx context.Context) error {
 	s.status.State, s.status.Err, s.status.Attempt = Connected, nil, 0
 	s.status.Connects++
 	s.mu.Unlock()
-	if s.opts.Dir != "" || s.opts.Start != nil {
-		go s.enterShell(ctx, client, shell, time.Now())
+	if s.opts.Dir != "" || s.opts.Start != nil || elevate != nil {
+		go s.enterShell(ctx, client, shell, elevate, time.Now())
 	}
 	s.changed()
 	return nil
@@ -594,12 +599,13 @@ const envRTTs = 4
 var noEnv sync.Map // Addr → struct{}
 
 // startShell starts the shell on client, on a PTY of the terminal's size,
-// its environment tagged when the server takes TagEnv. It closes the
-// channels it opened when it fails.
-func (s *Session) startShell(client *ssh.Client) (*ssh.Session, io.WriteCloser, bool, error) {
+// its environment tagged when the server takes TagEnv, and returns the
+// ask watching for its elevation's password prompt (nil when it is not
+// being elevated). It closes the channels it opened when it fails.
+func (s *Session) startShell(client *ssh.Client) (*ssh.Session, io.WriteCloser, *elevateAsk, bool, error) {
 	shell, rtt, err := s.openPTY(client)
 	if err != nil {
-		return nil, nil, false, err
+		return nil, nil, nil, false, err
 	}
 	tagged := false
 	if _, skip := noEnv.Load(s.cfg.Addr); !skip {
@@ -611,16 +617,21 @@ func (s *Session) startShell(client *ssh.Client) (*ssh.Session, io.WriteCloser, 
 			noEnv.Store(s.cfg.Addr, struct{}{})
 			shell.Close()
 			if shell, _, err = s.openPTY(client); err != nil {
-				return nil, nil, false, err
+				return nil, nil, nil, false, err
 			}
 		}
 	}
 	stdin, err := shell.StdinPipe()
 	if err != nil {
 		shell.Close()
-		return nil, nil, false, err
+		return nil, nil, nil, false, err
 	}
 	out := &termWriter{s: s}
+	var elevate *elevateAsk
+	if e := s.opts.Elevate; e != nil && e.Command != "" {
+		elevate = newElevateAsk(e)
+		out.elevate = elevate
+	}
 	shell.Stdout = out
 	shell.Stderr = out
 	// A new shell starts with the terminal's input as at a reset: the
@@ -630,9 +641,9 @@ func (s *Session) startShell(client *ssh.Client) (*ssh.Session, io.WriteCloser, 
 	s.outAt.Store(0)
 	if err := shell.Shell(); err != nil {
 		shell.Close()
-		return nil, nil, false, err
+		return nil, nil, nil, false, err
 	}
-	return shell, stdin, tagged, nil
+	return shell, stdin, elevate, tagged, nil
 }
 
 // openPTY opens a session channel on client with a PTY of the terminal's
@@ -682,11 +693,24 @@ const (
 	dirWait  = 5 * time.Second
 )
 
-// enterShell types the cd to Options.Dir, then the command Options.Start
-// gives, into shell, started at start, once it has printed and then gone
-// quiet for dirQuiet, or after dirWait: typed before the prompt, the
-// terminal would echo it twice. It gives up when shell is gone.
-func (s *Session) enterShell(ctx context.Context, client *ssh.Client, shell *ssh.Session, start time.Time) {
+// enterShell types what a starting shell is given, in order: the
+// elevation (Options.Elevate), whose program reads one line from the
+// terminal, then the cd to Options.Dir and the command Options.Start
+// gives. Each part is typed once the shell has printed and gone quiet for
+// dirQuiet, or after dirWait: typed before the prompt, the terminal would
+// echo it twice. It gives up when shell is gone, and when the elevation
+// does not happen the shell simply goes on as the login user's.
+func (s *Session) enterShell(ctx context.Context, client *ssh.Client, shell *ssh.Session, elevate *elevateAsk, start time.Time) {
+	in, ok := s.shellQuiet(shell, start)
+	if !ok {
+		return
+	}
+	if elevate != nil {
+		s.elevate(ctx, in, elevate)
+		if in, ok = s.shellQuiet(shell, time.Now()); !ok {
+			return
+		}
+	}
 	var line string
 	if s.opts.Dir != "" {
 		line = cdLine(s.opts.Dir)
@@ -696,22 +720,27 @@ func (s *Session) enterShell(ctx context.Context, client *ssh.Client, shell *ssh
 			line += cmd + "\r"
 		}
 	}
-	if line == "" {
-		return
+	if line != "" {
+		_ = in.send([]byte(line))
 	}
+}
+
+// shellQuiet waits until shell has printed and then gone quiet for
+// dirQuiet, or dirWait has passed, and returns the input to write to. ok
+// is false once the shell is gone.
+func (s *Session) shellQuiet(shell *ssh.Session, start time.Time) (*serializedInput, bool) {
 	for {
 		time.Sleep(dirQuiet / 5)
 		s.mu.Lock()
 		in, cur := s.stdin, s.shell
 		s.mu.Unlock()
 		if cur != shell || in == nil {
-			return
+			return nil, false
 		}
 		now := time.Now()
 		at := s.outAt.Load()
 		if (at != 0 && now.Sub(time.Unix(0, at)) >= dirQuiet) || now.Sub(start) >= dirWait {
-			_ = in.send([]byte(line))
-			return
+			return in, true
 		}
 	}
 }
@@ -943,11 +972,15 @@ func (s *Session) Watch(fn func(p []byte)) (stop func()) {
 }
 
 // termWriter writes output to the terminal, answering the login prompts
-// in it when it logs in.
+// in it when it logs in, and watching for the password prompt of a
+// starting shell's elevation.
 type termWriter struct {
 	s     *Session
 	login *login
 	in    *serializedInput
+	// elevate watches for the prompt Options.Elevate's command prints; nil
+	// when the shell is not being elevated.
+	elevate *elevateAsk
 }
 
 func (w *termWriter) Write(p []byte) (int, error) {
@@ -1005,6 +1038,9 @@ func (w *termWriter) print(p []byte) error {
 		if answer := w.login.feed(p, time.Now()); answer != nil {
 			w.in.answer(answer)
 		}
+	}
+	if w.elevate != nil {
+		w.elevate.feed(p)
 	}
 	return err
 }

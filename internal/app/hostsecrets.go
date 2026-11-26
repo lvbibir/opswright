@@ -42,7 +42,7 @@ func (a *App) hostSecretFields(c *ui.Context, m locales.Messages, tok theme.Toke
 }
 
 func hostFormNeedsSecrets(f *hostForm, h assets.Host) bool {
-	return startupChanges(f, h) != nil || hostAuthNeedsSecrets(f, h)
+	return startupChanges(f, h) != nil || suChanges(f, h) != nil || hostAuthNeedsSecrets(f, h)
 }
 
 // hostAuthNeedsSecrets reports whether saving h changes or copies the
@@ -178,7 +178,7 @@ func (a *App) saveHostForm(m locales.Messages, f *hostForm, h assets.Host) (asse
 	if err != nil {
 		return assets.Host{}, err
 	}
-	return a.saveHostSecrets(h, f.isNew, append(changes, startupChanges(f, h)...))
+	return a.saveHostSecrets(h, f.isNew, append(append(changes, startupChanges(f, h)...), suChanges(f, h)...))
 }
 
 // saveHostSecrets compensates secret changes if metadata cannot be saved.
@@ -206,11 +206,13 @@ func (a *App) saveHostSecrets(h assets.Host, fresh bool, changes []keychain.Chan
 }
 
 func (a *App) deleteHostSecrets(id string) error {
-	if h, ok := a.store.Get(id); !ok || (h.Auth != assets.AuthPassword && h.Auth != assets.AuthKey && !h.Startup) {
+	if h, ok := a.store.Get(id); !ok || (h.Auth != assets.AuthPassword && h.Auth != assets.AuthKey && !h.Startup && !h.TerminalSu) {
 		return a.store.Delete(id)
 	}
 	tx := &secretTx{kc: a.kc}
-	changes := hostSecretDeletes(id)
+	// The su password goes with the host it belongs to, and with nothing
+	// else: how the host logs in changing does not touch it.
+	changes := append(hostSecretDeletes(id), keychain.Change{Key: keychain.HostElevate(id), Delete: true})
 	if err := tx.setBatch(changes); err != nil {
 		return &keychainDeleteError{errors.Join(err, tx.rollback())}
 	}

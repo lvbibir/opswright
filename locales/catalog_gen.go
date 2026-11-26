@@ -10508,6 +10508,518 @@ func (msgs Messages) StartupReadFailed(host string) string {
 	return Catalog.Format(msgs.locale, "startupReadFailed", map[string]any{"host": host})
 }
 
+// TerminalSu says "Login as root"
+// in the language the app shows.
+func TerminalSu() string { return In(i18n.Locale()).TerminalSu() }
+
+// TerminalSu says "Login as root"
+// in the language of msgs.
+func (msgs Messages) TerminalSu() string {
+	return Catalog.Format(msgs.locale, "terminalSu", nil)
+}
+
+// TerminalSuOn says "Run each terminal as root with su -"
+// in the language the app shows.
+func TerminalSuOn() string { return In(i18n.Locale()).TerminalSuOn() }
+
+// TerminalSuOn says "Run each terminal as root with su -"
+// in the language of msgs.
+func (msgs Messages) TerminalSuOn() string {
+	return Catalog.Format(msgs.locale, "terminalSuOn", nil)
+}
+
+// TerminalSuPrompt says "Password prompt"
+// in the language the app shows.
+func TerminalSuPrompt() string { return In(i18n.Locale()).TerminalSuPrompt() }
+
+// TerminalSuPrompt says "Password prompt"
+// in the language of msgs.
+func (msgs Messages) TerminalSuPrompt() string {
+	return Catalog.Format(msgs.locale, "terminalSuPrompt", nil)
+}
+
+// TerminalSuPromptHint says "What the server prints when it asks for the password, by default Password: . It is matched against the terminal's out…"
+// in the language the app shows.
+func TerminalSuPromptHint() string { return In(i18n.Locale()).TerminalSuPromptHint() }
+
+// TerminalSuPromptHint says "What the server prints when it asks for the password, by default Password: . It is matched against the terminal's out…"
+// in the language of msgs.
+func (msgs Messages) TerminalSuPromptHint() string {
+	return Catalog.Format(msgs.locale, "terminalSuPromptHint", nil)
+}
+
+// TerminalSuPassword says "su password"
+// in the language the app shows.
+func TerminalSuPassword() string { return In(i18n.Locale()).TerminalSuPassword() }
+
+// TerminalSuPassword says "su password"
+// in the language of msgs.
+func (msgs Messages) TerminalSuPassword() string {
+	return Catalog.Format(msgs.locale, "terminalSuPassword", nil)
+}
+
+// TerminalSuPasswordHint says "Typed when the prompt appears, once. It is kept in the encrypted store, so the master password has to be unlocked."
+// in the language the app shows.
+func TerminalSuPasswordHint() string { return In(i18n.Locale()).TerminalSuPasswordHint() }
+
+// TerminalSuPasswordHint says "Typed when the prompt appears, once. It is kept in the encrypted store, so the master password has to be unlocked."
+// in the language of msgs.
+func (msgs Messages) TerminalSuPasswordHint() string {
+	return Catalog.Format(msgs.locale, "terminalSuPasswordHint", nil)
+}
+
+// TerminalSuHint says "su - is typed as each terminal's shell starts, before the cd to the terminal folder, the startup commands and the tmu…"
+// in the language the app shows.
+func TerminalSuHint() string { return In(i18n.Locale()).TerminalSuHint() }
+
+// TerminalSuHint says "su - is typed as each terminal's shell starts, before the cd to the terminal folder, the startup commands and the tmu…"
+// in the language of msgs.
+func (msgs Messages) TerminalSuHint() string {
+	return Catalog.Format(msgs.locale, "terminalSuHint", nil)
+}
+
+// TerminalSuInvalid says "The password prompt can have at most 64 characters and no control characters."
+// in the language the app shows.
+func TerminalSuInvalid() string { return In(i18n.Locale()).TerminalSuInvalid() }
+
+// TerminalSuInvalid says "The password prompt can have at most 64 characters and no control characters."
+// in the language of msgs.
+func (msgs Messages) TerminalSuInvalid() string {
+	return Catalog.Format(msgs.locale, "terminalSuInvalid", nil)
+}
+
+// TerminalSuNeedsPassword says "No su password is saved yet, so the terminals are not elevated. Type one above and save."
+// in the language the app shows.
+func TerminalSuNeedsPassword() string { return In(i18n.Locale()).TerminalSuNeedsPassword() }
+
+// TerminalSuNeedsPassword says "No su password is saved yet, so the terminals are not elevated. Type one above and save."
+// in the language of msgs.
+func (msgs Messages) TerminalSuNeedsPassword() string {
+	return Catalog.Format(msgs.locale, "terminalSuNeedsPassword", nil)
+}
+
+// ElevateFailed says "Couldn't run su - on {host}: {reason}"
+// in the language the app shows.
+func ElevateFailed(host string, reason string) string {
+	return In(i18n.Locale()).ElevateFailed(host, reason)
+}
+
+// ElevateFailed says "Couldn't run su - on {host}: {reason}"
+// in the language of msgs.
+func (msgs Messages) ElevateFailed(host string, reason string) string {
+	return Catalog.Format(msgs.locale, "elevateFailed", map[string]any{"host": host, "reason": reason})
+}
+
+// ElevateNoPassword says "no saved password"
+// in the language the app shows.
+func ElevateNoPassword() string { return In(i18n.Locale()).ElevateNoPassword() }
+
+// ElevateNoPassword says "no saved password"
+// in the language of msgs.
+func (msgs Messages) ElevateNoPassword() string {
+	return Catalog.Format(msgs.locale, "elevateNoPassword", nil)
+}
+
+// ElevateNoPrompt says "its password prompt did not appear — check what the host prints"
+// in the language the app shows.
+func ElevateNoPrompt() string { return In(i18n.Locale()).ElevateNoPrompt() }
+
+// ElevateNoPrompt says "its password prompt did not appear — check what the host prints"
+// in the language of msgs.
+func (msgs Messages) ElevateNoPrompt() string {
+	return Catalog.Format(msgs.locale, "elevateNoPrompt", nil)
+}
+
+// ElevateNotSu says "the prompt was not su's, so no password was typed — check the prompt this host prints"
+// in the language the app shows.
+func ElevateNotSu() string { return In(i18n.Locale()).ElevateNotSu() }
+
+// ElevateNotSu says "the prompt was not su's, so no password was typed — check the prompt this host prints"
+// in the language of msgs.
+func (msgs Messages) ElevateNotSu() string {
+	return Catalog.Format(msgs.locale, "elevateNotSu", nil)
+}
+
+// ElevateRefused says "su refused the password"
+// in the language the app shows.
+func ElevateRefused() string { return In(i18n.Locale()).ElevateRefused() }
+
+// ElevateRefused says "su refused the password"
+// in the language of msgs.
+func (msgs Messages) ElevateRefused() string {
+	return Catalog.Format(msgs.locale, "elevateRefused", nil)
+}
+
+// SuPasswordInvalid says "The su password can have at most 1 KB, and no CR, LF or other control characters but TAB."
+// in the language the app shows.
+func SuPasswordInvalid() string { return In(i18n.Locale()).SuPasswordInvalid() }
+
+// SuPasswordInvalid says "The su password can have at most 1 KB, and no CR, LF or other control characters but TAB."
+// in the language of msgs.
+func (msgs Messages) SuPasswordInvalid() string {
+	return Catalog.Format(msgs.locale, "suPasswordInvalid", nil)
+}
+
+// ImportMenu says "Import a host list…"
+// in the language the app shows.
+func ImportMenu() string { return In(i18n.Locale()).ImportMenu() }
+
+// ImportMenu says "Import a host list…"
+// in the language of msgs.
+func (msgs Messages) ImportMenu() string {
+	return Catalog.Format(msgs.locale, "importMenu", nil)
+}
+
+// ImportTitle says "Import hosts"
+// in the language the app shows.
+func ImportTitle() string { return In(i18n.Locale()).ImportTitle() }
+
+// ImportTitle says "Import hosts"
+// in the language of msgs.
+func (msgs Messages) ImportTitle() string {
+	return Catalog.Format(msgs.locale, "importTitle", nil)
+}
+
+// ImportHint says "One host per line, or a CSV table whose header names its columns the same way. Nothing is saved until you import."
+// in the language the app shows.
+func ImportHint() string { return In(i18n.Locale()).ImportHint() }
+
+// ImportHint says "One host per line, or a CSV table whose header names its columns the same way. Nothing is saved until you import."
+// in the language of msgs.
+func (msgs Messages) ImportHint() string {
+	return Catalog.Format(msgs.locale, "importHint", nil)
+}
+
+// ImportKeys says "host (or ip), port, user (or username), password, title (or name, label), group, gateway, su, suprompt, supassword"
+// in the language the app shows.
+func ImportKeys() string { return In(i18n.Locale()).ImportKeys() }
+
+// ImportKeys says "host (or ip), port, user (or username), password, title (or name, label), group, gateway, su, suprompt, supassword"
+// in the language of msgs.
+func (msgs Messages) ImportKeys() string {
+	return Catalog.Format(msgs.locale, "importKeys", nil)
+}
+
+// ImportPreview says "Preview"
+// in the language the app shows.
+func ImportPreview() string { return In(i18n.Locale()).ImportPreview() }
+
+// ImportPreview says "Preview"
+// in the language of msgs.
+func (msgs Messages) ImportPreview() string {
+	return Catalog.Format(msgs.locale, "importPreview", nil)
+}
+
+// ImportChooseFile says "Choose a file…"
+// in the language the app shows.
+func ImportChooseFile() string { return In(i18n.Locale()).ImportChooseFile() }
+
+// ImportChooseFile says "Choose a file…"
+// in the language of msgs.
+func (msgs Messages) ImportChooseFile() string {
+	return Catalog.Format(msgs.locale, "importChooseFile", nil)
+}
+
+// ImportSummary says "{n} hosts to import, {out} left out"
+// in the language the app shows.
+func ImportSummary(n string, out string) string { return In(i18n.Locale()).ImportSummary(n, out) }
+
+// ImportSummary says "{n} hosts to import, {out} left out"
+// in the language of msgs.
+func (msgs Messages) ImportSummary(n string, out string) string {
+	return Catalog.Format(msgs.locale, "importSummary", map[string]any{"n": n, "out": out})
+}
+
+// ImportPick says "Import {row}"
+// in the language the app shows.
+func ImportPick(row string) string { return In(i18n.Locale()).ImportPick(row) }
+
+// ImportPick says "Import {row}"
+// in the language of msgs.
+func (msgs Messages) ImportPick(row string) string {
+	return Catalog.Format(msgs.locale, "importPick", map[string]any{"row": row})
+}
+
+// ImportConflict says "a saved host answers for it: {host}"
+// in the language the app shows.
+func ImportConflict(host string) string { return In(i18n.Locale()).ImportConflict(host) }
+
+// ImportConflict says "a saved host answers for it: {host}"
+// in the language of msgs.
+func (msgs Messages) ImportConflict(host string) string {
+	return Catalog.Format(msgs.locale, "importConflict", map[string]any{"host": host})
+}
+
+// ImportConflictAction says "On conflict"
+// in the language the app shows.
+func ImportConflictAction() string { return In(i18n.Locale()).ImportConflictAction() }
+
+// ImportConflictAction says "On conflict"
+// in the language of msgs.
+func (msgs Messages) ImportConflictAction() string {
+	return Catalog.Format(msgs.locale, "importConflictAction", nil)
+}
+
+// ImportSkip says "Skip"
+// in the language the app shows.
+func ImportSkip() string { return In(i18n.Locale()).ImportSkip() }
+
+// ImportSkip says "Skip"
+// in the language of msgs.
+func (msgs Messages) ImportSkip() string {
+	return Catalog.Format(msgs.locale, "importSkip", nil)
+}
+
+// ImportOverwrite says "Overwrite"
+// in the language the app shows.
+func ImportOverwrite() string { return In(i18n.Locale()).ImportOverwrite() }
+
+// ImportOverwrite says "Overwrite"
+// in the language of msgs.
+func (msgs Messages) ImportOverwrite() string {
+	return Catalog.Format(msgs.locale, "importOverwrite", nil)
+}
+
+// ImportKeepBoth says "Keep both"
+// in the language the app shows.
+func ImportKeepBoth() string { return In(i18n.Locale()).ImportKeepBoth() }
+
+// ImportKeepBoth says "Keep both"
+// in the language of msgs.
+func (msgs Messages) ImportKeepBoth() string {
+	return Catalog.Format(msgs.locale, "importKeepBoth", nil)
+}
+
+// ImportSu says "run su - on login"
+// in the language the app shows.
+func ImportSu() string { return In(i18n.Locale()).ImportSu() }
+
+// ImportSu says "run su - on login"
+// in the language of msgs.
+func (msgs Messages) ImportSu() string {
+	return Catalog.Format(msgs.locale, "importSu", nil)
+}
+
+// ImportGateway says "through the gateway {name}"
+// in the language the app shows.
+func ImportGateway(name string) string { return In(i18n.Locale()).ImportGateway(name) }
+
+// ImportGateway says "through the gateway {name}"
+// in the language of msgs.
+func (msgs Messages) ImportGateway(name string) string {
+	return Catalog.Format(msgs.locale, "importGateway", map[string]any{"name": name})
+}
+
+// ImportGatewayMissing says "there is no gateway called “{name}” here: the host is imported without one, so set it in the editor"
+// in the language the app shows.
+func ImportGatewayMissing(name string) string { return In(i18n.Locale()).ImportGatewayMissing(name) }
+
+// ImportGatewayMissing says "there is no gateway called “{name}” here: the host is imported without one, so set it in the editor"
+// in the language of msgs.
+func (msgs Messages) ImportGatewayMissing(name string) string {
+	return Catalog.Format(msgs.locale, "importGatewayMissing", map[string]any{"name": name})
+}
+
+// ImportButton says "Import {n}"
+// in the language the app shows.
+func ImportButton(n string) string { return In(i18n.Locale()).ImportButton(n) }
+
+// ImportButton says "Import {n}"
+// in the language of msgs.
+func (msgs Messages) ImportButton(n string) string {
+	return Catalog.Format(msgs.locale, "importButton", map[string]any{"n": n})
+}
+
+// ImportDone says "Imported {n} hosts, left out {out}"
+// in the language the app shows.
+func ImportDone(n string, out string) string { return In(i18n.Locale()).ImportDone(n, out) }
+
+// ImportDone says "Imported {n} hosts, left out {out}"
+// in the language of msgs.
+func (msgs Messages) ImportDone(n string, out string) string {
+	return Catalog.Format(msgs.locale, "importDone", map[string]any{"n": n, "out": out})
+}
+
+// ImportFailed says "Import failed: {reason}"
+// in the language the app shows.
+func ImportFailed(reason string) string { return In(i18n.Locale()).ImportFailed(reason) }
+
+// ImportFailed says "Import failed: {reason}"
+// in the language of msgs.
+func (msgs Messages) ImportFailed(reason string) string {
+	return Catalog.Format(msgs.locale, "importFailed", map[string]any{"reason": reason})
+}
+
+// ImportNeedsUnlock says "Unlock the master password first: the list holds passwords."
+// in the language the app shows.
+func ImportNeedsUnlock() string { return In(i18n.Locale()).ImportNeedsUnlock() }
+
+// ImportNeedsUnlock says "Unlock the master password first: the list holds passwords."
+// in the language of msgs.
+func (msgs Messages) ImportNeedsUnlock() string {
+	return Catalog.Format(msgs.locale, "importNeedsUnlock", nil)
+}
+
+// ImportEmpty says "No host was found in that list."
+// in the language the app shows.
+func ImportEmpty() string { return In(i18n.Locale()).ImportEmpty() }
+
+// ImportEmpty says "No host was found in that list."
+// in the language of msgs.
+func (msgs Messages) ImportEmpty() string {
+	return Catalog.Format(msgs.locale, "importEmpty", nil)
+}
+
+// ImportNotUTF8 says "That list is not UTF-8. Save it as UTF-8 and read it again."
+// in the language the app shows.
+func ImportNotUTF8() string { return In(i18n.Locale()).ImportNotUTF8() }
+
+// ImportNotUTF8 says "That list is not UTF-8. Save it as UTF-8 and read it again."
+// in the language of msgs.
+func (msgs Messages) ImportNotUTF8() string {
+	return Catalog.Format(msgs.locale, "importNotUTF8", nil)
+}
+
+// ImportTooLarge says "That list is too large: at most 4 MB and 10000 hosts."
+// in the language the app shows.
+func ImportTooLarge() string { return In(i18n.Locale()).ImportTooLarge() }
+
+// ImportTooLarge says "That list is too large: at most 4 MB and 10000 hosts."
+// in the language of msgs.
+func (msgs Messages) ImportTooLarge() string {
+	return Catalog.Format(msgs.locale, "importTooLarge", nil)
+}
+
+// ImportIssueHost says "no host (host or ip)"
+// in the language the app shows.
+func ImportIssueHost() string { return In(i18n.Locale()).ImportIssueHost() }
+
+// ImportIssueHost says "no host (host or ip)"
+// in the language of msgs.
+func (msgs Messages) ImportIssueHost() string {
+	return Catalog.Format(msgs.locale, "importIssueHost", nil)
+}
+
+// ImportIssuePort says "the port is not a number from 1 to 65535"
+// in the language the app shows.
+func ImportIssuePort() string { return In(i18n.Locale()).ImportIssuePort() }
+
+// ImportIssuePort says "the port is not a number from 1 to 65535"
+// in the language of msgs.
+func (msgs Messages) ImportIssuePort() string {
+	return Catalog.Format(msgs.locale, "importIssuePort", nil)
+}
+
+// ImportIssueAddress says "the address has a space, @, / or :"
+// in the language the app shows.
+func ImportIssueAddress() string { return In(i18n.Locale()).ImportIssueAddress() }
+
+// ImportIssueAddress says "the address has a space, @, / or :"
+// in the language of msgs.
+func (msgs Messages) ImportIssueAddress() string {
+	return Catalog.Format(msgs.locale, "importIssueAddress", nil)
+}
+
+// ImportIssueField says "an unknown field: {field}"
+// in the language the app shows.
+func ImportIssueField(field string) string { return In(i18n.Locale()).ImportIssueField(field) }
+
+// ImportIssueField says "an unknown field: {field}"
+// in the language of msgs.
+func (msgs Messages) ImportIssueField(field string) string {
+	return Catalog.Format(msgs.locale, "importIssueField", map[string]any{"field": field})
+}
+
+// ImportIssueQuote says "the quote of {field} is never closed"
+// in the language the app shows.
+func ImportIssueQuote(field string) string { return In(i18n.Locale()).ImportIssueQuote(field) }
+
+// ImportIssueQuote says "the quote of {field} is never closed"
+// in the language of msgs.
+func (msgs Messages) ImportIssueQuote(field string) string {
+	return Catalog.Format(msgs.locale, "importIssueQuote", map[string]any{"field": field})
+}
+
+// ExportSelected says "Export chosen hosts…"
+// in the language the app shows.
+func ExportSelected() string { return In(i18n.Locale()).ExportSelected() }
+
+// ExportSelected says "Export chosen hosts…"
+// in the language of msgs.
+func (msgs Messages) ExportSelected() string {
+	return Catalog.Format(msgs.locale, "exportSelected", nil)
+}
+
+// ExportCsv says "Export as a host list"
+// in the language the app shows.
+func ExportCsv() string { return In(i18n.Locale()).ExportCsv() }
+
+// ExportCsv says "Export as a host list"
+// in the language of msgs.
+func (msgs Messages) ExportCsv() string {
+	return Catalog.Format(msgs.locale, "exportCsv", nil)
+}
+
+// ExportSummary says "{n} chosen hosts"
+// in the language the app shows.
+func ExportSummary(n string) string { return In(i18n.Locale()).ExportSummary(n) }
+
+// ExportSummary says "{n} chosen hosts"
+// in the language of msgs.
+func (msgs Messages) ExportSummary(n string) string {
+	return Catalog.Format(msgs.locale, "exportSummary", map[string]any{"n": n})
+}
+
+// ExportHint says "A CSV host list, the same one the import reads: host, port, user, title, group, the gateway the host is reached throu…"
+// in the language the app shows.
+func ExportHint() string { return In(i18n.Locale()).ExportHint() }
+
+// ExportHint says "A CSV host list, the same one the import reads: host, port, user, title, group, the gateway the host is reached throu…"
+// in the language of msgs.
+func (msgs Messages) ExportHint() string {
+	return Catalog.Format(msgs.locale, "exportHint", nil)
+}
+
+// ExportSecrets says "Include passwords in the clear"
+// in the language the app shows.
+func ExportSecrets() string { return In(i18n.Locale()).ExportSecrets() }
+
+// ExportSecrets says "Include passwords in the clear"
+// in the language of msgs.
+func (msgs Messages) ExportSecrets() string {
+	return Catalog.Format(msgs.locale, "exportSecrets", nil)
+}
+
+// ExportPlaintextWarning says "The file will hold these passwords as plain text. Anyone who can read it can log in with them, and they outlive a cha…"
+// in the language the app shows.
+func ExportPlaintextWarning() string { return In(i18n.Locale()).ExportPlaintextWarning() }
+
+// ExportPlaintextWarning says "The file will hold these passwords as plain text. Anyone who can read it can log in with them, and they outlive a cha…"
+// in the language of msgs.
+func (msgs Messages) ExportPlaintextWarning() string {
+	return Catalog.Format(msgs.locale, "exportPlaintextWarning", nil)
+}
+
+// ExportDone says "Exported to {path}"
+// in the language the app shows.
+func ExportDone(path string) string { return In(i18n.Locale()).ExportDone(path) }
+
+// ExportDone says "Exported to {path}"
+// in the language of msgs.
+func (msgs Messages) ExportDone(path string) string {
+	return Catalog.Format(msgs.locale, "exportDone", map[string]any{"path": path})
+}
+
+// ExportFailed says "Couldn't export: {reason}"
+// in the language the app shows.
+func ExportFailed(reason string) string { return In(i18n.Locale()).ExportFailed(reason) }
+
+// ExportFailed says "Couldn't export: {reason}"
+// in the language of msgs.
+func (msgs Messages) ExportFailed(reason string) string {
+	return Catalog.Format(msgs.locale, "exportFailed", map[string]any{"reason": reason})
+}
+
 // ConnectWithoutStartup says "Connect Without Startup Commands"
 // in the language the app shows.
 func ConnectWithoutStartup() string { return In(i18n.Locale()).ConnectWithoutStartup() }
