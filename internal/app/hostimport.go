@@ -190,6 +190,17 @@ func (a *App) Import(m locales.Messages) {
 		return
 	}
 	actions := importActions(m)
+	n, existing, out := a.importCounts(m, f)
+	if n == 0 {
+		if existing > 0 {
+			// Nothing was chosen but the rows that are already saved: say
+			// so, rather than let the sheet close on an empty import.
+			a.toast(func(m locales.Messages) ui.Toast {
+				return ui.Toast{Title: m.ImportAllSaved(strconv.Itoa(existing)), Type: "warning"}
+			})
+		}
+		return
+	}
 	baseline := a.store.List()
 	names := map[string]bool{}
 	for _, h := range baseline {
@@ -197,14 +208,8 @@ func (a *App) Import(m locales.Messages) {
 	}
 	var snap assets.Snapshot
 	var changes []keychain.Change
-	var planned []*importRow
-	out, existing := 0, 0
 	for _, r := range f.rows {
-		if r.conflict != "" {
-			existing++
-		}
 		if !importChosen(r, actions) {
-			out++
 			continue
 		}
 		h, overwrote := a.importHost(r, actions, names)
@@ -214,17 +219,6 @@ func (a *App) Import(m locales.Messages) {
 		}
 		changes = append(changes, a.importSecrets(r, h, overwrote)...)
 		snap.Hosts = append(snap.Hosts, h)
-		planned = append(planned, r)
-	}
-	if len(planned) == 0 {
-		if existing > 0 {
-			// Nothing was chosen but the rows that are already saved:
-			// say so rather than let the sheet close on an empty import.
-			a.toast(func(m locales.Messages) ui.Toast {
-				return ui.Toast{Title: m.ImportAllSaved(strconv.Itoa(existing)), Type: "warning"}
-			})
-		}
-		return
 	}
 	tx := &secretTx{kc: a.kc}
 	fail := func(err error) {
@@ -241,11 +235,13 @@ func (a *App) Import(m locales.Messages) {
 		fail(err)
 		return
 	}
-	for _, r := range planned {
-		r.pick = false
+	for _, r := range f.rows {
+		if importChosen(r, actions) {
+			r.pick = false
+		}
 	}
 	a.toast(func(m locales.Messages) ui.Toast {
-		return ui.Toast{Title: m.ImportDone(strconv.Itoa(len(planned)), strconv.Itoa(out)), Type: "success"}
+		return ui.Toast{Title: m.ImportDone(strconv.Itoa(n), strconv.Itoa(out)), Type: "success"}
 	})
 	a.importing = false
 	a.imp = nil

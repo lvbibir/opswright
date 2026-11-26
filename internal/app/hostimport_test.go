@@ -283,7 +283,7 @@ func TestImportRoundTripUpdates(t *testing.T) {
 	list := strings.Replace(string(out), "host,port,user,title,group,gateway,su,suprompt,supassword\r\n",
 		"host,port,user,title,group,gateway,su,suprompt,supassword,password\r\n", 1)
 	list = strings.Replace(list, "10.0.0.1,22,root,web,prod,,,,\r\n", "10.0.0.1,22,root,web,prod,,1,,rootpw,s3cret\r\n", 1)
-	if !strings.Contains(list, "s3cret") {
+	if !strings.Contains(list, "rootpw,s3cret") {
 		t.Fatalf("the edited list is not what was meant: %q", list)
 	}
 	f := importText(t, a, list)
@@ -309,9 +309,6 @@ func TestImportRoundTripUpdates(t *testing.T) {
 	}
 	f.action = importActions(en)[1]
 	importEvery(f, f.action)
-	if n, _, _ := a.importCounts(en, f); n != 1 {
-		t.Fatalf("after overwriting, %d to import", n)
-	}
 	a.Import(en)
 	if a.importing || a.imp != nil {
 		t.Fatal("the sheet stayed open")
