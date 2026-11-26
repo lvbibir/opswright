@@ -10346,6 +10346,36 @@ func (msgs Messages) ImportSummary(n string, out string) string {
 	return Catalog.Format(msgs.locale, "importSummary", map[string]any{"n": n, "out": out})
 }
 
+// ImportExisting says "{n} already saved"
+// in the language the app shows.
+func ImportExisting(n string) string { return In(i18n.Locale()).ImportExisting(n) }
+
+// ImportExisting says "{n} already saved"
+// in the language of msgs.
+func (msgs Messages) ImportExisting(n string) string {
+	return Catalog.Format(msgs.locale, "importExisting", map[string]any{"n": n})
+}
+
+// ImportForSaved says "For the ones already saved"
+// in the language the app shows.
+func ImportForSaved() string { return In(i18n.Locale()).ImportForSaved() }
+
+// ImportForSaved says "For the ones already saved"
+// in the language of msgs.
+func (msgs Messages) ImportForSaved() string {
+	return Catalog.Format(msgs.locale, "importForSaved", nil)
+}
+
+// ImportAllSaved says "{n} hosts are already saved, so nothing was imported. Choose to overwrite them, or to keep both, and import again."
+// in the language the app shows.
+func ImportAllSaved(n string) string { return In(i18n.Locale()).ImportAllSaved(n) }
+
+// ImportAllSaved says "{n} hosts are already saved, so nothing was imported. Choose to overwrite them, or to keep both, and import again."
+// in the language of msgs.
+func (msgs Messages) ImportAllSaved(n string) string {
+	return Catalog.Format(msgs.locale, "importAllSaved", map[string]any{"n": n})
+}
+
 // ImportPick says "Import {row}"
 // in the language the app shows.
 func ImportPick(row string) string { return In(i18n.Locale()).ImportPick(row) }

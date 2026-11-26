@@ -21,7 +21,11 @@ type hostImport struct {
 	text string
 	// rows are the preview's rows, from the text as last parsed.
 	rows []*importRow
-	err  string
+	// action is what every row a saved host already answers for does: one
+	// choice sets it for all of them at once, and a single row may still
+	// be given its own in the preview, which this does not follow.
+	action string
+	err    string
 	// picking is set while the system's file dialog is open.
 	picking bool
 }
@@ -85,6 +89,7 @@ func (a *App) parseImport(m locales.Messages) {
 		return
 	}
 	actions := importActions(m)
+	f.action = actions[0]
 	for _, r := range rows {
 		ir := &importRow{row: r, pick: r.OK(), named: r.Name != "", name: r.Label(), group: r.Group, action: actions[0]}
 		ir.gateway = a.importGateway(r.Gateway)
@@ -130,18 +135,32 @@ func importChosen(r *importRow, actions []string) bool {
 	return r.pick && r.row.OK() && !(r.conflict != "" && r.action == actions[0])
 }
 
-// importCounts is the preview's numbers: the hosts to save and the rows
-// left out.
-func (a *App) importCounts(m locales.Messages, f *hostImport) (n, out int) {
+// importCounts is the preview's numbers: the hosts to save, the rows a
+// saved host already answers for, and the rows left out.
+func (a *App) importCounts(m locales.Messages, f *hostImport) (n, existing, out int) {
 	actions := importActions(m)
 	for _, r := range f.rows {
+		if r.conflict != "" {
+			existing++
+		}
 		if importChosen(r, actions) {
 			n++
 			continue
 		}
 		out++
 	}
-	return n, out
+	return n, existing, out
+}
+
+// importEvery sets what every row a saved host already answers for does,
+// so that a list exported here, edited and read back updates the hosts it
+// came from with one choice rather than one per row.
+func importEvery(f *hostImport, action string) {
+	for _, r := range f.rows {
+		if r.conflict != "" {
+			r.action = action
+		}
+	}
 }
 
 // importNeedsSecrets reports a preview that would write passwords.
@@ -179,8 +198,11 @@ func (a *App) Import(m locales.Messages) {
 	var snap assets.Snapshot
 	var changes []keychain.Change
 	var planned []*importRow
-	out := 0
+	out, existing := 0, 0
 	for _, r := range f.rows {
+		if r.conflict != "" {
+			existing++
+		}
 		if !importChosen(r, actions) {
 			out++
 			continue
@@ -195,6 +217,13 @@ func (a *App) Import(m locales.Messages) {
 		planned = append(planned, r)
 	}
 	if len(planned) == 0 {
+		if existing > 0 {
+			// Nothing was chosen but the rows that are already saved:
+			// say so rather than let the sheet close on an empty import.
+			a.toast(func(m locales.Messages) ui.Toast {
+				return ui.Toast{Title: m.ImportAllSaved(strconv.Itoa(existing)), Type: "warning"}
+			})
+		}
 		return
 	}
 	tx := &secretTx{kc: a.kc}
@@ -373,9 +402,18 @@ func (a *App) importView(c *ui.Context, m locales.Messages) {
 					a.parseImport(m)
 				}
 			})
-			n, out := a.importCounts(m, f)
+			n, existing, out := a.importCounts(m, f)
 			if len(f.rows) > 0 {
-				ui.Text(c, m.ImportSummary(strconv.Itoa(n), strconv.Itoa(out))).FontSize(theme.Body).FontWeight(500)
+				ui.Row(c).Gap(8).AlignItems(ui.Center).Children(func() {
+					ui.Text(c, m.ImportSummary(strconv.Itoa(n), strconv.Itoa(out))).FontSize(theme.Body).FontWeight(500)
+					ui.Spacer(c)
+					if existing > 0 {
+						ui.Text(c, m.ImportExisting(strconv.Itoa(existing))).FontSize(theme.Footnote).TextColor(tok.TextMuted)
+						if formSelect(c.Key("imp:every"), &f.action, actions).Label(m.ImportForSaved()).Width(160).Changed() {
+							importEvery(f, f.action)
+						}
+					}
+				})
 				sheetScroll(ui.Scroll(c.Key("imp:rows")).Shrink(1).MinHeight(0).MaxHeight(340)).Children(func() {
 					ui.Column(c).Gap(6).FillWidth().Children(func() {
 						for i, r := range f.rows {

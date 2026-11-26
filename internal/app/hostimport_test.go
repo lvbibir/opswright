@@ -200,7 +200,7 @@ func TestImportInvalidRows(t *testing.T) {
 			t.Errorf("row %d has no reason: %+v", i, r.row)
 		}
 	}
-	if n, out := a.importCounts(en, f); n != 0 || out != 3 {
+	if n, _, out := a.importCounts(en, f); n != 0 || out != 3 {
 		t.Fatalf("counts %d %d", n, out)
 	}
 	a.Import(en)
@@ -214,7 +214,7 @@ func TestImportInvalidRows(t *testing.T) {
 func TestImportSuWithoutPassword(t *testing.T) {
 	a, _ := newTestApp(t)
 	f := importText(t, a, "host=10.0.0.1 user=root su=1 suprompt=Password:\n")
-	if n, out := a.importCounts(en, f); n != 1 || out != 0 {
+	if n, _, out := a.importCounts(en, f); n != 1 || out != 0 {
 		t.Fatalf("counts %d %d", n, out)
 	}
 	a.Import(en)
@@ -262,6 +262,75 @@ func TestImportOverwriteKeepsGateway(t *testing.T) {
 	if kept, _ = a.store.Get(h.ID); kept.GatewayID != gw.ID {
 		t.Fatalf("the gateway was not set: %+v", kept)
 	}
+}
+
+// TestImportRoundTripUpdates: a list exported here, given the passwords it
+// was missing and read back, updates the hosts it came from rather than
+// only being skipped, once the sheet's one choice for rows already saved
+// says so.
+func TestImportRoundTripUpdates(t *testing.T) {
+	a, _ := newTestApp(t)
+	h, err := a.store.Add(assets.Host{Name: "web", Address: "10.0.0.1", Port: 22, User: "root",
+		Group: "prod", Auth: assets.AuthAsk, CwdFollow: true})
+	if err != nil {
+		t.Fatal(err)
+	}
+	out, err := a.exportCSV(&hostExportForm{hosts: []assets.Host{h}})
+	if err != nil {
+		t.Fatal(err)
+	}
+	// What the user does to it: give it a password, and a su password.
+	list := strings.Replace(string(out), "host,port,user,title,group,gateway,su,suprompt,supassword\r\n",
+		"host,port,user,title,group,gateway,su,suprompt,supassword,password\r\n", 1)
+	list = strings.Replace(list, "10.0.0.1,22,root,web,prod,,,,\r\n", "10.0.0.1,22,root,web,prod,,1,,rootpw,s3cret\r\n", 1)
+	if !strings.Contains(list, "s3cret") {
+		t.Fatalf("the edited list is not what was meant: %q", list)
+	}
+	f := importText(t, a, list)
+	if f.rows[0].conflict != h.ID {
+		t.Fatalf("no conflict: %+v", f.rows[0])
+	}
+	// By default it is skipped, and the import says so rather than closing
+	// on an empty import.
+	if n, existing, out := a.importCounts(en, f); n != 0 || existing != 1 || out != 1 {
+		t.Fatalf("counts %d %d %d", n, existing, out)
+	}
+	a.Import(en)
+	kept, _ := a.store.Get(h.ID)
+	if kept.Auth != assets.AuthAsk || a.kc.Has(keychain.Host(h.ID, keychain.Password)) {
+		t.Fatalf("skipped row changed the host: %+v", kept)
+	}
+	if !a.importing {
+		t.Fatal("a skipped import closed the sheet")
+	}
+	// One choice for every row already saved turns them into updates.
+	if f.action != importActions(en)[0] {
+		t.Fatalf("the one choice starts at %q", f.action)
+	}
+	f.action = importActions(en)[1]
+	importEvery(f, f.action)
+	if n, _, _ := a.importCounts(en, f); n != 1 {
+		t.Fatalf("after overwriting, %d to import", n)
+	}
+	a.Import(en)
+	if a.importing || a.imp != nil {
+		t.Fatal("the sheet stayed open")
+	}
+	hosts := a.store.List()
+	if len(hosts) != 1 {
+		t.Fatalf("hosts %+v", hosts)
+	}
+	kept, _ = a.store.Get(h.ID)
+	if kept.Name != "web" || kept.Group != "prod" || kept.Auth != assets.AuthPassword || !kept.TerminalSu {
+		t.Fatalf("updated %+v", kept)
+	}
+	if v, err := a.kc.Get(keychain.Host(h.ID, keychain.Password)); err != nil || string(v) != "s3cret" {
+		t.Fatalf("password %q %v", v, err)
+	}
+	if v, err := a.kc.Get(keychain.HostElevate(h.ID)); err != nil || string(v) != "rootpw" {
+		t.Fatalf("su password %q %v", v, err)
+	}
+	noSecrets(t, a.p.DataDir, "s3cret", "rootpw")
 }
 
 // TestImportNeedsUnlock: a list holding passwords is not imported into a
@@ -362,7 +431,7 @@ func TestExportCSV(t *testing.T) {
 		t.Fatal(err)
 	}
 	f := importText(t, b, string(with))
-	if n, out := b.importCounts(en, f); n != 2 || out != 0 {
+	if n, _, out := b.importCounts(en, f); n != 2 || out != 0 {
 		t.Fatalf("counts %d %d (%q)", n, out, b.imp.err)
 	}
 	b.Import(en)
@@ -402,7 +471,7 @@ func TestImportGateway(t *testing.T) {
 	if f.rows[0].gateway != "" || !f.rows[0].row.OK() {
 		t.Fatalf("row %+v", f.rows[0])
 	}
-	if n, out := a.importCounts(en, f); n != 1 || out != 0 {
+	if n, _, out := a.importCounts(en, f); n != 1 || out != 0 {
 		t.Fatalf("counts %d %d", n, out)
 	}
 	a.Import(en)
