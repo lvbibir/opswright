@@ -587,40 +587,6 @@ func TestFullAccessNeedsConfirmation(t *testing.T) {
 		a.page = pageWorkspace
 		tt.Frame()
 	})
-
-	t.Run("host", func(t *testing.T) {
-		a.openEditor(&h)
-		a.form.aiOpen = true
-		tt.Frame()
-		tt.Advance(300 * time.Millisecond)
-		tt.Frame()
-		mustClick(t, tt, "Full access")
-		tt.Frame()
-		mustClick(t, tt, "Turn On Full Access")
-		tt.Frame()
-		if a.form == nil || a.form.aiIdx == 3 || a.form.fullOK {
-			t.Fatalf("host form %+v", a.form)
-		}
-		if !tt.HasText("I understand all actions will run without confirmation") {
-			mustClick(t, tt, "Full access")
-			tt.Frame()
-		}
-		mustClick(t, tt, "I understand all actions will run without confirmation")
-		tt.Frame()
-		mustClick(t, tt, "Turn On Full Access")
-		tt.Frame()
-		if a.form == nil || !a.form.fullOK || a.form.aiIdx != 3 {
-			t.Fatalf("after confirm %+v", a.form)
-		}
-		a.form.roots = "/srv/data\n/tmp"
-		a.form.sens = "/etc/*.pem"
-		mustClick(t, tt, "Save")
-		tt.Frame()
-		got, ok := a.Store().Get(h.ID)
-		if !ok || got.AIPolicy.Mode != "full" || len(got.AIPolicy.WritableRoots) != 2 || got.AIPolicy.Sensitive[0] != "/etc/*.pem" {
-			t.Fatalf("saved %+v", got.AIPolicy)
-		}
-	})
 }
 
 // Full access promises to stop asking, so an action the rules could not

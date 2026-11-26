@@ -7,7 +7,6 @@ import (
 	"testing"
 
 	"github.com/lvbibir/opswright/internal/sshtest"
-	"github.com/lvbibir/opswright/locales"
 )
 
 func TestHostDefaultDirs(t *testing.T) {
@@ -24,40 +23,16 @@ func TestHostDefaultDirs(t *testing.T) {
 	srv.SFTPRoot = root
 	os.Mkdir(filepath.Join(root, "www"), 0o755)
 	a, tt := newTestApp(t)
-	m := locales.In("en")
 	os.Mkdir(filepath.Join(a.localHome(), "proj"), 0o755)
 	h := addHost(t, a, srv, "box", "secret")
 	a.known.Add(srv.Addr, srv.HostKey.PublicKey())
 	showLocal(a)
 
-	// The editor keeps them folded until opened.
-	a.openEditor(&h)
-	tt.Frame()
-	if a.form.dirsOpen || tt.HasText(m.DefaultDirsHint()) {
-		t.Fatal("default folders open for a host without any")
+	// The host's default folders start its Files panes and its terminal.
+	h.TerminalDir, h.RemoteDir, h.LocalDir = "~/www", "~/www", "~/proj"
+	if _, err := a.Store().Update(h); err != nil {
+		t.Fatal(err)
 	}
-	mustClick(t, tt, m.DefaultDirs())
-	tt.Frame()
-	for _, s := range []string{m.DefaultDirTerminal(), m.DefaultDirRemote(), m.DefaultDirLocal(), m.DefaultDirsHint()} {
-		if !tt.HasText(s) {
-			t.Fatalf("missing %q in %q", s, tt.Texts())
-		}
-	}
-	a.form.termDir, a.form.remoteDir, a.form.localDir = " ~/www ", "~/www", "~/proj"
-	if !a.SaveForm(m) {
-		t.Fatal(a.form.err)
-	}
-	h, _ = a.Store().Get(h.ID)
-	if h.TerminalDir != "~/www" || h.RemoteDir != "~/www" || h.LocalDir != "~/proj" {
-		t.Fatalf("saved %q %q %q", h.TerminalDir, h.RemoteDir, h.LocalDir)
-	}
-	a.openEditor(&h)
-	if !a.form.dirsOpen {
-		t.Error("default folders folded for a host with some")
-	}
-	a.form, a.editing = nil, false
-
-	// A Files pane starts in both, a terminal changes to its own.
 	a.selected = h.ID
 	tt.Frame()
 	mustClick(t, tt, "Open Files")

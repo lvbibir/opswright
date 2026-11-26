@@ -178,7 +178,6 @@ func TestProxySheetAndEditor(t *testing.T) {
 	// The host editor makes one in place, and comes back with it chosen.
 	mustClick(t, tt, "Close Settings")
 	a.openEditor(nil)
-	a.form.netOpen = true
 	tt.Frame()
 	a.form.name, a.form.address, a.form.user = "web", "10.0.0.5", "root"
 	hf := a.form
@@ -216,11 +215,11 @@ func TestProxySheetAndEditor(t *testing.T) {
 	if err := a.DeleteProxy(px.ID); err != nil || a.kc.Has(keychain.ProxyPassword(px.ID)) {
 		t.Errorf("delete: %v", err)
 	}
-	// The editor shows the network section open for it.
+	// The editor shows the proxy it goes through.
 	a.openEditor(&h)
 	tt.Frame()
-	if !a.form.netOpen || !tt.HasText("Network") || a.form.proxy != socks.ID {
-		t.Errorf("editor network: open %v, proxy %q", a.form.netOpen, a.form.proxy)
+	if a.form.proxy != socks.ID {
+		t.Errorf("editor proxy %q", a.form.proxy)
 	}
 }
 

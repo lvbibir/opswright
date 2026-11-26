@@ -413,24 +413,6 @@ func TestMetricsSettingsControls(t *testing.T) {
 	if a.Settings().MetricsInterval != 10 {
 		t.Fatalf("interval %d", a.Settings().MetricsInterval)
 	}
-
-	h, err := a.Store().Add(assets.Host{Name: "web", Address: "10.0.0.8", Port: 22, User: "root", Auth: assets.AuthAgent})
-	if err != nil {
-		t.Fatal(err)
-	}
-	a.openEditor(&h)
-	tt.Frame()
-	mustClick(t, tt, "Off")
-	tt.Frame()
-	if a.form == nil || a.form.metricsIdx != 2 {
-		t.Fatalf("index %v", a.form)
-	}
-	mustClick(t, tt, "Save")
-	tt.Frame()
-	got, ok := a.Store().Get(h.ID)
-	if !ok || got.Metrics != assets.MetricsOff {
-		t.Fatalf("saved %q", got.Metrics)
-	}
 }
 
 func TestLatencyText(t *testing.T) {
@@ -450,32 +432,5 @@ func TestLatencyText(t *testing.T) {
 				t.Fatalf("en %q", got)
 			}
 		})
-	}
-}
-
-func TestHostMetricsDisabledWhenGlobalOff(t *testing.T) {
-	a, tt := newTestApp(t)
-	h, err := a.Store().Add(assets.Host{Name: "web", Address: "10.0.0.8", Port: 22, User: "root", Auth: assets.AuthAgent})
-	if err != nil {
-		t.Fatal(err)
-	}
-	a.openEditor(&h)
-	tt.Frame()
-	scrollEditorTo(t, tt, "Off")
-	mustClick(t, tt, "Off")
-	tt.Frame()
-	if a.form == nil || a.form.metricsIdx != 2 {
-		t.Fatalf("index %v", a.form)
-	}
-	a.form.metricsIdx = 0
-	s := a.Settings()
-	s.MetricsEnabled = false
-	if err := a.ApplySettings(s); err != nil {
-		t.Fatal(err)
-	}
-	tt.Frame()
-	mustClick(t, tt, "Off")
-	if a.form.metricsIdx != 0 {
-		t.Fatalf("index %d", a.form.metricsIdx)
 	}
 }

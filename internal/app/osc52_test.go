@@ -542,25 +542,9 @@ func TestOSC52LimitApplies(t *testing.T) {
 
 func TestOSC52HostOverride(t *testing.T) {
 	a, tt := newTestApp(t)
-	tt.SetSize(1200, 1400)
-	h, err := a.Store().Add(assets.Host{Name: "box", Address: "127.0.0.1", Port: 1, User: "u", Auth: assets.AuthAsk})
+	h, err := a.Store().Add(assets.Host{Name: "box", Address: "127.0.0.1", Port: 1, User: "u", Auth: assets.AuthAsk, OSC52: settings.OSC52Deny})
 	if err != nil {
 		t.Fatal(err)
-	}
-	a.openEditor(&h)
-	tt.Frame()
-	scrollEditorTo(t, tt, "Advanced")
-	mustClick(t, tt, "Advanced")
-	tt.Advance(250 * time.Millisecond)
-	scrollEditorTo(t, tt, "Follow the global setting")
-	mustClick(t, tt, "Follow the global setting")
-	tt.Frame()
-	mustClick(t, tt, "Deny")
-	tt.Frame()
-	mustClick(t, tt, "Save")
-	got, ok := a.Store().Get(h.ID)
-	if !ok || got.OSC52 != settings.OSC52Deny {
-		t.Fatalf("saved %+v", got)
 	}
 	id, err := a.Connect(h.ID, openAt{})
 	if err != nil {

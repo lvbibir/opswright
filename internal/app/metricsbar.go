@@ -229,28 +229,6 @@ func (a *App) hideMetrics(id string) {
 	}
 }
 
-func metricsIndex(m assets.MetricsMode) int {
-	switch m {
-	case assets.MetricsOn:
-		return 1
-	case assets.MetricsOff:
-		return 2
-	default:
-		return 0
-	}
-}
-
-func metricsMode(i int) assets.MetricsMode {
-	switch i {
-	case 1:
-		return assets.MetricsOn
-	case 2:
-		return assets.MetricsOff
-	default:
-		return assets.MetricsFollow
-	}
-}
-
 func intervalIndex(n int) int {
 	switch session.MetricsInterval(n) {
 	case 1:

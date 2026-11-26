@@ -70,7 +70,6 @@ func TestFormHostSelectCreateEditPersistence(t *testing.T) {
 			if err != nil {
 				t.Fatal(err)
 			}
-			a.form.netOpen = true
 			tt.Frame()
 			tt.Advance(focusHoldFor)
 			clickFormSelectRegion(t, tt, a.form.auth, 140, "text")

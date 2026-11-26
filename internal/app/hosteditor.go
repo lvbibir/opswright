@@ -12,7 +12,6 @@ import (
 	"github.com/lvbibir/opswright/internal/icons"
 	"github.com/lvbibir/opswright/internal/keychain"
 	"github.com/lvbibir/opswright/internal/keys"
-	"github.com/lvbibir/opswright/internal/settings"
 	"github.com/lvbibir/opswright/internal/theme"
 	"github.com/lvbibir/opswright/internal/vt"
 	"github.com/lvbibir/opswright/locales"
@@ -34,21 +33,13 @@ type hostForm struct {
 	// "" until the editor first shows
 	secret    credForm
 	auth      string
-	favorite  bool
 	cwdFollow bool
-	// metricsIdx is 0 follow, 1 on, 2 off.
-	metricsIdx int
 	// proxy is the ID chosen in the proxy select ("" none); gateway the
 	// ID of the gateway (jump server) chosen ("" none); gatewayPick its
 	// label in the select.
 	proxy       string
 	gateway     string
 	gatewayPick string
-	netOpen     bool
-	// termDir, remoteDir and localDir are the host's default folders
-	// (Host.TerminalDir, RemoteDir, LocalDir); dirsOpen shows them.
-	termDir, remoteDir, localDir string
-	dirsOpen                     bool
 	// startup is the commands the host's terminals type as their shell
 	// starts (Host.Startup), startupOrig those it had; startupGen renews
 	// the field once a snippet is added to it, startupPick the snippet
@@ -63,9 +54,6 @@ type hostForm struct {
 	// the setting's; termCustom edits it as text rather than a preset.
 	term       string
 	termCustom bool
-	// sessionLog logs the host's terminals as they connect
-	// (Host.SessionLog)
-	sessionLog bool
 	// sftpSudo runs the host's SFTP through sudo (Host.SFTPSudo)
 	sftpSudo bool
 	// terminalSu runs the host's terminals as root with su -
@@ -82,18 +70,7 @@ type hostForm struct {
 	// transfers lets the host's terminals take ZMODEM and trzsz
 	// transfers (not Host.TransfersOff)
 	transfers bool
-	// osc52 is the override's label once Advanced is open; osc52Code is
-	// the saved policy ("", allow, ask, deny), so a save before that
-	// keeps it. advOpen shows Advanced.
-	osc52, osc52Code string
-	advOpen          bool
-	err              string
-	// AI permission override. aiIdx 0 inherits. fullOK is set once the
-	// full-access sheet has been confirmed for this edit.
-	aiIdx, aiPrev int
-	roots, sens   string
-	aiOpen        bool
-	fullOK        bool
+	err       string
 	// promote is the temporary host being saved, whose panes then show
 	// the new host
 	promote string
@@ -157,16 +134,13 @@ func (a *App) openEditor(h *assets.Host) {
 		f.orig = *h
 		f.transfers = !h.TransfersOff
 		f.name, f.address, f.port = h.Name, h.Address, strconv.Itoa(h.Port)
-		f.user, f.group, f.favorite, f.cwdFollow = h.User, h.Group, h.Favorite, h.CwdFollow
+		f.user, f.group, f.cwdFollow = h.User, h.Group, h.CwdFollow
 		f.icon, f.color = h.Icon, h.Color
 		if !strings.HasPrefix(h.Icon, assets.IconPrefix) {
 			f.emoji = h.Icon
 		}
-		f.metricsIdx = metricsIndex(h.Metrics)
 		f.gateway = h.GatewayID
 		f.proxy = h.ProxyID
-		f.netOpen = f.proxy != "" || f.gateway != ""
-		f.termDir, f.remoteDir, f.localDir = h.TerminalDir, h.RemoteDir, h.LocalDir
 		if h.SSH() && h.Startup {
 			if data, err := a.kc.Get(keychain.HostStartup(h.ID)); err == nil {
 				f.startup = string(data)
@@ -176,7 +150,6 @@ func (a *App) openEditor(h *assets.Host) {
 			}
 			f.startupOrig = f.startup
 		}
-		f.sessionLog = h.SessionLog
 		f.sftpSudo = h.SFTPSudo
 		if h.SSH() {
 			f.terminalSu, f.suPrompt = h.TerminalSu, h.TerminalSuPrompt
@@ -188,14 +161,6 @@ func (a *App) openEditor(h *assets.Host) {
 		}
 		f.term = h.Term
 		f.termCustom = h.Term != "" && !slices.Contains(termPresets, h.Term)
-		f.dirsOpen = f.termDir != "" || f.remoteDir != "" || f.localDir != ""
-		f.osc52Code = h.OSC52
-		f.advOpen = h.OSC52 != ""
-		f.aiIdx = hostModeIndex(h.AIPolicy.Mode)
-		f.aiPrev = f.aiIdx
-		f.roots = strings.Join(h.AIPolicy.WritableRoots, "\n")
-		f.sens = strings.Join(h.AIPolicy.Sensitive, "\n")
-		f.aiOpen = h.AIPolicy.Mode != "" || f.roots != "" || f.sens != ""
 	}
 	f.secret.isNew = true
 	if h != nil {
@@ -227,38 +192,6 @@ func (a *App) openClone(h assets.Host) {
 	f := a.form
 	f.isNew, f.from = true, h.ID
 	f.orig.ID, f.orig.Created, f.orig.Updated = "", time.Time{}, time.Time{}
-}
-
-func osc52Choices(m locales.Messages) (labels, codes []string) {
-	return []string{m.Osc52Follow(), m.Osc52Allow(), m.Osc52Ask(), m.Osc52Deny()},
-		[]string{"", settings.OSC52Allow, settings.OSC52Ask, settings.OSC52Deny}
-}
-
-// syncOSC52Label makes the select's label match the saved code, and
-// remembers a label the user already picked so a language change keeps it.
-func syncOSC52Label(m locales.Messages, f *hostForm) []string {
-	labels, codes := osc52Choices(m)
-	if i := slices.Index(labels, f.osc52); i >= 0 {
-		f.osc52Code = codes[i]
-		return labels
-	}
-	f.osc52 = labels[0]
-	for i, code := range codes {
-		if code == f.osc52Code {
-			f.osc52 = labels[i]
-		}
-	}
-	return labels
-}
-
-// osc52CodeFrom is the policy to save: the label when Advanced has shown
-// it, otherwise the code the host already had.
-func osc52CodeFrom(m locales.Messages, f *hostForm) string {
-	labels, codes := osc52Choices(m)
-	if i := slices.Index(labels, f.osc52); i >= 0 {
-		return codes[i]
-	}
-	return f.osc52Code
 }
 
 // fieldError is a host field's problem in the user's language.
@@ -317,7 +250,7 @@ func (a *App) SaveForm(m locales.Messages) bool {
 	}
 	h := f.orig
 	h.Name, h.Address, h.Port, h.User, h.Group = f.name, f.address, port, f.user, f.group
-	h.Favorite, h.CwdFollow, h.Metrics = f.favorite, f.cwdFollow, metricsMode(f.metricsIdx)
+	h.CwdFollow = f.cwdFollow
 	h.Icon, h.Color = f.icon, f.color
 	f.applyStream(&h)
 	if f.auth == "" {
@@ -334,10 +267,8 @@ func (a *App) SaveForm(m locales.Messages) bool {
 	}
 	h.ProxyID = f.proxy
 	h.GatewayID = f.gateway
-	h.TerminalDir, h.RemoteDir, h.LocalDir = f.termDir, f.remoteDir, f.localDir
 	h.Encoding = string(f.encoding)
 	h.Term = f.term
-	h.SessionLog = f.sessionLog
 	h.SFTPSudo = f.sftpSudo
 	h.TerminalSu, h.TerminalSuPrompt = false, ""
 	if h.SSH() && f.terminalSu {
@@ -358,18 +289,6 @@ func (a *App) SaveForm(m locales.Messages) bool {
 		}
 	}
 	h.Startup = startupText(f.startup) != ""
-	h.OSC52 = osc52CodeFrom(m, f)
-	mode := ""
-	if f.aiIdx >= 0 && f.aiIdx < 4 {
-		mode = []string{"", "ask", "review", "full"}[f.aiIdx]
-	}
-	if mode == "full" && f.orig.AIPolicy.Mode != "full" && !f.fullOK {
-		a.openFull("host", 0)
-		return false
-	}
-	h.AIPolicy.Mode = mode
-	h.AIPolicy.WritableRoots = linesOf(f.roots)
-	h.AIPolicy.Sensitive = linesOf(f.sens)
 	h.Certificate = f.secret.cert
 	if h.Auth == assets.AuthKey && f.secret.certProblem() != nil {
 		f.err = m.ErrCertMismatch()
@@ -530,32 +449,15 @@ func (a *App) editorView(c *ui.Context, m locales.Messages) {
 							ui.Field(c, "", func() { ui.Text(c, m.AutoLoginHint()).FontSize(theme.Caption).TextColor(tok.TextMuted) })
 						}
 						if proto != assets.ProtoSerial {
-							ui.Field(c, "", func() {
-								ui.Collapsible(c.Key("f:net"), m.Network(), &f.netOpen, func() {
-									a.networkFields(c, m, tok, f)
-								})
-							})
+							a.networkFields(c, m, f)
 						}
 						if proto == assets.ProtoSSH {
-							ui.Field(c, "", func() {
-								ui.Collapsible(c.Key("f:dirs"), m.DefaultDirs(), &f.dirsOpen, func() {
-									a.dirFields(c, m, tok, f)
-								})
-							})
 							fileProtocolField(c, m, tok, f)
 							if fileProtocols[f.fileProtoIdx] != assets.FileSCP {
 								sftpSudoField(c, m, tok, f)
 							}
 							a.terminalSuField(c, m, tok, f)
 							a.startupField(c, m, tok, f)
-							ui.Field(c, m.MetricsBar(), func() {
-								ui.Column(c).Gap(4).Children(func() {
-									formSegmented(c.Key("f:met"), &f.metricsIdx, !a.settings.MetricsEnabled, m.MetricsFollow(), m.MetricsHostOn(), m.MetricsHostOff()).Label(m.MetricsBar())
-									if !a.settings.MetricsEnabled {
-										ui.Text(c, m.MetricsDisabledGlobally()).FontSize(theme.Caption).TextColor(tok.TextMuted)
-									}
-								})
-							})
 						} else {
 							a.streamTermFields(c, m, tok, f)
 						}
@@ -563,29 +465,15 @@ func (a *App) editorView(c *ui.Context, m locales.Messages) {
 						if f.protocol() != assets.ProtoSerial {
 							a.termTypeField(c, m, tok, f)
 						}
-						sessionLogField(c, m, tok, f)
 						a.transfersField(c, m, tok, f)
-						ui.Field(c, "", func() {
-							ui.Collapsible(c.Key("f:adv"), m.Advanced(), &f.advOpen, func() {
-								labels := syncOSC52Label(m, f)
-								ui.Column(c).Gap(6).FillWidth().Margin(8, 0, 0, 0).Children(func() {
-									ui.Text(c, m.Osc52Title()).FontSize(theme.Footnote).TextColor(tok.TextMuted)
-									formSelect(c.Key("f:osc52"), &f.osc52, labels).Label(m.Osc52Title()).FillWidth()
-								})
-							})
-						})
-						ui.Field(c, "", func() {
-							a.aiHostFields(c, m, tok, f, proto == assets.ProtoSSH)
-						})
-						ui.Field(c, "", func() {
-							ui.Column(c).Gap(6).Children(func() {
-								if proto == assets.ProtoSSH {
+						if proto == assets.ProtoSSH {
+							ui.Field(c, "", func() {
+								ui.Column(c).Gap(6).Children(func() {
 									formCheckbox(c.Key("f:cwd"), &f.cwdFollow, m.CwdFollow())
 									ui.Text(c, m.HostCwdFollowHint()).FontSize(theme.Caption).TextColor(tok.TextMuted)
-								}
-								formCheckbox(c.Key("f:fav"), &f.favorite, m.Favorite())
+								})
 							})
-						})
+						}
 					})
 				})
 				if f.err != "" {
@@ -624,31 +512,25 @@ func (a *App) editorView(c *ui.Context, m locales.Messages) {
 	}
 }
 
-// networkFields are the editor's network section: the proxy the
+// networkFields are the editor's network fields: the proxy the
 // connection is dialed through, and the gateway (jump server) that
 // reaches the host.
-func (a *App) networkFields(c *ui.Context, m locales.Messages, tok theme.Tokens, f *hostForm) {
-	ui.Column(c).Gap(10).FillWidth().Margin(8, 0, 0, 0).Children(func() {
-		ui.Row(c).Gap(10).AlignItems(ui.Center).Children(func() {
-			ui.Text(c, m.FieldProxy()).FontSize(theme.Footnote).TextColor(tok.TextMuted).Width(92)
-			a.proxySelect(c.Key("f:proxy"), m, &f.proxy, proxyPick{owner: f,
-				leave: func() { a.editing = false },
-				back: func(id string) {
-					a.form, a.editing = f, true
-					if id != "" {
-						f.proxy = id
-					}
-				}}).Grow(1)
-		})
-		// Telnet goes through a proxy only: a gateway is SSH.
-		if f.protocol() != assets.ProtoSSH {
-			return
-		}
-		ui.Row(c).Gap(10).AlignItems(ui.Center).Children(func() {
-			ui.Text(c, m.Gateway()).FontSize(theme.Footnote).TextColor(tok.TextMuted).Width(92)
-			a.gatewaySelect(c, m, f)
-		})
+func (a *App) networkFields(c *ui.Context, m locales.Messages, f *hostForm) {
+	ui.Field(c, m.FieldProxy(), func() {
+		a.proxySelect(c.Key("f:proxy"), m, &f.proxy, proxyPick{owner: f,
+			leave: func() { a.editing = false },
+			back: func(id string) {
+				a.form, a.editing = f, true
+				if id != "" {
+					f.proxy = id
+				}
+			}})
 	})
+	// Telnet goes through a proxy only: a gateway is SSH.
+	if f.protocol() != assets.ProtoSSH {
+		return
+	}
+	ui.Field(c, m.Gateway(), func() { a.gatewaySelect(c, m, f) })
 }
 
 // gatewaySelect is the editor's gateway picker: the jump server the host
@@ -666,32 +548,11 @@ func (a *App) gatewaySelect(c *ui.Context, m locales.Messages, f *hostForm) {
 		}
 	}
 	f.gatewayPick = label
-	if formSelect(c.Key("f:gateway"), &f.gatewayPick, opts).Label(m.Gateway()).Grow(1).Changed() {
+	if formSelect(c.Key("f:gateway"), &f.gatewayPick, opts).Label(m.Gateway()).Changed() {
 		if i := slices.Index(opts, f.gatewayPick); i >= 0 {
 			f.gateway = ids[i]
 		}
 	}
-}
-
-// dirFields are the editor's default folders: where the host's terminal
-// and the two sides of its Files panes start.
-func (a *App) dirFields(c *ui.Context, m locales.Messages, tok theme.Tokens, f *hostForm) {
-	ui.Column(c).Gap(10).FillWidth().Margin(8, 0, 0, 0).Children(func() {
-		for _, d := range []struct {
-			key, label, hint string
-			value            *string
-		}{
-			{"f:tdir", m.DefaultDirTerminal(), "~", &f.termDir},
-			{"f:rdir", m.DefaultDirRemote(), "~", &f.remoteDir},
-			{"f:ldir", m.DefaultDirLocal(), a.localHome(), &f.localDir},
-		} {
-			ui.Row(c).Gap(10).AlignItems(ui.Center).Children(func() {
-				ui.Text(c, d.label).FontSize(theme.Footnote).TextColor(tok.TextMuted).Width(92)
-				formTextInput(c.Key(d.key), d.value).Placeholder(d.hint).Label(d.label).Grow(1)
-			})
-		}
-		ui.Text(c, m.DefaultDirsHint()).FontSize(theme.Caption).TextColor(tok.TextMuted)
-	})
 }
 
 // startupField is the commands the host's terminals type each time their
@@ -842,17 +703,6 @@ func sftpSudoField(c *ui.Context, m locales.Messages, tok theme.Tokens, f *hostF
 		ui.Column(c).Gap(4).FillWidth().Children(func() {
 			formCheckbox(c.Key("f:sudo"), &f.sftpSudo, m.SftpSudoOn())
 			ui.Text(c, m.SftpSudoHint()).FontSize(theme.Caption).TextColor(tok.TextMuted)
-		})
-	})
-}
-
-// sessionLogField is whether the host's terminals are logged as they
-// connect.
-func sessionLogField(c *ui.Context, m locales.Messages, tok theme.Tokens, f *hostForm) {
-	ui.Field(c, m.SessionLogs(), func() {
-		ui.Column(c).Gap(4).FillWidth().Children(func() {
-			formCheckbox(c.Key("f:log"), &f.sessionLog, m.LogAuto())
-			ui.Text(c, m.LogAutoHint()).FontSize(theme.Caption).TextColor(tok.TextMuted)
 		})
 	})
 }

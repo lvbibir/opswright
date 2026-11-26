@@ -729,57 +729,6 @@ func newProviderID() string {
 	return "p" + hex.EncodeToString(b[:])
 }
 
-func linesOf(s string) []string {
-	var out []string
-	for _, line := range strings.Split(s, "\n") {
-		line = strings.TrimSpace(line)
-		if line != "" && !strings.ContainsRune(line, 0) {
-			out = append(out, line)
-		}
-	}
-	return out
-}
-
-func hostModeIndex(mode string) int {
-	switch mode {
-	case "ask":
-		return 1
-	case "review":
-		return 2
-	case "full":
-		return 3
-	default:
-		return 0
-	}
-}
-
-// aiHostFields is the host editor's AI section. A Telnet or serial
-// host, whose assistant has no files, has the mode only.
-func (a *App) aiHostFields(c *ui.Context, m locales.Messages, tok theme.Tokens, f *hostForm, files bool) {
-	ui.Collapsible(c.Key("f:ai"), m.AiSettings(), &f.aiOpen, func() {
-		ui.Column(c).Gap(8).FillWidth().Margin(8, 0, 0, 0).Children(func() {
-			ui.Text(c, m.AiHostMode()).FontSize(theme.Footnote).TextColor(tok.TextMuted)
-			if formSegmented(c.Key("f:aimode"), &f.aiIdx, false, m.AiModeInherit(), m.AiModeAsk(), m.AiModeReview(), m.AiModeFull()).Label(m.AiHostMode()).Changed() {
-				if f.aiIdx == 3 && f.orig.AIPolicy.Mode != "full" && !f.fullOK {
-					f.aiIdx = f.aiPrev
-					a.openFull("host", 0)
-				} else {
-					f.aiPrev = f.aiIdx
-				}
-			}
-			if !files {
-				return
-			}
-			ui.Text(c, m.AiWritableRoots()).FontSize(theme.Footnote).TextColor(tok.TextMuted)
-			ui.Text(c, m.AiWritableRootsNote()).FontSize(theme.Caption).TextColor(tok.TextMuted)
-			formTextArea(c.Key("f:roots"), &f.roots).FillWidth().Height(64)
-			ui.Text(c, m.AiSensitive()).FontSize(theme.Footnote).TextColor(tok.TextMuted)
-			ui.Text(c, m.AiSensitiveNote()).FontSize(theme.Caption).TextColor(tok.TextMuted)
-			formTextArea(c.Key("f:sens"), &f.sens).FillWidth().Height(64)
-		})
-	})
-}
-
 // maxToolCallsValue reads the tool-call limit field: empty is the default
 // (nil), 0 is no limit, and any other value must be a whole number the
 // setting accepts. A text that is none of these leaves the setting as it was.

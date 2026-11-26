@@ -133,7 +133,7 @@ type aiPend struct {
 }
 
 type fullAsk struct {
-	kind string // pane, settings, host
+	kind string // pane, settings
 	conn int
 	tick bool
 	open bool
@@ -1036,12 +1036,6 @@ func (a *App) applyFull() {
 		_ = a.ApplySettings(s)
 		for _, c := range a.conns {
 			a.refreshMode(c)
-		}
-	case "host":
-		if a.form != nil {
-			a.form.fullOK = true
-			a.form.aiIdx = 3
-			a.form.aiPrev = 3
 		}
 	}
 }

@@ -25,7 +25,7 @@ func TestHostEditorProtocols(t *testing.T) {
 
 	a.openEditor(nil)
 	tt.Frame()
-	if !tt.HasText(m.FieldProtocol()) || !tt.HasText(m.MetricsBar()) || tt.HasText(m.TelnetPlaintext()) {
+	if !tt.HasText(m.FieldProtocol()) || tt.HasText(m.TelnetPlaintext()) {
 		t.Fatalf("ssh editor %q", tt.Texts())
 	}
 	mustClick(t, tt, m.ProtocolTelnet())
@@ -35,7 +35,7 @@ func TestHostEditorProtocols(t *testing.T) {
 		t.Fatalf("telnet form proto %v port %q auth %q", f.protocol(), f.port, f.auth)
 	}
 	if !tt.HasText(m.TelnetPlaintext()) || !tt.HasText(m.FieldNewLine()) || !tt.HasText(m.LocalEcho()) ||
-		tt.HasText(m.MetricsBar()) || tt.HasText(m.CwdFollow()) {
+		tt.HasText(m.CwdFollow()) {
 		t.Fatalf("telnet editor %q", tt.Texts())
 	}
 	f.name, f.address, f.user, f.newLine, f.localEcho, f.backspace = "switch", "sw.lan", "admin", 2, true, 1
@@ -61,7 +61,7 @@ func TestHostEditorProtocols(t *testing.T) {
 			t.Fatalf("no %q in serial editor %q", s, tt.Texts())
 		}
 	}
-	if slices.Contains(tt.Texts(), m.FieldPort()) || slices.Contains(tt.Texts(), m.Network()) {
+	if slices.Contains(tt.Texts(), m.FieldPort()) || slices.Contains(tt.Texts(), m.FieldProxy()) {
 		t.Fatalf("serial editor has a network address: %q", tt.Texts())
 	}
 	f.device, f.baud, f.dataBits, f.parity = "/dev/ttyUSB1", 9600, 2, "even"
