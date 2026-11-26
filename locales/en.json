@@ -1496,6 +1496,8 @@
   "searchSettings": "Search settings",
   "settingsNoResults": "No matching settings",
   "shortcutRecord": "Record a shortcut for “{action}”",
+  "shortcutNone": "None",
+  "shortcutClear": "Clear the shortcut of “{action}”",
   "shortcutReset": "Restore the default shortcut of “{action}”",
   "shortcutRecordHint": "Press the new shortcut. Esc cancels.",
   "shortcutPressKeys": "Press keys…",

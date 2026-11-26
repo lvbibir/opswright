@@ -281,12 +281,13 @@ func TestTerminalSchemes(t *testing.T) {
 
 func TestShortcutsNormalize(t *testing.T) {
 	p := filepath.Join(t.TempDir(), "s.json")
-	os.WriteFile(p, []byte(`{"shortcuts":{"newTab":"super+j","find":"super+enter","":"super+k","x":"nonsense"}}`), 0o600)
+	os.WriteFile(p, []byte(`{"shortcuts":{"newTab":"super+j","find":"super+enter","closePane":"none","":"super+k","x":"nonsense"}}`), 0o600)
 	s, err := Load(p)
 	if err != nil {
 		t.Fatal(err)
 	}
-	if len(s.Shortcuts) != 1 || s.Shortcuts["newTab"] != "super+j" {
+	// A cleared shortcut is kept: "none" is what having no keys writes.
+	if len(s.Shortcuts) != 2 || s.Shortcuts["newTab"] != "super+j" || s.Shortcuts["closePane"] != "none" {
 		t.Errorf("shortcuts %v", s.Shortcuts)
 	}
 	os.WriteFile(p, []byte(`{"shortcuts":{"find":"bad"}}`), 0o600)

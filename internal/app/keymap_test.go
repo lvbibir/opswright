@@ -201,6 +201,39 @@ func TestRecordShortcut(t *testing.T) {
 	}
 }
 
+// TestClearShortcut: the delete button beside Record clears an action's
+// shortcut. It runs on no key until one is recorded again, and the row
+// offers the way back to the default.
+func TestClearShortcut(t *testing.T) {
+	a, tt := newTestApp(t)
+	tt.SetSize(1200, 1400)
+	m := locales.In("en")
+	a.openSettings(prefShortcuts)
+	tt.Frame()
+	mustClick(t, tt, m.ShortcutClear(m.QuickConnect()))
+	tt.Frame()
+	if a.settings.Shortcuts[actQuickConnect] != keymap.None || !a.keyOf(actQuickConnect).Unbound() {
+		t.Fatalf("after clear: shortcuts %v, key %v", a.settings.Shortcuts, a.keyOf(actQuickConnect))
+	}
+	// The row shows no keys, no delete button, and the way back.
+	if !hasExact(tt, m.ShortcutNone()) || hasExact(tt, m.ShortcutClear(m.QuickConnect())) || !tt.HasText(m.ShortcutReset(m.QuickConnect())) {
+		t.Errorf("after clear: texts %q", tt.Texts())
+	}
+
+	// The default key reaches the shell again, and the action no longer
+	// runs on it.
+	if isAppShortcut(a.settings.Shortcuts, ui.KeyK, appMods) {
+		t.Error("a cleared shortcut must reach the shell")
+	}
+	a.closeSettings()
+	tt.Frame()
+	tt.Key(appMods, ui.KeyK)
+	tt.Frame()
+	if a.quicking {
+		t.Fatal("the cleared shortcut still opens quick connect")
+	}
+}
+
 // TestRecordShortcutWaitsForKey: a modifier or Caps Lock pressed on its
 // own, as before the key of a shortcut, neither records nor refuses
 // anything; the key pressed with it then records the shortcut.

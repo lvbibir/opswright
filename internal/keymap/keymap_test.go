@@ -20,6 +20,8 @@ func TestRoundTrip(t *testing.T) {
 		{Combo{ui.Super, ui.KeyBracketLeft}, "super+bracketleft"},
 		{Combo{ui.Ctrl, ui.KeyTab}, "ctrl+tab"},
 		{Combo{ui.Ctrl | ui.Shift, ui.KeyTab}, "ctrl+shift+tab"},
+		// A cleared shortcut: no keys, written None.
+		{Combo{}, None},
 	} {
 		if got := tc.c.String(); got != tc.s {
 			t.Errorf("%+v: %q, want %q", tc.c, got, tc.s)
@@ -27,6 +29,9 @@ func TestRoundTrip(t *testing.T) {
 		if got, ok := Parse(tc.s); !ok || got != tc.c {
 			t.Errorf("Parse(%q) = %+v %v", tc.s, got, ok)
 		}
+	}
+	if !(Combo{}).Unbound() || (Combo{Key: ui.KeyA}).Unbound() {
+		t.Error("Unbound")
 	}
 	if c, ok := Parse(" Super+Shift+P "); !ok || c != (Combo{ui.Super | ui.Shift, ui.KeyP}) {
 		t.Errorf("case and spaces: %+v %v", c, ok)

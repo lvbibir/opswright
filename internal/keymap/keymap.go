@@ -9,11 +9,19 @@ import (
 	"github.com/egoist/mygo/ui"
 )
 
+// None is what a shortcut with no keys is written as: an action whose
+// shortcut is cleared runs on no key until another is recorded.
+const None = "none"
+
 // Combo is a shortcut: modifiers held and a key pressed.
 type Combo struct {
 	Mods ui.Modifiers
 	Key  ui.Key
 }
+
+// Unbound reports a shortcut with no keys at all: the zero Combo, which
+// None writes and reads back, and no action runs on.
+func (c Combo) Unbound() bool { return c == Combo{} }
 
 // mods are the modifiers in the order they are written.
 var mods = []struct {
@@ -49,8 +57,12 @@ func Bindable(k ui.Key) bool {
 	return ok
 }
 
-// String writes c as the settings keep it, "ctrl+shift+p".
+// String writes c as the settings keep it, "ctrl+shift+p"; a shortcut
+// with no keys writes None.
 func (c Combo) String() string {
+	if c.Unbound() {
+		return None
+	}
 	var parts []string
 	for _, m := range mods {
 		if c.Mods&m.mod != 0 {
@@ -62,7 +74,11 @@ func (c Combo) String() string {
 
 // Parse reads what String writes.
 func Parse(s string) (Combo, bool) {
-	parts := strings.Split(strings.ToLower(strings.TrimSpace(s)), "+")
+	s = strings.ToLower(strings.TrimSpace(s))
+	if s == None {
+		return Combo{}, true
+	}
+	parts := strings.Split(s, "+")
 	var c Combo
 	for _, p := range parts[:len(parts)-1] {
 		found := false

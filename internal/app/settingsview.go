@@ -758,7 +758,7 @@ func keyCaps(mods ui.Modifiers, key ui.Key) []string {
 }
 
 // shortcutsPage lists the actions with their shortcuts: each records a
-// new one, or goes back to its own.
+// new one, clears it, or goes back to its own.
 func (a *App) shortcutsPage(c *ui.Context, m locales.Messages, tok theme.Tokens) {
 	custom := false
 	a.settingsSection(c, tok, nil, "", func(g *settingsGroup) {
@@ -776,11 +776,20 @@ func (a *App) shortcutsPage(c *ui.Context, m locales.Messages, tok theme.Tokens)
 					a.shortcutRecorder(c, m, tok, label)
 					return
 				}
-				for _, cap := range keyCaps(k.Mods, k.Key) {
-					keyCap(c, tok, cap)
+				if k.Unbound() {
+					ui.Text(c, m.ShortcutNone()).FontSize(theme.Footnote).TextColor(tok.TextMuted).SingleLine()
+				} else {
+					for _, cap := range keyCaps(k.Mods, k.Key) {
+						keyCap(c, tok, cap)
+					}
 				}
 				if (IconButton{Icon: icons.Record, Label: m.ShortcutRecord(label), Size: Small}).Clicked(c, "sc:rec:"+ac.id) {
 					a.recording, a.recordErr = ac.id, ""
+				}
+				if !k.Unbound() && (IconButton{Icon: icons.Delete, Label: m.ShortcutClear(label), Size: Small}).Clicked(c, "sc:clear:"+ac.id) {
+					if err := a.setShortcut(ac.id, keymap.Combo{}); err != nil {
+						a.toastError(m.ErrGeneric(err.Error()))
+					}
 				}
 				if k != ac.def && (IconButton{Icon: icons.Reset, Label: m.ShortcutReset(label), Size: Small}).Clicked(c, "sc:reset:"+ac.id) {
 					if err := a.setShortcut(ac.id, ac.def); err != nil {

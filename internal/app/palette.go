@@ -252,7 +252,7 @@ func (a *App) paletteView(c *ui.Context, m locales.Messages) {
 	}
 	tok := currentTokens(c)
 	sheet(ui.Modal(c, &p.open, func() {
-		if k := a.keyOf(actCommandPalette); c.Shortcut(k.Mods, k.Key) {
+		if a.pressed(c, actCommandPalette) {
 			p.open = false
 		}
 		ui.Column(c).Gap(10).Width(560).Children(func() {

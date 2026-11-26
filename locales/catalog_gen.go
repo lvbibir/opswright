@@ -15108,6 +15108,26 @@ func (msgs Messages) ShortcutRecord(action string) string {
 	return Catalog.Format(msgs.locale, "shortcutRecord", map[string]any{"action": action})
 }
 
+// ShortcutNone says "None"
+// in the language the app shows.
+func ShortcutNone() string { return In(i18n.Locale()).ShortcutNone() }
+
+// ShortcutNone says "None"
+// in the language of msgs.
+func (msgs Messages) ShortcutNone() string {
+	return Catalog.Format(msgs.locale, "shortcutNone", nil)
+}
+
+// ShortcutClear says "Clear the shortcut of “{action}”"
+// in the language the app shows.
+func ShortcutClear(action string) string { return In(i18n.Locale()).ShortcutClear(action) }
+
+// ShortcutClear says "Clear the shortcut of “{action}”"
+// in the language of msgs.
+func (msgs Messages) ShortcutClear(action string) string {
+	return Catalog.Format(msgs.locale, "shortcutClear", map[string]any{"action": action})
+}
+
 // ShortcutReset says "Restore the default shortcut of “{action}”"
 // in the language the app shows.
 func ShortcutReset(action string) string { return In(i18n.Locale()).ShortcutReset(action) }

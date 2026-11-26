@@ -163,11 +163,12 @@ func actionOf(id string) (action, bool) {
 }
 
 // shortcutOf is the shortcut of action id with the shortcuts recorded in
-// custom: its own, unless it has none or one it may not have.
+// custom: its own, unless it has none, one that is cleared or one it may
+// not have. A cleared shortcut is unbound and runs on no key.
 func shortcutOf(custom map[string]string, id string) keymap.Combo {
 	ac, _ := actionOf(id)
 	if s, ok := custom[id]; ok {
-		if k, ok := keymap.Parse(s); ok && shortcutRule(ac, k) == ruleOK {
+		if k, ok := keymap.Parse(s); ok && (k.Unbound() || shortcutRule(ac, k) == ruleOK) {
 			return k
 		}
 	}
@@ -176,6 +177,13 @@ func shortcutOf(custom map[string]string, id string) keymap.Combo {
 
 // keyOf is the shortcut of action id.
 func (a *App) keyOf(id string) keymap.Combo { return shortcutOf(a.settings.Shortcuts, id) }
+
+// pressed reports whether the shortcut of action id was pressed in c: a
+// cleared shortcut, which has no keys, never is.
+func (a *App) pressed(c *ui.Context, id string) bool {
+	k := a.keyOf(id)
+	return k.Key != ui.KeyUnknown && c.Shortcut(k.Mods, k.Key)
+}
 
 // bound is menu entry e with the shortcut of action id beside it.
 func (a *App) bound(id string, e menuEntry) menuEntry {
@@ -188,6 +196,9 @@ func (a *App) bound(id string, e menuEntry) menuEntry {
 // shortcuts recorded in custom: the main window's actions. Saving is the
 // editor's, so Ctrl+S still reaches the shell.
 func isAppShortcut(custom map[string]string, k ui.Key, mods ui.Modifiers) bool {
+	if k == ui.KeyUnknown {
+		return false // a modifier on its own, or Caps Lock: no action runs on it
+	}
 	for _, ac := range actions {
 		if !ac.editor && shortcutOf(custom, ac.id) == (keymap.Combo{Mods: mods, Key: k}) {
 			return true
@@ -320,7 +331,7 @@ func (a *App) shortcuts(c *ui.Context) {
 		if ac.editor {
 			continue
 		}
-		if k := a.keyOf(ac.id); c.Shortcut(k.Mods, k.Key) {
+		if a.pressed(c, ac.id) {
 			a.runAction(ac.id)
 		}
 	}
