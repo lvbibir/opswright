@@ -460,9 +460,8 @@ func heardCount(client *ssh.Client) uint64 {
 }
 
 func isHostKeyErr(err error) bool {
-	var u *UnknownHostError
 	var c *HostKeyChangedError
-	return errors.As(err, &u) || errors.As(err, &c)
+	return errors.As(err, &c)
 }
 
 // Kind is a category of connection error, for the message the UI shows.
@@ -477,7 +476,6 @@ const (
 	KindNoBanner
 	// KindNoShell: logged in, but the shell never started (ErrNoShell).
 	KindNoShell
-	KindHostUnknown
 	KindHostChanged
 	KindPassphrase
 	KindNoCredentials
@@ -501,14 +499,11 @@ const (
 
 // Classify returns the kind of a connection error.
 func Classify(err error) Kind {
-	var u *UnknownHostError
 	var c *HostKeyChangedError
 	var ne net.Error
 	switch {
 	case err == nil:
 		return KindNone
-	case errors.As(err, &u):
-		return KindHostUnknown
 	case errors.As(err, &c):
 		return KindHostChanged
 	case errors.Is(err, ErrChallengeCanceled), errors.Is(err, ErrChallengeUnattended):

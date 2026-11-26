@@ -146,10 +146,10 @@ func (a *App) ForwardStatus(id string) (forward.Status, bool) {
 		return forward.Status{State: forward.Error, Err: run.err}, true
 	}
 	st := run.fw.Status()
-	// Its connection failed for a password or host key the user is being
+	// Its connection failed for a password or passphrase the user is being
 	// asked for: it is still on its way.
 	if st.State == forward.Error && st.Session.State == session.Failed && st.Session.Err != nil &&
-		st.Session.Err == run.c.handled && (a.prompt != nil || a.hostKey != nil) {
+		st.Session.Err == run.c.handled && a.prompt != nil {
 		st.State, st.Err = forward.Connecting, nil
 	}
 	return st, true

@@ -50,9 +50,20 @@ func TestKnownHostsMerge(t *testing.T) {
 	if err := a.Callback()("web.lan:22", addr, web); err != nil {
 		t.Fatalf("merged key not trusted: %v", err)
 	}
-	var unknown *UnknownHostError
-	if err := a.Callback()("new.lan:22", addr, web); !errors.As(err, &unknown) {
-		t.Fatalf("unknown host: %v", err)
+	// A host seen for the first time is trusted and saved.
+	if err := a.Callback()("new.lan:22", addr, web); err != nil {
+		t.Fatalf("first-time host not trusted: %v", err)
+	}
+	if got := a.For("new.lan:22"); len(got) != 1 || got[0].Fingerprint != ssh.FingerprintSHA256(web) {
+		t.Fatalf("first-time key not saved: %+v", got)
+	}
+	// The same key is not written twice.
+	saved, _ := os.ReadFile(a.Path())
+	if err := a.Callback()("new.lan:22", addr, web); err != nil {
+		t.Fatal(err)
+	}
+	if again, _ := os.ReadFile(a.Path()); string(again) != string(saved) {
+		t.Fatalf("duplicate line written:\n%s", again)
 	}
 }
 
@@ -111,14 +122,14 @@ func TestKnownHostsForget(t *testing.T) {
 	if err := k.Forget("vps.lan:22"); err != nil {
 		t.Fatal(err)
 	}
-	addr := &net.TCPAddr{IP: net.IPv4(10, 0, 0, 5), Port: 22}
-	var unknown *UnknownHostError
-	if err := k.Callback()("vps.lan:22", addr, old); !errors.As(err, &unknown) {
-		t.Fatalf("forgotten host: %v", err)
-	}
 	b, _ := os.ReadFile(k.Path())
 	if want := "# kept\n" + knownhosts.Line([]string{"web.lan"}, web) + "\n"; string(b) != want {
 		t.Fatalf("file:\n%s", b)
+	}
+	// The forgotten key is trusted and saved again on the next connection.
+	addr := &net.TCPAddr{IP: net.IPv4(10, 0, 0, 5), Port: 22}
+	if err := k.Callback()("vps.lan:22", addr, old); err != nil {
+		t.Fatalf("forgotten host not trusted again: %v", err)
 	}
 }
 

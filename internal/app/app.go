@@ -441,11 +441,9 @@ type App struct {
 	importHold   focusHold
 	exp          *hostExportForm // the sheet exporting the chosen hosts
 	exporting    bool
-	hostKey      *hostKeyAsk
 	keyChange    *hostKeyChange
 	changingKey  bool
 	khQuery      string
-	askingKey    bool
 	field        welcomeField // the welcome page's dots
 	finding      bool
 	query        string

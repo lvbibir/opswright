@@ -916,38 +916,6 @@ func (msgs Messages) ErrGeneric(detail string) string {
 	return Catalog.Format(msgs.locale, "errGeneric", map[string]any{"detail": detail})
 }
 
-// HostKeyUnknownTitle says "Unknown Host Key"
-// in the language the app shows.
-func HostKeyUnknownTitle() string { return In(i18n.Locale()).HostKeyUnknownTitle() }
-
-// HostKeyUnknownTitle says "Unknown Host Key"
-// in the language of msgs.
-func (msgs Messages) HostKeyUnknownTitle() string {
-	return Catalog.Format(msgs.locale, "hostKeyUnknownTitle", nil)
-}
-
-// HostKeyUnknown says "The authenticity of {host} can't be established. Its {keyType} key fingerprint is {fingerprint}."
-// in the language the app shows.
-func HostKeyUnknown(host string, keyType string, fingerprint string) string {
-	return In(i18n.Locale()).HostKeyUnknown(host, keyType, fingerprint)
-}
-
-// HostKeyUnknown says "The authenticity of {host} can't be established. Its {keyType} key fingerprint is {fingerprint}."
-// in the language of msgs.
-func (msgs Messages) HostKeyUnknown(host string, keyType string, fingerprint string) string {
-	return Catalog.Format(msgs.locale, "hostKeyUnknown", map[string]any{"host": host, "keyType": keyType, "fingerprint": fingerprint})
-}
-
-// TrustAndConnect says "Trust and Connect"
-// in the language the app shows.
-func TrustAndConnect() string { return In(i18n.Locale()).TrustAndConnect() }
-
-// TrustAndConnect says "Trust and Connect"
-// in the language of msgs.
-func (msgs Messages) TrustAndConnect() string {
-	return Catalog.Format(msgs.locale, "trustAndConnect", nil)
-}
-
 // PasswordPromptTitle says "Password for {target}"
 // in the language the app shows.
 func PasswordPromptTitle(target string) string { return In(i18n.Locale()).PasswordPromptTitle(target) }
@@ -16882,11 +16850,11 @@ func (msgs Messages) KnownHostsDesc() string {
 	return Catalog.Format(msgs.locale, "knownHostsDesc", nil)
 }
 
-// KnownHostsEmpty says "No host keys are trusted yet. Opswright asks the first time it connects to a host."
+// KnownHostsEmpty says "No host keys are trusted yet. Opswright trusts a host's key the first time it connects."
 // in the language the app shows.
 func KnownHostsEmpty() string { return In(i18n.Locale()).KnownHostsEmpty() }
 
-// KnownHostsEmpty says "No host keys are trusted yet. Opswright asks the first time it connects to a host."
+// KnownHostsEmpty says "No host keys are trusted yet. Opswright trusts a host's key the first time it connects."
 // in the language of msgs.
 func (msgs Messages) KnownHostsEmpty() string {
 	return Catalog.Format(msgs.locale, "knownHostsEmpty", nil)
@@ -16962,11 +16930,11 @@ func (msgs Messages) ForgetHostKey() string {
 	return Catalog.Format(msgs.locale, "forgetHostKey", nil)
 }
 
-// HostKeyForgotten says "Forgot the host key of {host}. Opswright asks to trust it on the next connection."
+// HostKeyForgotten says "Forgot the host key of {host}. Opswright trusts its key again on the next connection."
 // in the language the app shows.
 func HostKeyForgotten(host string) string { return In(i18n.Locale()).HostKeyForgotten(host) }
 
-// HostKeyForgotten says "Forgot the host key of {host}. Opswright asks to trust it on the next connection."
+// HostKeyForgotten says "Forgot the host key of {host}. Opswright trusts its key again on the next connection."
 // in the language of msgs.
 func (msgs Messages) HostKeyForgotten(host string) string {
 	return Catalog.Format(msgs.locale, "hostKeyForgotten", map[string]any{"host": host})

@@ -154,11 +154,6 @@ func errText(m locales.Messages, h assets.Host, err error) string {
 		return m.ErrNoShell(name)
 	case session.KindHostChanged:
 		return m.ErrHostKeyChanged(name)
-	case session.KindHostUnknown:
-		var u *session.UnknownHostError
-		if errors.As(err, &u) {
-			return m.HostKeyUnknown(name, u.Key.Type(), u.Fingerprint)
-		}
 	case session.KindPassphrase:
 		return m.ErrPassphrase(name)
 	case session.KindChallenge:
@@ -217,13 +212,6 @@ type credPrompt struct {
 	remember bool
 	// note says what was tried before the password was asked.
 	note string
-}
-
-// hostKeyAsk asks whether to trust a host's key seen for the first time.
-type hostKeyAsk struct {
-	conn int
-	err  *session.UnknownHostError
-	err0 error // the whole failure, which names the hop
 }
 
 // hostKeyChange shows a host's key that changed beside the keys saved for
@@ -292,9 +280,10 @@ func hostKeyChangeDetails(c *ui.Context, m locales.Messages, tok theme.Tokens, n
 }
 
 // checkFailures opens a prompt for a session that failed for want of what
-// the user can give: a password, a passphrase, trust in a host key.
+// the user can give: a password or a passphrase. A changed host key is
+// reviewed from its pane instead (reviewHostKey).
 func (a *App) checkFailures(m locales.Messages) {
-	if a.prompt != nil || a.hostKey != nil {
+	if a.prompt != nil {
 		return
 	}
 	for _, id := range a.promptConns() {
@@ -349,11 +338,6 @@ func (a *App) checkFailures(m locales.Messages) {
 				o.handled = o.s.Status().Err
 			}
 			a.prompt, a.prompting = p, true
-		case session.KindHostUnknown:
-			var u *session.UnknownHostError
-			if errors.As(st.Err, &u) {
-				a.hostKey, a.askingKey = &hostKeyAsk{conn: id, err: u, err0: st.Err}, true
-			}
 		}
 		return
 	}
@@ -432,23 +416,6 @@ func (a *App) sameSecretFailures(c *conn, key string) []*conn {
 	return out
 }
 
-// TrustHostKey adds the key asked about to known_hosts and connects again.
-func (a *App) TrustHostKey() error {
-	k := a.hostKey
-	a.hostKey, a.askingKey = nil, false
-	if k == nil {
-		return nil
-	}
-	if err := a.known.Add(k.err.Host, k.err.Key); err != nil {
-		return err
-	}
-	if c := a.conns[k.conn]; c != nil && c.s != nil {
-		a.focusReq = c.id
-		c.s.Reconnect()
-	}
-	return nil
-}
-
 func (a *App) promptsView(c *ui.Context, m locales.Messages) {
 	a.checkFailures(m)
 	a.sudoPromptView(c, m)
@@ -525,22 +492,6 @@ func (a *App) promptsView(c *ui.Context, m locales.Messages) {
 		}), tok)
 		if !a.prompting {
 			a.prompt = nil
-		}
-	}
-	if k := a.hostKey; k != nil {
-		name := k.err.Host
-		if cn := a.conns[k.conn]; cn != nil {
-			name = a.failedHost(cn.host, k.err0).Label()
-		}
-		switch ui.AlertDialog(c, &a.askingKey, m.HostKeyUnknownTitle(),
-			m.HostKeyUnknown(name, k.err.Key.Type(), k.err.Fingerprint), m.Cancel(), m.TrustAndConnect()) {
-		case 1:
-			if err := a.TrustHostKey(); err != nil {
-				c.AddToast(ui.Toast{Title: m.ErrGeneric(err.Error()), Type: "error"})
-			}
-		}
-		if !a.askingKey {
-			a.hostKey = nil
 		}
 	}
 	if k := a.keyChange; k != nil {

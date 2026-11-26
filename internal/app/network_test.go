@@ -46,18 +46,11 @@ func TestGatewayTerminalAndFiles(t *testing.T) {
 	}
 	a.Connect(h.ID, openAt{})
 	c := a.focused()
-	// Every hop's key is confirmed: the gateway's first.
-	waitFor(t, tt, "gateway host key prompt", func() bool { return a.hostKey != nil })
-	if a.hostKey.err.Host != bastion.Addr {
-		t.Fatalf("asked for %s", a.hostKey.err.Host)
-	}
-	mustClick(t, tt, "Trust and Connect")
-	waitFor(t, tt, "target key prompt", func() bool { return a.hostKey != nil })
-	if a.hostKey.err.Host != db.Addr {
-		t.Fatalf("asked for %s", a.hostKey.err.Host)
-	}
-	mustClick(t, tt, "Trust and Connect")
+	// Every hop's key is trusted on sight, the gateway's first.
 	waitFor(t, tt, "connected through the gateway", func() bool { return c.s.Status().State == session.Connected })
+	if len(a.known.For(bastion.Addr)) == 0 || len(a.known.For(db.Addr)) == 0 {
+		t.Fatal("hop keys not saved")
+	}
 	if bastion.Tunnels() < 1 || db.Logins() != 1 {
 		t.Errorf("tunnels %d, logins %d", bastion.Tunnels(), db.Logins())
 	}

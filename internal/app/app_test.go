@@ -204,9 +204,7 @@ func TestConnectTrustTypeSplit(t *testing.T) {
 	h := addHost(t, a, srv, "box", "secret")
 	tt.Frame()
 	a.Connect(h.ID, openAt{})
-	// The host key is unknown: the app asks.
-	waitFor(t, tt, "host key prompt", func() bool { return a.hostKey != nil })
-	mustClick(t, tt, "Trust and Connect")
+	// The host key is unseen: the app trusts and saves it without asking.
 	c := a.focused()
 	if c == nil {
 		t.Fatal("no focused session")

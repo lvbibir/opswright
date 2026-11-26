@@ -536,11 +536,8 @@ func (a *App) mcpConnect(ctx context.Context, raw json.RawMessage) (string, erro
 
 // mcpDialErr says why a connection failed, in words for the agent.
 func mcpDialErr(err error) error {
-	var unknown *session.UnknownHostError
 	var changed *session.HostKeyChangedError
 	switch {
-	case errors.As(err, &unknown):
-		return fmt.Errorf("the host key of %s is not trusted yet; connect to it once in Opswright and trust the key", unknown.Host)
 	case errors.As(err, &changed):
 		return fmt.Errorf("the host key of %s changed; Opswright refused to connect. Only the user can review and trust the new key, in Opswright", changed.Host)
 	case errors.Is(err, errMCPNeedsInput), errors.Is(err, session.ErrNoCredentials),

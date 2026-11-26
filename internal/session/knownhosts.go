@@ -15,19 +15,6 @@ import (
 	"golang.org/x/crypto/ssh/knownhosts"
 )
 
-// UnknownHostError reports a host whose key is not in known_hosts yet.
-// The UI shows its fingerprint and, when the user trusts it, calls
-// KnownHosts.Add and connects again.
-type UnknownHostError struct {
-	Host        string // host:port as dialed
-	Key         ssh.PublicKey
-	Fingerprint string // SHA256:...
-}
-
-func (e *UnknownHostError) Error() string {
-	return fmt.Sprintf("session: unknown host key for %s (%s %s)", e.Host, e.Key.Type(), e.Fingerprint)
-}
-
 // HostKeyChangedError reports a host whose key does not match the one in
 // known_hosts: possibly an attack, so Opswright refuses to connect. Only the
 // user, having compared the fingerprints, replaces the key (Replace).
@@ -46,7 +33,9 @@ func (e *HostKeyChangedError) Error() string {
 }
 
 // KnownHosts is a known_hosts file in OpenSSH's format, Opswright's own,
-// which it adds keys the user trusts to.
+// which it adds the keys of hosts it trusts to. A host's key seen for the
+// first time is trusted and saved by default; a key that differs from the
+// saved one is refused for the user to review.
 type KnownHosts struct {
 	path string
 	// wmu orders the changes to the file.
@@ -168,6 +157,8 @@ func (probeKey) Marshal() []byte                     { return []byte("opswright-
 func (probeKey) Verify([]byte, *ssh.Signature) error { return errors.New("probe") }
 
 // Callback is the ssh.HostKeyCallback that checks keys against the file.
+// A key the file does not know yet is trusted and saved (see the type);
+// only a key that differs from the saved one is refused.
 func (k *KnownHosts) Callback() ssh.HostKeyCallback {
 	return func(hostname string, remote net.Addr, key ssh.PublicKey) error {
 		k.mu.Lock()
@@ -176,15 +167,16 @@ func (k *KnownHosts) Callback() ssh.HostKeyCallback {
 		err := cb(hostname, remote, key)
 		var ke *knownhosts.KeyError
 		if errors.As(err, &ke) {
-			fp := ssh.FingerprintSHA256(key)
 			if len(ke.Want) == 0 {
-				return &UnknownHostError{Host: hostname, Key: key, Fingerprint: fp}
+				// Seen for the first time: trusted by default, saved so a
+				// later change is caught.
+				return k.Add(hostname, key)
 			}
 			old := make([]ssh.PublicKey, len(ke.Want))
 			for i, w := range ke.Want {
 				old[i] = w.Key
 			}
-			return &HostKeyChangedError{Host: hostname, Key: key, Fingerprint: fp, Line: ke.Want[0].Line, File: ke.Want[0].Filename, Old: old}
+			return &HostKeyChangedError{Host: hostname, Key: key, Fingerprint: ssh.FingerprintSHA256(key), Line: ke.Want[0].Line, File: ke.Want[0].Filename, Old: old}
 		}
 		return err
 	}
@@ -242,12 +234,23 @@ func (k *KnownHosts) Merge(data []byte) (int, error) {
 	return n, k.reload()
 }
 
-// Add trusts key for host (host:port as dialed).
+// Add trusts key for host (host:port as dialed). A key the file already
+// has for the host is left as it is, so concurrent first connections to
+// one host do not write its line twice.
 func (k *KnownHosts) Add(host string, key ssh.PublicKey) error {
 	k.wmu.Lock()
 	defer k.wmu.Unlock()
 	line := knownhosts.Line([]string{knownhosts.Normalize(host)}, key)
-	f, err := os.OpenFile(k.path, os.O_APPEND|os.O_WRONLY|os.O_CREATE, 0o600)
+	data, err := os.ReadFile(k.path)
+	if err != nil {
+		return err
+	}
+	for _, l := range strings.Split(string(data), "\n") {
+		if strings.TrimSpace(l) == line {
+			return nil
+		}
+	}
+	f, err := os.OpenFile(k.path, os.O_APPEND|os.O_WRONLY, 0o600)
 	if err != nil {
 		return err
 	}
@@ -270,7 +273,7 @@ func (k *KnownHosts) Replace(host string, key ssh.PublicKey) error {
 }
 
 // Forget removes the keys the file has for host (host:port as dialed), so
-// the next connection asks to trust its key again.
+// the next connection trusts its key again, as one seen for the first time.
 func (k *KnownHosts) Forget(host string) error {
 	return k.rewrite(func(cur []KnownKey, cb ssh.HostKeyCallback) ([]KnownKey, string) {
 		return keysFor(cb, cur, host), ""

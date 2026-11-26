@@ -18,8 +18,6 @@ func TestSidebarLiveConnections(t *testing.T) {
 	assertSidebarConnections(t, a, 0)
 	h := addHost(t, a, srv, "box", "secret")
 	a.Connect(h.ID, openAt{})
-	waitFor(t, tt, "trust prompt", func() bool { return tt.HasText("Unknown Host Key") })
-	mustClick(t, tt, "Trust and Connect")
 	waitFor(t, tt, "connected", func() bool { return a.focused().s.Client() != nil })
 	first := a.focused()
 	assertSidebarConnections(t, a, 1)

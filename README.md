@@ -73,7 +73,7 @@ Opswright is a native desktop SSH / SFTP client for Windows, bringing terminals,
   - Add and group hosts by hand, or connect quickly with `user@host:port`
   - Passwords, OpenSSH / PEM / PuTTY keys, OpenSSH certificates, SSH agent and password-less login support
   - Nested groups you can rearrange by dragging, with multi-select and latency tests
-  - Local encrypted credential storage, key generation and public-key installation; changed host keys are checked by fingerprint, and known hosts can be managed
+  - Local encrypted credential storage, key generation and public-key installation; a host's key is trusted on first use and checked by fingerprint only when it changes, and known hosts can be managed
 
 - **Backup and restore**
   - Password-encrypted backups of hosts, credentials, snippets and settings, with restore on another device

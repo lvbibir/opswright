@@ -27,9 +27,6 @@ type installForm struct {
 	needPassword, needPassphrase bool
 	busy                         bool
 	res                          *installResult
-	// unknown is the host's key, seen for the first time: the install
-	// goes on once it is trusted
-	unknown *session.UnknownHostError
 	// changed is the host's key, unlike the one saved: the install goes
 	// on once the user trusts it in its place
 	changed *session.HostKeyChangedError
@@ -213,17 +210,14 @@ func (a *App) startInstall(m locales.Messages, f *installForm, h assets.Host) {
 	if credID == "" {
 		return
 	}
-	f.busy, f.res, f.unknown, f.changed = true, nil, nil, nil
+	f.busy, f.res, f.changed = true, nil, nil
 	pw, pp := f.password, f.passphrase
 	go func() {
 		res := a.InstallKey(context.Background(), h, credID, pw, pp)
 		a.post(func() {
 			f.busy = false
-			var u *session.UnknownHostError
 			var ch *session.HostKeyChangedError
 			switch {
-			case errors.As(res.err, &u):
-				f.unknown = u
 			case errors.As(res.err, &ch):
 				f.changed = ch
 			case errors.Is(res.err, keys.ErrPassphraseNeeded):
@@ -303,9 +297,6 @@ func (a *App) installView(c *ui.Context, m locales.Messages) {
 					}
 				})
 			}
-			if u := f.unknown; u != nil {
-				ui.Text(c, m.HostKeyUnknown(h.Label(), u.Key.Type(), u.Fingerprint)).FontSize(theme.Footnote)
-			}
 			if ch := f.changed; ch != nil {
 				hostKeyChangeDetails(c, m, tok, a.pv(h.Label()), ch)
 			}
@@ -336,16 +327,6 @@ func (a *App) installView(c *ui.Context, m locales.Messages) {
 				}
 				if pill(c, m.Cancel(), false, false, false) {
 					a.installing = false
-				}
-				if u := f.unknown; u != nil {
-					if pill(c, m.TrustAndConnect(), true, false, false) {
-						if err := a.known.Add(u.Host, u.Key); err != nil {
-							c.AddToast(ui.Toast{Title: m.ErrGeneric(err.Error()), Type: "error"})
-							return
-						}
-						a.startInstall(m, f, h)
-					}
-					return
 				}
 				if ch := f.changed; ch != nil {
 					if pill(c, m.TrustNewKeyAndConnect(), false, true, false) {

@@ -19,7 +19,7 @@ func (a *App) knowsHostKey(h assets.Host) bool {
 }
 
 // ForgetHostKey removes the keys known_hosts has for host id, so its next
-// connection asks to trust its key again.
+// connection trusts its key again, as one seen for the first time.
 func (a *App) ForgetHostKey(id string) error {
 	h, ok := a.store.Get(id)
 	if !ok || a.known == nil {

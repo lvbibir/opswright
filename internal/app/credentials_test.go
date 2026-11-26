@@ -538,8 +538,8 @@ func TestPPKLogin(t *testing.T) {
 	}
 }
 
-// A host never connected to shows its key in the install sheet, and the
-// install goes on once it is trusted.
+// A host never connected to has its key trusted on sight, and the
+// install goes on without asking.
 func TestInstallKeyUnknownHost(t *testing.T) {
 	srv, root := keyServer(t)
 	a, tt := newTestApp(t)
@@ -559,12 +559,6 @@ func TestInstallKeyUnknownHost(t *testing.T) {
 	a.openInstall(h.ID)
 	tt.Frame()
 	mustClick(t, tt, "Install")
-	waitFor(t, tt, "host key asked", func() bool { return a.install.unknown != nil })
-	tt.Frame()
-	if !tt.HasText(en.TrustAndConnect()) || a.install.res != nil {
-		t.Fatalf("%q", tt.Texts())
-	}
-	mustClick(t, tt, en.TrustAndConnect())
 	waitFor(t, tt, "installed", func() bool { return a.install.res != nil })
 	if r := a.install.res; !r.ok() || !r.added {
 		t.Fatalf("result %+v", r)

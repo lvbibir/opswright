@@ -65,6 +65,8 @@ func TestMCPConnectAndRun(t *testing.T) {
 	}
 	t.Cleanup(untrusted.Close)
 	stranger := addHost(t, a, untrusted, "stranger", "secret")
+	// Its key differs from the one saved: MCP refuses it.
+	a.known.Add(untrusted.Addr, sshtest.NewHostKey().PublicKey())
 
 	s := a.Settings()
 	s.MCPPort = freePort(t)
@@ -107,8 +109,8 @@ func TestMCPConnectAndRun(t *testing.T) {
 	if text, failed := c.call("connect", map[string]any{"host_id": asked.ID}); !failed || !strings.Contains(text, "refused") {
 		t.Fatalf("a host asking for a password: %v %s", failed, text)
 	}
-	if text, failed := c.call("connect", map[string]any{"host_id": stranger.ID}); !failed || !strings.Contains(text, "not trusted") {
-		t.Fatalf("unknown host key: %v %s", failed, text)
+	if text, failed := c.call("connect", map[string]any{"host_id": stranger.ID}); !failed || !strings.Contains(text, "changed") {
+		t.Fatalf("changed host key: %v %s", failed, text)
 	}
 	text, failed := c.call("connect", map[string]any{"host_id": h.ID})
 	seen.WriteString(text)

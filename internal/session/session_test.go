@@ -88,22 +88,15 @@ func TestTrustOnFirstUseThenShell(t *testing.T) {
 	s := New(Config{Addr: srv.Addr, User: "demo", Credentials: password("secret"), HostKey: kh.Callback()}, Options{}, 80, 24)
 	defer s.Close()
 	s.Start()
-	st := waitState(t, s, Failed)
-	var unknown *UnknownHostError
-	if !errors.As(st.Err, &unknown) || Classify(st.Err) != KindHostUnknown {
-		t.Fatalf("first connect: %v", st.Err)
-	}
-	if unknown.Fingerprint != ssh.FingerprintSHA256(srv.HostKey.PublicKey()) {
-		t.Error("fingerprint")
-	}
-	if srv.Logins() != 0 {
-		t.Error("logged in to an untrusted host")
-	}
-	if err := kh.Add(unknown.Host, unknown.Key); err != nil {
-		t.Fatal(err)
-	}
-	s.Reconnect()
+	// The host is seen for the first time: trusted on sight, no asking.
 	waitState(t, s, Connected)
+	if srv.Logins() != 1 {
+		t.Errorf("logins %d", srv.Logins())
+	}
+	keys := kh.For(srv.Addr)
+	if len(keys) != 1 || keys[0].Fingerprint != ssh.FingerprintSHA256(srv.HostKey.PublicKey()) {
+		t.Fatalf("host key not saved: %+v", keys)
+	}
 	waitText(t, s, "Welcome")
 	if p := srv.LastPTY(); p.Term != "xterm-256color" || p.Cols != 80 || p.Rows != 24 {
 		t.Errorf("pty %+v", p)

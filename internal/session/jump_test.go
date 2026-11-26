@@ -71,16 +71,21 @@ func TestJumpErrorsNameTheHop(t *testing.T) {
 	if !errors.As(err, &he) || he.Index != 0 || he.ID != "b1" || Classify(err) != KindAuth {
 		t.Fatalf("bad jump password: %v", err)
 	}
-	// The target's key is unknown: asked for at the last hop, even though
-	// the jump host is trusted; and a jump host's unknown key is not skipped.
-	_, err = Dial(context.Background(), jumpCfg(knownAll(t, b), b, db, "secret"))
-	var u *UnknownHostError
-	if !errors.As(err, &he) || he.Index != 1 || !errors.As(err, &u) || u.Host != db.Addr {
-		t.Fatalf("unknown target key: %v", err)
+	// A hop whose key changed is refused there, and named: at the last
+	// hop for the target, at the first for the jump host. A key merely
+	// unseen is trusted, so a change is what stops a chain.
+	kh := knownAll(t, b)
+	kh.Add(db.Addr, hostKey(t)) // not the key db offers now
+	_, err = Dial(context.Background(), jumpCfg(kh, b, db, "secret"))
+	var changed *HostKeyChangedError
+	if !errors.As(err, &he) || he.Index != 1 || !errors.As(err, &changed) || changed.Host != db.Addr {
+		t.Fatalf("changed target key: %v", err)
 	}
-	_, err = Dial(context.Background(), jumpCfg(knownAll(t, db), b, db, "secret"))
-	if !errors.As(err, &he) || he.Index != 0 || !errors.As(err, &u) || u.Host != b.Addr {
-		t.Fatalf("unknown jump key: %v", err)
+	kh = knownAll(t, db)
+	kh.Add(b.Addr, hostKey(t)) // not the key the jump host offers now
+	_, err = Dial(context.Background(), jumpCfg(kh, b, db, "secret"))
+	if !errors.As(err, &he) || he.Index != 0 || !errors.As(err, &changed) || changed.Host != b.Addr {
+		t.Fatalf("changed jump key: %v", err)
 	}
 	// The target cannot be reached from the jump host.
 	cfg := jumpCfg(knownAll(t, b, db), b, db, "secret")

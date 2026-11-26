@@ -88,7 +88,7 @@ func TestLayoutRememberedLocalCredentialsWaitForUnlock(t *testing.T) {
 			}
 			unlockApp(t, again, tt, testBackupPassword)
 			waitFor(t, tt, "fresh noninteractive dial", func() bool { return dials.Load() == 1 && restored.s.Status().State == session.Failed })
-			if again.prompting || again.hostKey != nil {
+			if again.prompting {
 				t.Fatal("restoration opened an interactive prompt")
 			}
 			if where != "none" && (!again.unlocked() || restored.restorePending || restored.waitingSecrets) {
