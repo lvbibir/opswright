@@ -89,6 +89,7 @@ var (
 	Quick        = load("flashlight-line")
 	Save         = load("save-line")
 	Import       = load("import-line")
+	Export       = load("export-line")
 	Forward      = load("arrow-left-right-line")
 	Run          = load("play-circle-line")
 	RunOn        = load("play-circle-fill")

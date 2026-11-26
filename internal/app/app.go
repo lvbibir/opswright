@@ -446,6 +446,11 @@ type App struct {
 	sudo         *sudoAsk // the sheet asking a files pane's sudo password
 	sudoAsking   bool
 	sudoHold     focusHold
+	imp          *hostImport // the sheet importing a host list
+	importing    bool
+	importHold   focusHold
+	exp          *hostExportForm // the sheet exporting the chosen hosts
+	exporting    bool
 	hostKey      *hostKeyAsk
 	keyChange    *hostKeyChange
 	changingKey  bool

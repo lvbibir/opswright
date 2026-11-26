@@ -321,6 +321,9 @@ func (a *App) multiSelectBar(c *ui.Context, m locales.Messages, tok theme.Tokens
 	a.menuButton(c, "pickmove", IconButton{Icon: icons.MoveTo, Label: m.MoveToGroup(), Disabled: n == 0}, func() []menuEntry {
 		return a.movePickedEntries(c, m)
 	})
+	if (IconButton{Icon: icons.Export, Label: m.ExportSelected(), Disabled: len(hosts) == 0}).Clicked(c, "pickexport") {
+		a.openHostExport()
+	}
 	if (IconButton{Icon: icons.Delete, Label: m.DeleteSelected(), Danger: true, Disabled: n == 0}).Clicked(c, "pickdelete") {
 		a.multi.deleting = true
 	}

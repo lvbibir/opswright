@@ -453,6 +453,8 @@ func (a *App) promptsView(c *ui.Context, m locales.Messages) {
 	a.checkFailures(m)
 	a.sudoPromptView(c, m)
 	a.challengeView(c, m)
+	a.importView(c, m)
+	a.exportView(c, m)
 	if p := a.prompt; p != nil {
 		title := m.PasswordPromptTitle(a.pv(p.host.Target()))
 		switch {
