@@ -423,12 +423,12 @@ func (a *App) promptsView(c *ui.Context, m locales.Messages) {
 	a.importView(c, m)
 	a.exportView(c, m)
 	if p := a.prompt; p != nil {
-		title := m.PasswordPromptTitle(a.pv(p.host.Target()))
+		title := m.PasswordPromptTitle(p.host.Target())
 		switch {
 		case p.localKey != nil:
 			title = m.LocalKeyPromptTitle(filepath.Base(p.localKey.Path))
 		case p.passphrase:
-			title = m.PassphrasePromptTitle(a.pv(p.host.Target()))
+			title = m.PassphrasePromptTitle(p.host.Target())
 		}
 		tok := currentTokens(c)
 		sheet(ui.Modal(c, &a.prompting, func() {
@@ -506,7 +506,7 @@ func (a *App) promptsView(c *ui.Context, m locales.Messages) {
 					tile(c, icons.HostKey, tok.Danger, 36)
 					sheetTitle(c, m.HostKeyChangedTitle())
 				})
-				hostKeyChangeDetails(c, m, tok, a.pv(name), k.err)
+				hostKeyChangeDetails(c, m, tok, name, k.err)
 				ui.Row(c).Gap(8).Margin(4, 0, 0, 0).Children(func() {
 					ui.Spacer(c)
 					if pill(c, m.Cancel(), false, false, false) {

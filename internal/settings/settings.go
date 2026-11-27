@@ -69,9 +69,6 @@ type Settings struct {
 	TerminalCharWidth  int `json:"terminalCharWidth"`
 	// SidebarHidden hides the hosts' sidebar beside the workspace.
 	SidebarHidden bool `json:"sidebarHidden,omitempty"`
-	// Privacy masks the IP addresses the app shows, for a screen share
-	// or a recording. What is typed in a form is shown as it is.
-	Privacy bool `json:"privacy,omitempty"`
 	// UIZoom is how large the interface shows, in percent, one of
 	// UIZooms; 0, the default, follows the system's text size.
 	UIZoom int `json:"uiZoom,omitempty"`

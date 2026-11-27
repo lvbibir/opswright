@@ -50,7 +50,7 @@ func (a *App) tabSource(cn *conn) string {
 	}
 	switch a.settings.TabTitle {
 	case settings.TabTitleProgram:
-		return a.pv(strings.TrimSpace(cn.s.Term.Title()))
+		return strings.TrimSpace(cn.s.Term.Title())
 	case settings.TabTitleCwd:
 		if d := followDir(cn.s.Term.Cwd()); d != "" {
 			return d

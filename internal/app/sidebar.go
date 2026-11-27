@@ -245,7 +245,7 @@ const hostActionsWidth = 2*24 + 2 + 4
 // that the tile it is given (after its label, as a badge) comes first.
 func (a *App) hostItem(c *ui.Context, m locales.Messages, h assets.Host, prefix string) {
 	tok := currentTokens(c)
-	it := ui.SidebarItem(c.Key(prefix+h.ID), prefix+h.ID, nil, a.pv(h.Label())).Reverse().Description(a.pv(a.hostTip(m, h))).Drag(dragHost{h.ID})
+	it := ui.SidebarItem(c.Key(prefix+h.ID), prefix+h.ID, nil, h.Label()).Reverse().Description(a.hostTip(m, h)).Drag(dragHost{h.ID})
 	chosen := !a.multi.on && a.selected == prefix+h.ID
 	if chosen {
 		// Gray even while the sidebar has the focus, as the actions on
@@ -282,7 +282,7 @@ func (a *App) hostItem(c *ui.Context, m locales.Messages, h assets.Host, prefix 
 			if a.multi.hosts[h.ID] {
 				state = pickFull
 			}
-			pickBox(c, "pick", a.pv(h.Label()), state, func(on bool) { a.pickHost(h.ID, on) })
+			pickBox(c, "pick", h.Label(), state, func(on bool) { a.pickHost(h.ID, on) })
 		}
 		if marks > 0 && !shown {
 			ui.Row(c.Key("marks")).Absolute().Top(0).Bottom(0).Right(theme.Space(2)).Gap(theme.Space(1)).AlignItems(ui.Center).Children(func() {

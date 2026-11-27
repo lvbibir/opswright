@@ -123,7 +123,7 @@ func (a *App) toolDetails(c *ui.Context, cn *conn, card agent.ToolCard, tok them
 			toolDetailText(c, toolOutput(m, card.Output), tok.Text, theme.Caption)
 		})
 	}
-	where := m.AiWhereRemote(a.pv(cn.host.Label()))
+	where := m.AiWhereRemote(cn.host.Label())
 	if card.Where == string(policy.Local) {
 		where = m.AiWhereLocal()
 	}

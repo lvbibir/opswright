@@ -437,10 +437,10 @@ func (a *App) paneView(c *ui.Context, t *layout.Tab, n *layout.Node, tok theme.T
 			headTok := onTokens(tok, bg)
 			ui.Themed(c.Key("headbar"), headTok.Apply(*c.Theme())).Background(ui.Transparent).Shrink(0).FillWidth().Children(func() {
 				tok := headTok
-				title := a.pv(cn.host.Label())
+				title := cn.host.Label()
 				switch cn.kind {
 				case layout.Files:
-					title = m.FilesPane(a.pv(cn.host.Label()))
+					title = m.FilesPane(cn.host.Label())
 				}
 				leadMin := paneHeadIcon + 8 + titleRoom(c, title)
 				if cn.s != nil {
@@ -482,7 +482,7 @@ func (a *App) paneView(c *ui.Context, t *layout.Tab, n *layout.Node, tok theme.T
 					if cn.kind == layout.Terminal {
 						a.paneForwards(c, m, tok, cn.host.ID)
 					}
-					ui.Text(c, a.pv(cn.host.Target())).FontSize(theme.Caption).TextColor(tok.TextMuted).SingleLine().Shrink(1)
+					ui.Text(c, cn.host.Target()).FontSize(theme.Caption).TextColor(tok.TextMuted).SingleLine().Shrink(1)
 				}, leadMin, a.paneActions(c, t, n, cn, focused, m), nil)
 				if head.Clicked() {
 					t.Focus = n.ID
@@ -760,7 +760,7 @@ func (a *App) banner(c *ui.Context, cn *conn, st session.Status, tok theme.Token
 		} else {
 			ui.Icon(c, icons.Warning.SVG).Size(14, 14).Shrink(0).TextColor(col)
 		}
-		text := a.pv(a.statusText(m, cn.host, st, c.Now()))
+		text := a.statusText(m, cn.host, st, c.Now())
 		if waiting {
 			text = m.SecretsLockedTitle()
 			if a.unlocked() {

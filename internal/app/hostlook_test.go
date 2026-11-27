@@ -1,7 +1,6 @@
 package app
 
 import (
-	"strings"
 	"testing"
 
 	"github.com/lvbibir/opswright/internal/assets"
@@ -11,42 +10,6 @@ import (
 	"github.com/lvbibir/opswright/internal/theme"
 	"github.com/lvbibir/opswright/locales"
 )
-
-// TestPrivacyMode masks the addresses the app shows, from the status
-// bar's switch, and keeps the setting.
-func TestPrivacyMode(t *testing.T) {
-	a, tt := newTestApp(t)
-	h, err := a.Store().Add(assets.Host{Address: "12.32.43.55", User: "root"})
-	if err != nil {
-		t.Fatal(err)
-	}
-	a.selected = h.ID
-	tt.Frame()
-	shows := func(s string) bool {
-		for _, x := range tt.Texts() {
-			if strings.Contains(x, s) {
-				return true
-			}
-		}
-		return false
-	}
-	if !shows("12.32.43.55") {
-		t.Fatalf("no address in %q", tt.Texts())
-	}
-	mustClick(t, tt, "Privacy mode: mask IP addresses")
-	tt.Frame()
-	if !a.settings.Privacy {
-		t.Fatal("privacy mode not on")
-	}
-	if shows("12.32.43.55") || !shows("1*.**.**.*5") {
-		t.Errorf("address not masked: %q", tt.Texts())
-	}
-	mustClick(t, tt, "Privacy mode: mask IP addresses")
-	tt.Frame()
-	if a.settings.Privacy || !shows("12.32.43.55") {
-		t.Errorf("privacy mode not off: %q", tt.Texts())
-	}
-}
 
 // TestSidebarToolsAndGroups puts the add button beside the search, the
 // host count at the foot, and makes, fills, renames and deletes a group.

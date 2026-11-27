@@ -145,7 +145,7 @@ func (p *TrayPanel) hosts(c *ui.Context, m locales.Messages, tok theme.Tokens) {
 			if len(byGroup[g]) == 0 && slices.ContainsFunc(groups, func(sub string) bool { return assets.GroupParent(sub) == g }) {
 				continue
 			}
-			ui.SidebarSection(c.Key("group:"+g), p.app.pv(g), p.section("g:"+g), func() {
+			ui.SidebarSection(c.Key("group:"+g), g, p.section("g:"+g), func() {
 				for _, h := range byGroup[g] {
 					p.host(c, h, "", tok)
 				}
@@ -172,7 +172,7 @@ func (p *TrayPanel) hosts(c *ui.Context, m locales.Messages, tok theme.Tokens) {
 }
 
 func (p *TrayPanel) host(c *ui.Context, h assets.Host, prefix string, tok theme.Tokens) {
-	row := ui.ButtonBase(c.Key(prefix+h.ID)).FillWidth().Justify(ui.Start).AlignItems(ui.Center).Padding(theme.Space(2), theme.Space(2)).Gap(theme.Space(2)).Radius(theme.RadiusControl).Label(p.app.pv(h.Label())).Cursor(ui.CursorPointer)
+	row := ui.ButtonBase(c.Key(prefix+h.ID)).FillWidth().Justify(ui.Start).AlignItems(ui.Center).Padding(theme.Space(2), theme.Space(2)).Gap(theme.Space(2)).Radius(theme.RadiusControl).Label(h.Label()).Cursor(ui.CursorPointer)
 	if row.Hovered() || row.FocusVisible() {
 		row.Background(tok.Hover)
 	}
@@ -182,8 +182,8 @@ func (p *TrayPanel) host(c *ui.Context, h assets.Host, prefix string, tok theme.
 	row.Children(func() {
 		hostAvatar(c, tok, h, theme.Space(6))
 		ui.Column(c).Grow(1).Shrink(1).MinWidth(0).Children(func() {
-			ui.Text(c, p.app.pv(h.Label())).FontSize(theme.Body).SingleLine()
-			ui.Text(c, p.app.pv(h.Target())).FontSize(theme.Caption).TextColor(tok.TextMuted).SingleLine()
+			ui.Text(c, h.Label()).FontSize(theme.Body).SingleLine()
+			ui.Text(c, h.Target()).FontSize(theme.Caption).TextColor(tok.TextMuted).SingleLine()
 		})
 	})
 	if row.Clicked() {

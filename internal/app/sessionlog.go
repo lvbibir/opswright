@@ -437,7 +437,7 @@ func (a *App) recentLogsList(c *ui.Context, m locales.Messages, tok theme.Tokens
 		row.Children(func() {
 			ui.Icon(c, icons.FileText.SVG).Size(14, 14).Shrink(0).TextColor(tok.TextMuted)
 			ui.Column(c).Grow(1).Shrink(1).MinWidth(0).Gap(1).Children(func() {
-				ui.Text(c, a.pv(l.Host)).FontSize(theme.Footnote).SingleLine()
+				ui.Text(c, l.Host).FontSize(theme.Footnote).SingleLine()
 				ui.Text(c, l.Mod.Format("2006-01-02 15:04")+" · "+humanSize(l.Size)).FontSize(theme.Caption).TextColor(tok.TextMuted).SingleLine()
 			})
 		})

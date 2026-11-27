@@ -42,7 +42,7 @@ func (a *App) aiPane(c *ui.Context, t *layout.Tab, n *layout.Node, cn *conn, tok
 	}
 	head := ui.Column(c.Key("aihead")).Shrink(0).FillWidth()
 	head.Children(func() {
-		title := m.AiPane(a.pv(cn.host.Label()))
+		title := m.AiPane(cn.host.Label())
 		split := func(edge layout.Edge) func() {
 			return func() {
 				t.Focus = n.ID
@@ -478,7 +478,7 @@ func (a *App) aiTimeline(c *ui.Context, cn *conn, tok theme.Tokens, m locales.Me
 	if len(cn.ai.items) == 0 && !cn.ai.running {
 		ui.Scroll(c.Key("aiempty")).Grow(1).FillWidth().Padding(theme.Space(6)).Gap(theme.Space(2)).AlignItems(ui.Center).Justify(ui.Center).Children(func() {
 			softTile(c, icons.Robot, tok.Accent, 44).Margin(0, 0, theme.Space(1), 0)
-			ui.Text(c, m.AiEmptyTitle(a.pv(cn.host.Label()))).FontSize(theme.Title3).FontWeight(600).TextAlign(ui.Center).MaxWidth(320)
+			ui.Text(c, m.AiEmptyTitle(cn.host.Label())).FontSize(theme.Title3).FontWeight(600).TextAlign(ui.Center).MaxWidth(320)
 			empty := m.AiEmpty()
 			if aiTargetOf(cn) != agent.TargetSSH {
 				empty = m.AiEmptyTerminal()
@@ -1127,7 +1127,7 @@ func (a *App) aiApproval(c *ui.Context, cn *conn, tok theme.Tokens, m locales.Me
 	}
 	ui.Column(c.Key("aiask")).FillWidth().Padding(theme.Space(2), theme.Space(3)).Gap(theme.Space(2)).
 		Radius(theme.RadiusCard).Background(tint.Alpha(0.12)).Border(1, tint.Alpha(0.22)).Label(m.AiApprovalTitle()).Children(func() {
-		where := m.AiWhereRemote(a.pv(cn.host.Label()))
+		where := m.AiWhereRemote(cn.host.Label())
 		if pr.Action.Where == policy.Local {
 			where = m.AiWhereLocal()
 		}
@@ -1210,7 +1210,7 @@ func (a *App) askElsewhere(c *ui.Context, m locales.Messages) {
 			a.askToasts = map[int]*aiPend{}
 		}
 		a.askToasts[id] = cn.ai.pending
-		c.AddToast(ui.Toast{ID: askToastID(id), Title: m.AiApprovalWaiting(a.pv(cn.host.Label())), Timeout: -1,
+		c.AddToast(ui.Toast{ID: askToastID(id), Title: m.AiApprovalWaiting(cn.host.Label()), Timeout: -1,
 			Action: m.AiShowApproval(), OnAction: func() {
 				if cn := a.conns[id]; cn != nil {
 					a.showPane(cn)

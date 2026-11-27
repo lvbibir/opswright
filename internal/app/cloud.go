@@ -718,10 +718,10 @@ func (a *App) targetNote(m locales.Messages, t settings.BackupTarget) string {
 	switch t.Kind {
 	case settings.BackupWebDAV:
 		if u, err := url.Parse(t.URL); err == nil && u.Host != "" {
-			parts = append(parts, a.pv(u.Host))
+			parts = append(parts, u.Host)
 		}
 	case settings.BackupS3:
-		parts = append(parts, a.pv(t.Bucket))
+		parts = append(parts, t.Bucket)
 	}
 	var st targetState
 	if p := a.cloudNow().Targets[t.ID]; p != nil {

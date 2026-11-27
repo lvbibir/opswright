@@ -96,7 +96,7 @@ func (a *App) startupLines(c *conn) []string {
 		host := c.host.Label()
 		a.post(func() {
 			a.toasts = append(a.toasts, func(m locales.Messages) ui.Toast {
-				return ui.Toast{Title: m.StartupReadFailed(a.pv(host)), Type: "error"}
+				return ui.Toast{Title: m.StartupReadFailed(host), Type: "error"}
 			})
 		})
 		return nil

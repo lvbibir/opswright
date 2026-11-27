@@ -835,7 +835,6 @@
   "durMinutes": "{n} 分钟",
   "durHours": "{h} 小时 {m} 分",
   "durDays": "{d} 天 {h} 小时",
-  "privacyMode": "隐私模式：隐藏 IP 地址",
   "localTerminal": "本地终端",
   "localTerminalNote": "本机的 shell。文件、AI、端口转发和监控需要连接服务器。",
   "monitorLocal": "监控仅适用于服务器，此面板是本机的 shell。",

@@ -133,8 +133,7 @@ var (
 	Received     = load("arrow-down-line")
 	Uptime       = load("time-line")
 	Load         = load("speed-up-line")
-	Privacy      = load("eye-off-line")
-	PrivacyOn    = load("eye-off-fill")
+	Hide         = load("eye-off-line")
 	Transfers    = Network
 	Relay        = Forward // a copy from one server straight to another
 	LocalShell   = load("terminal-window-line")

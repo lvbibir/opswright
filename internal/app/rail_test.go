@@ -21,28 +21,28 @@ func TestRailRows(t *testing.T) {
 		}
 		seen[it.id] = true
 	}
-	all := []string{"monitor", "usage", "host", railSep, "files", "docker", "ai", "forward", railSep, "snippets", "history", "broadcast", "logs"}
+	all := []string{"host", "ai", "monitor", "usage", railSep, "files", "docker", "forward", railSep, "logs", "snippets", "history", "broadcast"}
 	for _, tc := range []struct {
-		name        string
-		hidden      []string
-		top, bottom []string
+		name   string
+		hidden []string
+		top    []string
 	}{
-		{"none", nil, all, []string{"quick"}},
-		{"unknown", []string{"later", ""}, all, []string{"quick"}},
+		{"none", nil, all},
+		{"unknown", []string{"later", ""}, all},
 		{"some", []string{"usage"},
-			[]string{"monitor", "host", railSep, "files", "docker", "ai", "forward", railSep, "snippets", "history", "broadcast", "logs"}, []string{"quick"}},
-		{"first group", []string{"monitor", "usage", "host"},
-			[]string{"files", "docker", "ai", "forward", railSep, "snippets", "history", "broadcast", "logs"}, []string{"quick"}},
-		{"middle group", []string{"files", "docker", "ai", "forward"},
-			[]string{"monitor", "usage", "host", railSep, "snippets", "history", "broadcast", "logs"}, []string{"quick"}},
-		{"last group", []string{"snippets", "history", "broadcast", "logs", "quick"},
-			[]string{"monitor", "usage", "host", railSep, "files", "docker", "ai", "forward"}, nil},
-		{"one left", []string{"monitor", "usage", "host", "files", "docker", "ai", "snippets", "history", "broadcast", "logs"},
-			[]string{"forward"}, []string{"quick"}},
+			[]string{"host", "ai", "monitor", railSep, "files", "docker", "forward", railSep, "logs", "snippets", "history", "broadcast"}},
+		{"first group", []string{"host", "ai", "monitor", "usage"},
+			[]string{"files", "docker", "forward", railSep, "logs", "snippets", "history", "broadcast"}},
+		{"middle group", []string{"files", "docker", "forward"},
+			[]string{"host", "ai", "monitor", "usage", railSep, "logs", "snippets", "history", "broadcast"}},
+		{"last group", []string{"logs", "snippets", "history", "broadcast"},
+			[]string{"host", "ai", "monitor", "usage", railSep, "files", "docker", "forward"}},
+		{"one left", []string{"host", "ai", "monitor", "files", "docker", "forward", "logs", "snippets", "history", "broadcast"},
+			[]string{"usage"}},
 	} {
-		top, bottom := railRows(tc.hidden)
-		if !slices.Equal(top, tc.top) || !slices.Equal(bottom, tc.bottom) {
-			t.Errorf("%s: top %q bottom %q", tc.name, top, bottom)
+		top := railRows(tc.hidden)
+		if !slices.Equal(top, tc.top) {
+			t.Errorf("%s: top %q", tc.name, top)
 		}
 	}
 }

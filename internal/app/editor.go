@@ -549,7 +549,7 @@ func (a *App) editorWindowView(c *ui.Context, cn *conn) {
 	ew.dirty.Store(unsaved > 0)
 	place := m.Local()
 	if !ew.local {
-		place = a.pv(cn.host.Label())
+		place = cn.host.Label()
 	}
 	title := place
 	if ed != nil {
@@ -759,7 +759,7 @@ func (a *App) editorWhere(cn *conn, p string) string {
 	if cn.ed.local {
 		return p
 	}
-	return a.pv(cn.host.Target()) + ":" + p
+	return cn.host.Target() + ":" + p
 }
 
 // editorPane is the file shown in an editor window: where it is, with
@@ -781,7 +781,7 @@ func (a *App) editorPane(c *ui.Context, cn *conn, ed *editState, tok theme.Token
 			st := cn.s.Status()
 			dot(c, stateColor(tok, st.State))
 			if st.State != session.Connected {
-				ui.Text(c, a.pv(a.statusText(m, cn.host, st, c.Now()))).FontSize(theme.Caption).TextColor(tok.TextMuted).SingleLine().Shrink(1)
+				ui.Text(c, a.statusText(m, cn.host, st, c.Now())).FontSize(theme.Caption).TextColor(tok.TextMuted).SingleLine().Shrink(1)
 			}
 		}
 		reload := m.EditorReloadFromServer()

@@ -125,7 +125,7 @@ func (a *App) prefAgents(c *ui.Context, m locales.Messages, tok theme.Tokens, s 
 		}
 		for _, ss := range list {
 			id := ss.id
-			g.row(ss.host.Label(), a.pv(ss.host.Address)+" · "+ss.since.Format("15:04:05"), func() {
+			g.row(ss.host.Label(), ss.host.Address+" · "+ss.since.Format("15:04:05"), func() {
 				if (IconButton{Icon: icons.Disconnect, Label: m.McpDisconnect(), Danger: true}).Clicked(c, "mcp:drop:"+id) {
 					a.dropMCPSession(id)
 				}

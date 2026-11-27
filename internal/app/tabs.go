@@ -237,7 +237,7 @@ func (a *App) newTabEntries(c *ui.Context, m locales.Messages) []menuEntry {
 	for _, h := range hosts {
 		entries = append(entries, menuEntry{
 			Lead:  func() { hostAvatar(c, currentTokens(c), h, 16) },
-			Label: a.pv(h.Label()),
+			Label: h.Label(),
 			Do:    func() { a.Connect(h.ID, openAt{}) },
 		})
 	}
@@ -442,10 +442,10 @@ func (a *App) tabTip(c *ui.Context, m locales.Messages, tok theme.Tokens, chip u
 						}
 						var parts []string
 						if target := h.Target(); target != "" {
-							parts = append(parts, a.pv(target))
+							parts = append(parts, target)
 						}
 						if cn.s != nil {
-							parts = append(parts, a.pv(a.statusText(m, h, cn.s.Status(), c.Now())))
+							parts = append(parts, a.statusText(m, h, cn.s.Status(), c.Now()))
 						}
 						line := strings.Join(parts, " · ")
 						ui.Text(c, line).FontSize(theme.Caption).TextColor(tok.TextMuted).SingleLine()
@@ -516,10 +516,10 @@ func (a *App) moreTab(c *ui.Context, m locales.Messages, tok theme.Tokens, t *la
 			h := a.liveHost(cn.host)
 			a.paneTile(c, tok, cn, 26)
 			if target := h.Target(); target != "" {
-				sub = append(sub, a.pv(target))
+				sub = append(sub, target)
 			}
 			if cn.s != nil {
-				sub = append(sub, a.pv(a.statusText(m, h, cn.s.Status(), c.Now())))
+				sub = append(sub, a.statusText(m, h, cn.s.Status(), c.Now()))
 			}
 		}
 		ui.Column(c).Gap(1).Grow(1).Shrink(1).MinWidth(0).Children(func() {

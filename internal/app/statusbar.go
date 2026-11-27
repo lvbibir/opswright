@@ -14,8 +14,7 @@ const statusBarHeight = 30
 // statusBar is the band along the bottom of the content: on the left the
 // focused session (its state, time connected, directory) and
 // what runs (sessions, forwards, an update); on the right IconButtons to
-// a local terminal, the theme, privacy, the command palette and the
-// shortcuts. The settings
+// a local terminal, the command palette and the shortcuts. The settings
 // are in the title bar.
 func (a *App) statusBar(c *ui.Context, m locales.Messages, tok theme.Tokens) {
 	a.backgroundSeparator(c, tok.GlassEdge, a.chromeFill(tok.Glass)).Height(1).Shrink(0).FillWidth()
@@ -55,10 +54,10 @@ func (a *App) statusSession(c *ui.Context, m locales.Messages, tok theme.Tokens)
 	}
 	ui.Row(c.Key("who")).Gap(6).Shrink(1).MinWidth(0).AlignItems(ui.Center).Children(func() {
 		if cn.s != nil {
-			dot(c, stateColor(tok, st.State)).Label(a.pv(a.statusText(m, h, st, c.Now())))
+			dot(c, stateColor(tok, st.State)).Label(a.statusText(m, h, st, c.Now()))
 		}
-		ui.Text(c, a.pv(h.Label())).FontSize(theme.Caption).FontWeight(600).SingleLine().Shrink(0)
-		ui.Text(c, a.pv(h.Target())).FontSize(theme.Caption).TextColor(tok.TextMuted).SingleLine().Shrink(1)
+		ui.Text(c, h.Label()).FontSize(theme.Caption).FontWeight(600).SingleLine().Shrink(0)
+		ui.Text(c, h.Target()).FontSize(theme.Caption).TextColor(tok.TextMuted).SingleLine().Shrink(1)
 	})
 	if cn.s == nil || st.State != session.Connected {
 		return
@@ -108,48 +107,11 @@ func (a *App) statusCounts(c *ui.Context, m locales.Messages, tok theme.Tokens) 
 	}
 }
 
-// themeIcon is the icon of an appearance mode.
-func themeIcon(md theme.Mode) *icons.Icon {
-	switch md {
-	case theme.Light:
-		return icons.Light
-	case theme.Dark:
-		return icons.Dark
-	}
-	return icons.LocalDisk
-}
-
 func (a *App) statusActions(c *ui.Context, m locales.Messages, tok theme.Tokens) {
 	ui.Row(c.Key("actions")).Shrink(0).Gap(theme.Space(1)).AlignItems(ui.Center).Children(func() {
 		a.outputEncodingChip(c, m)
 		if (IconButton{Icon: icons.LocalShell, Label: m.LocalTerminal(), Size: Small}).Clicked(c, "localterm") {
 			a.openLocal(m, "", true)
-		}
-		a.menuButton(c, "theme", IconButton{Icon: themeIcon(a.settings.Theme), Label: m.Theme(), Size: Small}, func() []menuEntry {
-			var entries []menuEntry
-			for i, md := range theme.Modes {
-				entries = append(entries, menuEntry{
-					Icon:    themeIcon(md),
-					Label:   []string{m.ThemeAuto(), m.ThemeLight(), m.ThemeDark()}[i],
-					Checked: a.settings.Theme == md,
-					Do: func() {
-						if a.settings.Theme == md {
-							return
-						}
-						s := a.settings
-						s.Theme = md
-						if err := a.ApplySettings(s); err != nil {
-							c.AddToast(ui.Toast{Title: m.ErrGeneric(err.Error()), Type: "error"})
-						}
-					},
-				})
-			}
-			return entries
-		})
-		if (IconButton{Icon: icons.Privacy, On: icons.PrivacyOn, Label: m.PrivacyMode(), Size: Small, Active: a.settings.Privacy, Toggle: true}).Clicked(c, "privacy") {
-			if err := a.TogglePrivacy(); err != nil {
-				c.AddToast(ui.Toast{Title: m.ErrGeneric(err.Error()), Type: "error"})
-			}
 		}
 		if (IconButton{Icon: icons.Command, Label: m.CommandPalette(), Size: Small}).Clicked(c, "palette") {
 			a.openPalette()

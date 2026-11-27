@@ -34,6 +34,17 @@ type pickerState struct {
 // paletteMax is how many rows the palette shows at most.
 const paletteMax = 60
 
+// themeIcon is the icon of an appearance mode.
+func themeIcon(md theme.Mode) *icons.Icon {
+	switch md {
+	case theme.Light:
+		return icons.Light
+	case theme.Dark:
+		return icons.Dark
+	}
+	return icons.LocalDisk
+}
+
 // paletteItem is one thing the palette finds: its title and the line
 // under it, what else finds it, the shortcut beside it, and what it does.
 type paletteItem struct {
@@ -84,12 +95,6 @@ func (a *App) paletteItems(m locales.Messages, tok theme.Tokens) []paletteItem {
 	if a.store.Len() > 0 {
 		cmd("newfwd", icons.Forward, locales.Messages.NewForwardMenu, func() { a.openFwdForm(m, nil, a.selectedHost()) })
 	}
-	add(paletteItem{key: "privacy", icon: icons.Privacy, title: m.PrivacyMode(), sub: m.PaletteCommand(), also: en.PrivacyMode(),
-		on: a.settings.Privacy, run: func() {
-			if err := a.TogglePrivacy(); err != nil {
-				a.toastError(m.ErrGeneric(err.Error()))
-			}
-		}})
 	cmd("update", icons.Update, locales.Messages.CheckForUpdates, func() { a.upd.Check() })
 	cmd("settings", icons.Settings, locales.Messages.Settings, func() { a.openSettings(a.prefNow()) })
 
@@ -99,7 +104,7 @@ func (a *App) paletteItems(m locales.Messages, tok theme.Tokens) []paletteItem {
 		if !h.SSH() {
 			sub = h.Target()
 		}
-		add(paletteItem{key: "host:" + id, icon: icons.Host, title: h.Label(), sub: a.pv(sub), run: func() { a.Connect(id, openAt{}) }})
+		add(paletteItem{key: "host:" + id, icon: icons.Host, title: h.Label(), sub: sub, run: func() { a.Connect(id, openAt{}) }})
 	}
 	for _, n := range a.store.Snippets() {
 		add(paletteItem{key: "snippet:" + n.ID, icon: icons.Send, title: n.Name, sub: m.Snippets(), also: n.Group,

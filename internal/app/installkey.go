@@ -298,7 +298,7 @@ func (a *App) installView(c *ui.Context, m locales.Messages) {
 				})
 			}
 			if ch := f.changed; ch != nil {
-				hostKeyChangeDetails(c, m, tok, a.pv(h.Label()), ch)
+				hostKeyChangeDetails(c, m, tok, h.Label(), ch)
 			}
 			a.installResultView(c, m, tok, f, h)
 			ui.Box(c).Height(1).FillWidth().Background(tok.Line)

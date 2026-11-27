@@ -8448,16 +8448,6 @@ func (msgs Messages) DurDays(d string, h string) string {
 	return Catalog.Format(msgs.locale, "durDays", map[string]any{"d": d, "h": h})
 }
 
-// PrivacyMode says "Privacy mode: mask IP addresses"
-// in the language the app shows.
-func PrivacyMode() string { return In(i18n.Locale()).PrivacyMode() }
-
-// PrivacyMode says "Privacy mode: mask IP addresses"
-// in the language of msgs.
-func (msgs Messages) PrivacyMode() string {
-	return Catalog.Format(msgs.locale, "privacyMode", nil)
-}
-
 // LocalTerminal says "Local terminal"
 // in the language the app shows.
 func LocalTerminal() string { return In(i18n.Locale()).LocalTerminal() }

@@ -109,7 +109,7 @@ func (a *App) terminalPanes(tabs []*layout.Tab) []*conn {
 // paneName names terminal pane c in a list of panes: its host, and its
 // number when the host has more than one.
 func (a *App) paneName(c *conn) string {
-	name := a.pv(a.liveHost(c.host).Label())
+	name := a.liveHost(c.host).Label()
 	if c.termNo > 0 && a.hostTermPanes(c.host.ID) > 1 {
 		name += " #" + strconv.Itoa(c.termNo)
 	}

@@ -107,8 +107,8 @@ func (a *App) dockerImageView(c *ui.Context, m locales.Messages, tok theme.Token
 					in := d.img.Inspect
 					a.imgOverview(c, m, tok, fam, im)
 					a.imgContainers(c, m, tok, tc)
-					a.ctrPairs(c, tok, fam, "env", icons.LocalShell, m.DockerEnv(), envPairs(in.Config.Env), true)
-					a.ctrPairs(c, tok, fam, "labels", icons.FileCode, m.DockerLabels(), labelPairs(in.Config.Labels), false)
+					a.ctrPairs(c, tok, fam, "env", icons.LocalShell, m.DockerEnv(), envPairs(in.Config.Env))
+					a.ctrPairs(c, tok, fam, "labels", icons.FileCode, m.DockerLabels(), labelPairs(in.Config.Labels))
 					a.imgHistory(c, m, tok, fam)
 				})
 			})

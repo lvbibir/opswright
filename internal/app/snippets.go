@@ -243,7 +243,7 @@ func (a *App) snippetFoot(c *ui.Context, m locales.Messages, tok theme.Tokens) {
 	ui.Row(c.Key("snippet:foot")).Height(statusBarHeight).Shrink(0).Padding(0, theme.Space(4)).Gap(theme.Space(2)).AlignItems(ui.Center).Children(func() {
 		col, text := tok.TextMuted, m.SnippetNoTarget()
 		if cn := a.snippetTarget(); cn != nil {
-			col, text = tok.Success, m.SnippetTarget(a.pv(cn.host.Label()), strconv.Itoa(cn.termNo))
+			col, text = tok.Success, m.SnippetTarget(cn.host.Label(), strconv.Itoa(cn.termNo))
 		}
 		dot(c, col)
 		ui.Text(c, text).FontSize(theme.Caption).TextColor(tok.TextMuted).Shrink(1).SingleLine()

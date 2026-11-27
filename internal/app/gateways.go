@@ -232,7 +232,7 @@ func (a *App) gatewaysSection(c *ui.Context, m locales.Messages, tok theme.Token
 		}
 		for _, gw := range gs {
 			gw := gw
-			note := a.pv(gatewayNote(m, gw))
+			note := gatewayNote(m, gw)
 			if hs := a.store.GatewayUsers(gw.ID); len(hs) > 0 {
 				note += " — " + m.CredUsedBy(hostNames(hs))
 			}

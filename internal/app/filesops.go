@@ -491,7 +491,7 @@ func transferLabel(m locales.Messages, t sftpsvc.Transfer) string {
 func (a *App) transferTip(m locales.Messages, t sftpsvc.Transfer) string {
 	var lines []string
 	if t.Dir == sftpsvc.Relay {
-		lines = append(lines, m.TransferFromHost(a.pv(t.From), shownName(t.Src)))
+		lines = append(lines, m.TransferFromHost(t.From, shownName(t.Src)))
 	}
 	if t.Destination != "" {
 		lines = append(lines, t.Destination)

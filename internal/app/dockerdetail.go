@@ -130,8 +130,8 @@ func (a *App) dockerDetailView(c *ui.Context, m locales.Messages, tok theme.Toke
 					a.ctrNetworks(c, m, tok, fam)
 					a.ctrMounts(c, m, tok, fam)
 					in := d.detail.Inspect
-					a.ctrPairs(c, tok, fam, "env", icons.LocalShell, m.DockerEnv(), envPairs(in.Config.Env), true)
-					a.ctrPairs(c, tok, fam, "labels", icons.FileCode, m.DockerLabels(), labelPairs(in.Config.Labels), false)
+					a.ctrPairs(c, tok, fam, "env", icons.LocalShell, m.DockerEnv(), envPairs(in.Config.Env))
+					a.ctrPairs(c, tok, fam, "labels", icons.FileCode, m.DockerLabels(), labelPairs(in.Config.Labels))
 					a.ctrProcesses(c, m, tok, fam)
 				})
 			})
@@ -211,14 +211,14 @@ func (a *App) ctrOverview(c *ui.Context, m locales.Messages, tok theme.Tokens, f
 		}
 		kv = append(kv,
 			m.DockerRestartPolicy(), orDash(m, policy), m.DockerRestartCount(), strconv.Itoa(in.Restart),
-			m.DockerUser(), orDash(m, in.Config.User), m.DockerHostname(), orDash(m, a.pv(in.Config.Hostname)),
+			m.DockerUser(), orDash(m, in.Config.User), m.DockerHostname(), orDash(m, in.Config.Hostname),
 			m.DockerNetworkMode(), orDash(m, in.HostConfig.NetworkMode), m.DockerPrivileged(), privileged,
 			m.DockerMemLimit(), memLimit, m.DockerCPULimit(), cpuLimit,
 		)
 		facts(c, tok, fam, kv...)
 		wideFact(c, tok, fam, m.DockerCommand(), orDash(m, in.Command()))
 		wideFact(c, tok, fam, m.DockerWorkDir(), orDash(m, in.Config.WorkingDir))
-		wideFact(c, tok, fam, m.DockerPorts(), orDash(m, a.pv(ct.Ports)))
+		wideFact(c, tok, fam, m.DockerPorts(), orDash(m, ct.Ports))
 	})
 }
 
@@ -243,9 +243,9 @@ func (a *App) ctrNetworks(c *ui.Context, m locales.Messages, tok theme.Tokens, f
 				ui.Box(c).Height(1).FillWidth().Background(tok.Line)
 			}
 			ui.Text(c, n.Name).FontSize(theme.Footnote).FontWeight(600).SingleLine()
-			kv := []string{"IP", orDash(m, a.pv(n.IP)), m.DockerGateway(), orDash(m, a.pv(n.Gateway)), "MAC", orDash(m, a.pv(n.MAC))}
+			kv := []string{"IP", orDash(m, n.IP), m.DockerGateway(), orDash(m, n.Gateway), "MAC", orDash(m, n.MAC)}
 			if n.IPv6 != "" {
-				kv = append(kv, "IPv6", a.pv(n.IPv6))
+				kv = append(kv, "IPv6", n.IPv6)
 			}
 			facts(c, tok, fam, kv...)
 		}
@@ -301,17 +301,14 @@ func labelPairs(ls map[string]string) [][2]string {
 }
 
 // ctrPairs is a card of keys and their values, an environment or
-// labels; values that may hold secrets are masked in privacy mode.
-func (a *App) ctrPairs(c *ui.Context, tok theme.Tokens, fam, key string, ic *icons.Icon, title string, ps [][2]string, private bool) {
+// labels.
+func (a *App) ctrPairs(c *ui.Context, tok theme.Tokens, fam, key string, ic *icons.Icon, title string, ps [][2]string) {
 	if len(ps) == 0 {
 		return
 	}
 	a.panelCard(c, tok, key, ic, tok.TintAt(4), title, strconv.Itoa(len(ps)), func() {
 		for i, p := range ps {
 			v := p[1]
-			if private {
-				v = a.pv(v)
-			}
 			ui.Row(c.Key(i)).Gap(12).FillWidth().AlignItems(ui.Start).Children(func() {
 				ui.Text(c, p[0]).Font(fam).FontSize(theme.Caption).FontWeight(600).Width(220).Shrink(0).Selectable()
 				ui.Text(c, v).Font(fam).FontSize(theme.Caption).TextColor(tok.TextMuted).Grow(1).Shrink(1).MinWidth(0).Selectable()

@@ -14,7 +14,6 @@ import (
 	"github.com/lvbibir/opswright/internal/layout"
 	"github.com/lvbibir/opswright/internal/session"
 	"github.com/lvbibir/opswright/internal/settings"
-	"github.com/lvbibir/opswright/internal/theme"
 	"github.com/lvbibir/opswright/locales"
 )
 
@@ -98,14 +97,14 @@ func TestAboutLicenseLink(t *testing.T) {
 
 func TestStatusBar(t *testing.T) {
 	a, tt := newTestApp(t)
-	if err := tt.Click("Theme"); err != nil {
-		t.Fatal(err)
-	}
-	mustClick(t, tt, "Dark")
+	m := locales.In("en")
+	mustClick(t, tt, m.CommandPalette())
 	tt.Frame()
-	if a.Settings().Theme != theme.Dark {
-		t.Fatalf("theme %q", a.Settings().Theme)
+	if !a.palette.open {
+		t.Fatal("the status bar's palette button did not open the palette")
 	}
+	tt.Key(0, ui.KeyEscape)
+	tt.Frame()
 	mustClick(t, tt, "Settings")
 	if a.page != pageSettings {
 		t.Fatal("the title bar's settings did not open them")

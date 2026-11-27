@@ -52,7 +52,7 @@ func (a *App) connLabel(cn *conn) string {
 	if isTool(cn.kind) {
 		return a.toolNames[cn.kind]
 	}
-	return a.pv(cn.host.Label())
+	return cn.host.Label()
 }
 
 // nameTools keeps what the tool panes are called in m's language.

@@ -35,7 +35,7 @@ func (a *App) forgetHostKey(h assets.Host) {
 		if err != nil {
 			return ui.Toast{Title: knownHostsErrorText(m, err), Type: "error"}
 		}
-		return ui.Toast{Title: m.HostKeyForgotten(a.pv(h.Label()))}
+		return ui.Toast{Title: m.HostKeyForgotten(h.Label())}
 	})
 }
 
@@ -93,7 +93,7 @@ func (a *App) knownHostsPage(c *ui.Context, m locales.Messages, tok theme.Tokens
 				continue
 			}
 			shown++
-			g.row(a.pv(title), a.pv(note), func() {
+			g.row(title, note, func() {
 				if (IconButton{Icon: icons.Delete, Label: m.RemoveHostKey(), Size: Small, Danger: true}).Clicked(c, "kh:rm:"+strconv.Itoa(k.Line)) {
 					a.removeKnownKey(k)
 				}

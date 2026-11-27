@@ -63,8 +63,8 @@ func (a *App) hostCard(c *ui.Context, m locales.Messages, tok theme.Tokens, anch
 			ui.Row(c).Gap(10).AlignItems(ui.Center).FillWidth().Children(func() {
 				hostAvatar(c, tok, h, 32)
 				ui.Column(c).Gap(1).Grow(1).Shrink(1).MinWidth(0).Children(func() {
-					ui.Text(c, a.pv(h.Label())).FontSize(theme.Body).FontWeight(600).SingleLine()
-					ui.Text(c, a.pv(h.Target())).FontSize(theme.Caption).TextColor(tok.TextMuted).SingleLine()
+					ui.Text(c, h.Label()).FontSize(theme.Body).FontWeight(600).SingleLine()
+					ui.Text(c, h.Target()).FontSize(theme.Caption).TextColor(tok.TextMuted).SingleLine()
 				})
 			})
 			ui.Box(c).Height(1).FillWidth().Background(tok.Line)
@@ -86,10 +86,10 @@ func (a *App) hostCard(c *ui.Context, m locales.Messages, tok theme.Tokens, anch
 				fact(m.FieldProxy(), px.Name, none, 1)
 			}
 			if gw, ok := a.gatewayFor(h); ok {
-				fact(m.Gateway(), a.pv(gw.Label()), none, 2)
+				fact(m.Gateway(), gw.Label(), none, 2)
 			}
 			if st, ok := a.hostState(h.ID); ok {
-				fact(m.FieldStatus(), a.pv(a.statusText(m, h, session.Status{State: st}, now)), stateColor(tok, st), 1)
+				fact(m.FieldStatus(), a.statusText(m, h, session.Status{State: st}, now), stateColor(tok, st), 1)
 			}
 			if r, ok := a.pingOf(h); ok && r.ok {
 				fact(m.SysLatency(), latencyValue(m, r.d, true), latencyColor(tok, r.d, true), 1)

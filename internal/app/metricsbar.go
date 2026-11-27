@@ -387,7 +387,7 @@ func maxGPU(gs []session.GPU) (float64, bool) {
 func (a *App) metricsItemMenu(el ui.Element, cn *conn, m locales.Messages) {
 	a.contextMenu(el, func() []menuEntry {
 		return []menuEntry{
-			{Icon: icons.Privacy, Label: m.MetricsHide(), Do: func() { a.hideMetrics(cn.host.ID) }},
+			{Icon: icons.Hide, Label: m.MetricsHide(), Do: func() { a.hideMetrics(cn.host.ID) }},
 			{Icon: icons.Settings, Label: m.OpenSettings(), Do: func() { a.openSettings(prefMonitoring) }},
 		}
 	})

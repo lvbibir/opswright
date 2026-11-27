@@ -135,7 +135,7 @@ func (a *App) quickCommandRow(c *ui.Context, m locales.Messages, tok theme.Token
 func (a *App) quickCommandFoot(c *ui.Context, m locales.Messages, tok theme.Tokens) {
 	col, text := tok.TextMuted, m.SnippetNoTarget()
 	if cn := a.snippetTarget(); cn != nil {
-		col, text = tok.Success, m.SnippetTarget(a.pv(cn.host.Label()), strconv.Itoa(cn.termNo))
+		col, text = tok.Success, m.SnippetTarget(cn.host.Label(), strconv.Itoa(cn.termNo))
 	}
 	ui.Row(c.Key("qcmd:foot")).FillWidth().Gap(theme.Space(2)).AlignItems(ui.Center).Children(func() {
 		dot(c, col)

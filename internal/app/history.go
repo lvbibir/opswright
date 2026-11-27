@@ -313,7 +313,7 @@ func (a *App) historyBody(c *ui.Context, m locales.Messages, tok theme.Tokens) {
 			ui.Row(c.Key("hist:err")).FillWidth().Padding(theme.Space(2), theme.Space(2.5)).Gap(theme.Space(2)).Radius(theme.RadiusControl).
 				Background(tok.Warning.Alpha(0.12)).Border(1, tok.Warning.Alpha(0.3)).Children(func() {
 				ui.Icon(c, icons.Warning.SVG).Size(14, 14).Shrink(0).TextColor(tok.Warning)
-				ui.Text(c, m.HistoryFailed(a.pv(d.err.Error()))).FontSize(theme.Footnote).Grow(1).Shrink(1)
+				ui.Text(c, m.HistoryFailed(d.err.Error())).FontSize(theme.Footnote).Grow(1).Shrink(1)
 			})
 		}
 	})
@@ -490,7 +490,7 @@ func (a *App) historyRow(c *ui.Context, m locales.Messages, tok theme.Tokens, i 
 			row.Children(func() {
 				ui.Column(c).Grow(1).Shrink(1).MinWidth(0).Gap(theme.Space(0.5)).Children(func() {
 					if !sel {
-						ui.Text(c, a.pv(strings.SplitN(e.Cmd, "\n", 2)[0])).Font(fam).FontSize(theme.Footnote).SingleLine()
+						ui.Text(c, strings.SplitN(e.Cmd, "\n", 2)[0]).Font(fam).FontSize(theme.Footnote).SingleLine()
 					}
 					ui.Text(c, historyMeta(m, e)).FontSize(theme.Caption).TextColor(tok.TextMuted).SingleLine()
 				})
@@ -525,7 +525,7 @@ func (a *App) historyRow(c *ui.Context, m locales.Messages, tok theme.Tokens, i 
 		ui.Column(c.Key("hist:detail")).FillWidth().Padding(0, theme.Space(2), theme.Space(2), theme.Space(2)).Children(func() {
 			ui.Scroll(c.Key("hist:body")).FillWidth().MaxHeight(theme.Space(40)).Radius(theme.RadiusSmall).Background(a.contentSurfaceFill(tok.Inset)).Border(1, tok.Line).Children(func() {
 				ui.Column(c).FillWidth().Padding(theme.Space(2), theme.Space(2.5)).Children(func() {
-					ui.Text(c, a.pv(e.Cmd)).Font(fam).FontSize(theme.Footnote)
+					ui.Text(c, e.Cmd).Font(fam).FontSize(theme.Footnote)
 				})
 			})
 		})

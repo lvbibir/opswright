@@ -126,7 +126,7 @@ func (a *App) challengeView(c *ui.Context, m locales.Messages) {
 	if r.ch.User != "" {
 		target = r.ch.User + "@" + target
 	}
-	title := m.ChallengeTitle(a.pv(target))
+	title := m.ChallengeTitle(target)
 	submit := false
 	sheet(stickyModal(c, &a.challenging, func() {
 		ui.Column(c).Gap(14).Width(400).Children(func() {

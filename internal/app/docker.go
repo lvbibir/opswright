@@ -230,7 +230,7 @@ func (a *App) dockerPanel(c *ui.Context, m locales.Messages, tok theme.Tokens) {
 		ui.Row(c.Key("dockererr")).FillWidth().Padding(8, 10).Gap(8).Radius(theme.RadiusControl).
 			Background(tok.Warning.Alpha(0.12)).Border(1, tok.Warning.Alpha(0.3)).Children(func() {
 			ui.Icon(c, icons.Warning.SVG).Size(14, 14).Shrink(0).TextColor(tok.Warning)
-			ui.Text(c, a.pv(dockerErrText(m, d.err))).FontSize(theme.Footnote).Shrink(1)
+			ui.Text(c, dockerErrText(m, d.err)).FontSize(theme.Footnote).Shrink(1)
 		})
 		if !d.read {
 			return

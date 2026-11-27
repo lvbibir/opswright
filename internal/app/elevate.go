@@ -32,7 +32,7 @@ func (a *App) elevateOptions(h assets.Host) *session.Elevate {
 	if ok, err := a.kc.Exists(keychain.HostElevate(h.ID)); err != nil || !ok {
 		return nil
 	}
-	id, host := h.ID, a.pv(h.Label())
+	id, host := h.ID, h.Label()
 	return &session.Elevate{
 		Command: elevateCommand,
 		Prompt:  h.SuPrompt(),

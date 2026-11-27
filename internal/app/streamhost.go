@@ -159,7 +159,7 @@ func (a *App) streamFacts(c *ui.Context, m locales.Messages, tok theme.Tokens, h
 			m.OpenPanes(), strconv.Itoa(panes))
 	} else {
 		facts(c, tok, "",
-			m.FieldProtocol(), protocolName(m, h.Protocol), m.SysAddress(), a.pv(h.Address),
+			m.FieldProtocol(), protocolName(m, h.Protocol), m.SysAddress(), h.Address,
 			m.FieldPort(), strconv.Itoa(h.Port), m.FieldUser(), or(h.User),
 			m.FieldProxy(), proxy, m.FieldNewLine(), nl,
 			m.FieldGroup(), or(h.Group), m.OpenPanes(), strconv.Itoa(panes))

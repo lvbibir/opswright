@@ -185,8 +185,8 @@ func TestLocalTerminalTabOrSplit(t *testing.T) {
 		t.Fatalf("%d tabs, %d panes, menu %q: the + did not open a tab", len(a.ws.Tabs), len(a.conns), a.menu.key)
 	}
 
-	th := mustFind(t, tt, "Theme")
-	tt.ClickAt(th.X-float32(theme.Space(1))-th.W/2, th.Y+th.H/2)
+	pal := mustFind(t, tt, "Command Palette")
+	tt.ClickAt(pal.X-float32(theme.Space(1))-pal.W/2, pal.Y+pal.H/2)
 	tt.Frame()
 	if len(a.ws.Tabs) != 2 || len(a.conns) != 3 {
 		t.Fatalf("%d tabs, %d panes: the status bar did not split", len(a.ws.Tabs), len(a.conns))

@@ -103,12 +103,6 @@ func TestCommandPalette(t *testing.T) {
 	if a.palette.open || a.settings.Theme != "light" {
 		t.Fatalf("open %v, theme %q", a.palette.open, a.settings.Theme)
 	}
-	openPaletteTyped(t, a, tt, "privacy")
-	tt.Key(0, ui.KeyEnter)
-	tt.Frame()
-	if !a.settings.Privacy {
-		t.Fatal("privacy mode stays off")
-	}
 
 	openPaletteTyped(t, a, tt, "zzzz nothing")
 	if !tt.HasText(m.PaletteNoResults()) {

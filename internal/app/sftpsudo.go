@@ -146,7 +146,7 @@ func (a *App) sudoPromptView(c *ui.Context, m locales.Messages) {
 		return
 	}
 	tok := currentTokens(c)
-	title := m.SudoPromptTitle(a.pv(p.host.Target()))
+	title := m.SudoPromptTitle(p.host.Target())
 	sheet(ui.Modal(c, &a.sudoAsking, func() {
 		ui.Column(c).Gap(14).Width(380).Children(func() {
 			ui.Row(c).Gap(12).AlignItems(ui.Center).Children(func() {

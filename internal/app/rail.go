@@ -34,71 +34,57 @@ type railItem struct {
 	name  func(locales.Messages) string
 }
 
-// railBottom is the group under the rail's spacer: ways to reach a new
-// host.
-const railBottom = 3
-
-// railItems are the rail's items in its order: the panels on the host,
-// then actions on the focused session, then the tool panes working on the
-// sessions, then the bottom group. An ID never changes once released.
+// railItems are the rail's items in its order: the host and what runs on
+// it, then the sessions' panes and ways to reach them, then the tool
+// panes working on the sessions. An ID never changes once released.
 var railItems = []railItem{
+	{"host", 0, icons.Info, locales.Messages.HostDetails},
+	{"ai", 0, icons.Robot, locales.Messages.AiSettings},
 	{"monitor", 0, icons.Monitor, locales.Messages.SystemMonitor},
 	{"usage", 0, icons.Usage, locales.Messages.ProcessUsage},
-	{"host", 0, icons.Info, locales.Messages.HostDetails},
 	{"files", 1, icons.Folder, locales.Messages.Sftp},
 	{"docker", 1, icons.Docker, locales.Messages.DockerManager},
-	{"ai", 1, icons.Robot, locales.Messages.AiSettings},
 	{"forward", 1, icons.Forward, locales.Messages.NewForward},
+	{"logs", 2, icons.FileText, locales.Messages.SessionLogs},
 	{"snippets", 2, icons.API, locales.Messages.Snippets},
 	{"history", 2, icons.History, locales.Messages.CommandHistory},
 	{"broadcast", 2, icons.Broadcast, locales.Messages.Broadcast},
-	{"logs", 2, icons.FileText, locales.Messages.SessionLogs},
-	{"quick", railBottom, icons.Quick, locales.Messages.QuickConnect},
 }
 
 // railSep stands for a separator in railRows.
 const railSep = "-"
 
-// railRows are the IDs of the rail's items not hidden, in its order: top
-// above the spacer, with railSep between two groups that both keep an
-// item, so an empty group leaves no separator; bottom under it. An ID in
-// hidden that names no item is ignored.
-func railRows(hidden []string) (top, bottom []string) {
+// railRows are the IDs of the rail's items not hidden, in its order, with
+// railSep between two groups that both keep an item, so an empty group
+// leaves no separator. An ID in hidden that names no item is ignored.
+func railRows(hidden []string) []string {
 	group := -1
+	var top []string
 	for _, it := range railItems {
-		switch {
-		case slices.Contains(hidden, it.id):
-		case it.group == railBottom:
-			bottom = append(bottom, it.id)
-		default:
-			if group >= 0 && it.group != group {
-				top = append(top, railSep)
-			}
-			group = it.group
-			top = append(top, it.id)
+		if slices.Contains(hidden, it.id) {
+			continue
 		}
+		if group >= 0 && it.group != group {
+			top = append(top, railSep)
+		}
+		group = it.group
+		top = append(top, it.id)
 	}
-	return top, bottom
+	return top
 }
 
-// railView is the rail: the items the user did not hide, in their groups,
-// the bottom ones under the spacer. Its menu, and each item's, choose the
-// items.
+// railView is the rail: the items the user did not hide, in their groups.
+// Its menu, and each item's, choose the items.
 func (a *App) railView(c *ui.Context, m locales.Messages, tok theme.Tokens) {
 	cn := a.focused()
-	top, bottom := railRows(a.settings.RailHidden)
 	rail := ui.Column(c.Key("rail")).Width(railWidth).Shrink(0).FillHeight().Padding(theme.Space(2), 0).Gap(theme.Space(1)).
 		AlignItems(ui.Center).Background(a.chromeFill(tok.Glass))
 	rail.Children(func() {
-		for i, id := range top {
+		for i, id := range railRows(a.settings.RailHidden) {
 			if id == railSep {
 				ui.Box(c.Key("sep" + strconv.Itoa(i))).Width(14).Height(1).Shrink(0).MarginY(theme.Space(1)).Background(tok.Line)
 				continue
 			}
-			a.railButton(c, m, cn, id)
-		}
-		ui.Spacer(c)
-		for _, id := range bottom {
 			a.railButton(c, m, cn, id)
 		}
 	})
@@ -167,8 +153,6 @@ func (a *App) railButton(c *ui.Context, m locales.Messages, cn *conn, id string)
 		if logging > 0 {
 			b.Prominent, b.Badge, b.BadgeDanger = true, strconv.Itoa(logging), failed
 		}
-	case "quick":
-		b, do = IconButton{Icon: icons.Quick, Label: m.QuickConnect()}, a.OpenQuickConnect
 	default:
 		return
 	}
@@ -185,7 +169,7 @@ func (a *App) railButton(c *ui.Context, m locales.Messages, cn *conn, id string)
 func (a *App) railEntries(m locales.Messages, id string) []menuEntry {
 	var out []menuEntry
 	if id != "" {
-		out = append(out, menuEntry{Icon: icons.Privacy, Label: m.RailHide(), Do: func() { a.setRailShown(id, false) }}, menuSep)
+		out = append(out, menuEntry{Icon: icons.Hide, Label: m.RailHide(), Do: func() { a.setRailShown(id, false) }}, menuSep)
 	}
 	return append(out, menuEntry{Icon: icons.Settings, Label: m.RailCustomize(), Do: func() { a.openSetting(prefGeneral, m.RailSection()) }})
 }
@@ -396,12 +380,12 @@ func (a *App) monitorPanel(c *ui.Context, m locales.Messages, tok theme.Tokens) 
 				tickDur(c, d)
 			}
 		}
-		kv := []string{m.FieldHost(), a.pv(h.Label()), m.SysOS(), osName, m.SysLatency(), lat, m.SysConnectedFor(), up}
+		kv := []string{m.FieldHost(), h.Label(), m.SysOS(), osName, m.SysLatency(), lat, m.SysConnectedFor(), up}
 		// A BSD release already names its kernel.
 		if rd.Kernel != "" && !strings.Contains(osName, rd.Kernel) {
 			kv = append(kv, m.SysKernel(), rd.Kernel)
 		}
-		facts(c, tok, fam, append(kv, m.SysAddress(), a.pv(h.Target()))...)
+		facts(c, tok, fam, append(kv, m.SysAddress(), h.Target())...)
 	})
 	switch {
 	case tc == nil:
@@ -630,14 +614,14 @@ func (a *App) loginCard(c *ui.Context, m locales.Messages, tok theme.Tokens, fam
 			for _, l := range rd.Logins {
 				var detail []string
 				if l.From != "" {
-					detail = append(detail, a.pv(l.From))
+					detail = append(detail, l.From)
 				}
 				if l.When != "" {
 					detail = append(detail, l.When)
 				}
 				ui.Row(c).Gap(8).FillWidth().Padding(5, 8).Radius(theme.RadiusSmall).Background(tok.Fill).AlignItems(ui.Center).Children(func() {
 					ui.Column(c).Gap(1).Grow(1).Shrink(1).MinWidth(0).Children(func() {
-						ui.Text(c, a.pv(l.User)).FontSize(theme.Footnote).FontWeight(500).SingleLine()
+						ui.Text(c, l.User).FontSize(theme.Footnote).FontWeight(500).SingleLine()
 						if len(detail) > 0 {
 							ui.Text(c, strings.Join(detail, " · ")).Font(fam).FontSize(theme.Caption).TextColor(tok.TextMuted).SingleLine()
 						}
@@ -696,12 +680,12 @@ func (a *App) hostPanel(c *ui.Context, m locales.Messages, tok theme.Tokens) {
 			hostAvatar(c, tok, h, 36)
 			ui.Column(c).Gap(2).Grow(1).Shrink(1).Children(func() {
 				ui.Row(c).Gap(6).AlignItems(ui.Center).Children(func() {
-					ui.Text(c, a.pv(h.Label())).FontSize(theme.Title3).FontWeight(600).SingleLine().Shrink(1)
+					ui.Text(c, h.Label()).FontSize(theme.Title3).FontWeight(600).SingleLine().Shrink(1)
 					if temp {
 						tempBadge(c, m, tok)
 					}
 				})
-				ui.Text(c, a.pv(h.Target())).FontSize(theme.Caption).TextColor(tok.TextMuted).SingleLine()
+				ui.Text(c, h.Target()).FontSize(theme.Caption).TextColor(tok.TextMuted).SingleLine()
 			})
 		})
 		ui.Row(c).Gap(2).AlignItems(ui.Center).FillWidth().Children(func() {
@@ -742,7 +726,7 @@ func (a *App) hostPanel(c *ui.Context, m locales.Messages, tok theme.Tokens) {
 	}
 	jump := m.GatewayNone()
 	if gw, ok := a.gatewayFor(h); ok {
-		jump = a.pv(gw.Label())
+		jump = gw.Label()
 	}
 	panes := 0
 	for _, o := range a.conns {
@@ -756,7 +740,7 @@ func (a *App) hostPanel(c *ui.Context, m locales.Messages, tok theme.Tokens) {
 			return
 		}
 		facts(c, tok, "",
-			m.SysAddress(), a.pv(h.Address), m.FieldPort(), strconv.Itoa(h.Port),
+			m.SysAddress(), h.Address, m.FieldPort(), strconv.Itoa(h.Port),
 			m.FieldUser(), or(h.User), m.FieldGroup(), or(h.Group),
 			m.FieldProxy(), proxy, m.OpenPanes(), strconv.Itoa(panes))
 		ui.Column(c).Gap(2).FillWidth().Children(func() {

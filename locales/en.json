@@ -835,7 +835,6 @@
   "durMinutes": "{n}m",
   "durHours": "{h}h {m}m",
   "durDays": "{d}d {h}h",
-  "privacyMode": "Privacy mode: mask IP addresses",
   "localTerminal": "Local terminal",
   "localTerminalNote": "A shell on this computer. Files, AI, forwards and metrics need a server.",
   "monitorLocal": "Metrics are for servers. This pane is a shell on this computer.",
