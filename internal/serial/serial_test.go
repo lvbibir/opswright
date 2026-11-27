@@ -93,15 +93,6 @@ func TestFrame(t *testing.T) {
 	}
 }
 
-func TestNaturalCompare(t *testing.T) {
-	got := []string{"COM10", "COM2", "COM1", "/dev/ttyUSB10", "/dev/ttyUSB2", "/dev/ttyACM0", "COM02", "/dev/ttyUSB"}
-	slices.SortFunc(got, naturalCompare)
-	want := []string{"/dev/ttyACM0", "/dev/ttyUSB", "/dev/ttyUSB2", "/dev/ttyUSB10", "COM1", "COM2", "COM02", "COM10"}
-	if !slices.Equal(got, want) {
-		t.Fatalf("sorted = %q, want %q", got, want)
-	}
-}
-
 func TestListPorts(t *testing.T) {
 	for _, tc := range []struct {
 		goos string

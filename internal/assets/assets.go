@@ -21,6 +21,7 @@ import (
 	"sync"
 	"time"
 
+	"github.com/lvbibir/opswright/internal/natsort"
 	"github.com/lvbibir/opswright/internal/session"
 	"github.com/lvbibir/opswright/internal/settings"
 	"github.com/lvbibir/opswright/internal/theme"
@@ -536,10 +537,13 @@ func (s *Store) Rev() uint64 {
 	return s.rev
 }
 
+// sorted orders hosts by label, a label's runs of digits compared as
+// numbers, so that a host named after an address keeps 1.1.1.2 before
+// 1.1.1.10 and 1.1.1.100 after 1.1.1.11.
 func sorted(hs []Host) []Host {
 	out := slices.Clone(hs)
 	slices.SortStableFunc(out, func(a, b Host) int {
-		if c := strings.Compare(strings.ToLower(a.Label()), strings.ToLower(b.Label())); c != 0 {
+		if c := natsort.Compare(strings.ToLower(a.Label()), strings.ToLower(b.Label())); c != 0 {
 			return c
 		}
 		return strings.Compare(a.ID, b.ID)
@@ -761,7 +765,7 @@ func (s *Store) groupNames() []string {
 			}
 			return i - j
 		}
-		return strings.Compare(strings.ToLower(a), strings.ToLower(b))
+		return natsort.Compare(strings.ToLower(a), strings.ToLower(b))
 	})
 	return treeOrder(out)
 }

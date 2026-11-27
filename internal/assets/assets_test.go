@@ -5,6 +5,7 @@ import (
 	"os"
 	"path/filepath"
 	"runtime"
+	"slices"
 	"strings"
 	"testing"
 	"time"
@@ -78,6 +79,36 @@ func TestCRUDAndPersistence(t *testing.T) {
 	}
 	if _, err := s2.Update(Host{ID: "nope", Address: "x", User: "y"}); !errors.Is(err, ErrNotFound) {
 		t.Errorf("update missing: %v", err)
+	}
+}
+
+func TestListNaturalOrder(t *testing.T) {
+	path := filepath.Join(t.TempDir(), "hosts.json")
+	s, err := Open(path)
+	if err != nil {
+		t.Fatal(err)
+	}
+	// A host with no name sorts by its address; the address's parts
+	// compare as numbers, not byte by byte. A named host sorts by its
+	// name the same way.
+	for _, addr := range []string{"1.1.1.1", "1.1.1.10", "1.1.1.100", "1.1.1.101", "1.1.1.11", "1.1.1.2"} {
+		if _, err := s.Add(Host{Address: addr, User: "root"}); err != nil {
+			t.Fatal(err)
+		}
+	}
+	if _, err := s.Add(Host{Name: "web-2", Address: "10.0.0.2", User: "root"}); err != nil {
+		t.Fatal(err)
+	}
+	if _, err := s.Add(Host{Name: "web-10", Address: "10.0.0.10", User: "root"}); err != nil {
+		t.Fatal(err)
+	}
+	var got []string
+	for _, h := range s.List() {
+		got = append(got, h.Label())
+	}
+	want := []string{"1.1.1.1", "1.1.1.2", "1.1.1.10", "1.1.1.11", "1.1.1.100", "1.1.1.101", "web-2", "web-10"}
+	if !slices.Equal(got, want) {
+		t.Fatalf("List order %q, want %q", got, want)
 	}
 }
 

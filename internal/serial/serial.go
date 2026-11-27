@@ -4,7 +4,6 @@
 package serial
 
 import (
-	"cmp"
 	"errors"
 	"fmt"
 	"io"
@@ -12,6 +11,8 @@ import (
 	"slices"
 	"strings"
 	"time"
+
+	"github.com/lvbibir/opswright/internal/natsort"
 )
 
 // Parity is a port's parity setting.
@@ -181,37 +182,6 @@ func listPorts(goos string, names []string) []string {
 		}
 		out = append(out, n)
 	}
-	slices.SortFunc(out, naturalCompare)
+	slices.SortFunc(out, natsort.Compare)
 	return out
-}
-
-// naturalCompare orders strings with runs of digits compared as numbers.
-func naturalCompare(a, b string) int {
-	for a != "" && b != "" {
-		if isDigit(a[0]) && isDigit(b[0]) {
-			da, ra := leadingDigits(a)
-			db, rb := leadingDigits(b)
-			na, nb := strings.TrimLeft(da, "0"), strings.TrimLeft(db, "0")
-			if c := cmp.Or(cmp.Compare(len(na), len(nb)), strings.Compare(na, nb), cmp.Compare(len(da), len(db))); c != 0 {
-				return c
-			}
-			a, b = ra, rb
-			continue
-		}
-		if a[0] != b[0] {
-			return cmp.Compare(a[0], b[0])
-		}
-		a, b = a[1:], b[1:]
-	}
-	return cmp.Compare(len(a), len(b))
-}
-
-func isDigit(c byte) bool { return '0' <= c && c <= '9' }
-
-func leadingDigits(s string) (digits, rest string) {
-	i := 0
-	for i < len(s) && isDigit(s[i]) {
-		i++
-	}
-	return s[:i], s[i:]
 }
