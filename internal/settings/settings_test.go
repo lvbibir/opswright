@@ -231,7 +231,7 @@ func TestLocalBackup(t *testing.T) {
 	if s.LocalBackup.Interval != LocalDaily || s.LocalBackup.Keep != LocalBackupKeepDefault || s.LocalBackup.Dir != "" {
 		t.Fatalf("normalized %+v", s.LocalBackup)
 	}
-	abs := filepath.Join(string(filepath.Separator), "bak")
+	abs := filepath.Join(t.TempDir(), "bak")
 	s.LocalBackup = LocalBackup{Interval: LocalMonthly, Keep: 0, Dir: abs}
 	s.Normalize()
 	if s.LocalBackup.Interval != LocalMonthly || s.LocalBackup.Keep != 0 || s.LocalBackup.Dir != abs {
