@@ -123,6 +123,16 @@ func mustClick(t *testing.T, tt *ui.Tester, s string) {
 	}
 }
 
+// scrollSettingsTo scrolls the settings page so the row labelled s sits
+// near the top of the window, however many rows come before it.
+func scrollSettingsTo(t *testing.T, tt *ui.Tester, s string) {
+	t.Helper()
+	r := mustFind(t, tt, s)
+	tt.Scroll(r.X+r.W/2, 300, 0, r.Y-300)
+	tt.Advance(300 * time.Millisecond)
+	tt.Frame()
+}
+
 func TestAddHostFlow(t *testing.T) {
 	a, tt := newTestApp(t)
 	a.openEditor(nil)

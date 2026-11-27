@@ -127,8 +127,8 @@ func TestBackupRoundTrip(t *testing.T) {
 	if s.TerminalFontSize != 17 || len(s.AIProviders) != 1 || s.AIProviders[0].ID != "prov1" {
 		t.Fatalf("preferences not restored: %+v", s)
 	}
-	if s.SidebarWidth == 300 {
-		t.Fatal("this device's sidebar width was replaced")
+	if s.SidebarWidth != 300 {
+		t.Fatal("this device's sidebar width was not replaced")
 	}
 	tt.Frame()
 	if !tt.HasText(en.BackupRestored(1, 2)) {
@@ -236,35 +236,55 @@ func TestRestoreBrokenEntriesPutsSecretsBack(t *testing.T) {
 	}
 }
 
+// TestMergeSettings: a restore takes the backup's preferences whole, but
+// what belongs to this device alone stays: the MCP endpoint, the
+// locations it backs up to (and the scheduled backup to a folder on it)
+// and the background image. AI providers are merged by ID, the consent
+// hosts joined.
 func TestMergeSettings(t *testing.T) {
 	cur := settings.Default()
 	cur.RememberLayout = false
 	cur.TrayClick, cur.TrayHeight = settings.TrayClickWindow, 700
-	cur.SidebarWidth, cur.UIFont = 260, "Local Font"
+	cur.SidebarWidth, cur.UIFont, cur.TerminalFont = 260, "Local Font", "Local Mono"
 	cur.FilesDual, cur.FilesSplit, cur.EditorTreeWidth = true, 30, 300
+	cur.SessionLog.Dir = "/here/logs"
+	cur.MCPEnabled, cur.MCPPort = false, 40000
+	cur.BackupTargets = []settings.BackupTarget{{ID: "here", Name: "NAS", Kind: settings.BackupWebDAV}}
+	cur.LocalBackup = settings.LocalBackup{Enabled: false, Interval: settings.LocalMonthly, Keep: 3, Dir: "/here/bak"}
 	cur.AIProviders = []settings.AIProvider{{ID: "a", Name: "A"}, {ID: "b", Name: "B"}}
 	cur.AIConsentHosts = []string{"h1"}
+
 	in := settings.Default()
-	in.SidebarWidth, in.UIFont, in.KeepAliveSeconds = 400, "Other Font", 99
-	in.FilesSplit, in.EditorTreeWidth, in.EditorTreeHidden = 70, 500, true
+	in.RememberLayout = true
+	in.TrayClick, in.TrayHeight = settings.TrayClickPanel, 500
+	in.SidebarWidth, in.UIFont, in.TerminalFont, in.KeepAliveSeconds = 400, "Other Font", "Other Mono", 99
+	in.FilesDual, in.FilesSplit, in.EditorTreeWidth, in.EditorTreeHidden = false, 70, 500, true
+	in.SessionLog.Dir = "/there/logs"
+	in.MCPEnabled, in.MCPPort = true, 50000
+	in.BackupTargets = []settings.BackupTarget{{ID: "there", Name: "Other", Kind: settings.BackupS3}}
+	in.LocalBackup = settings.LocalBackup{Enabled: true, Interval: settings.LocalWeekly, Keep: 9, Dir: "/there/bak"}
 	in.AIProviders = []settings.AIProvider{{ID: "b", Name: "B2"}, {ID: "c", Name: "C"}}
 	in.AIConsentHosts = []string{"h1", "h2"}
-	cur.BackupTargets = []settings.BackupTarget{{ID: "here", Name: "NAS", Kind: settings.BackupWebDAV}}
-	in.BackupTargets = []settings.BackupTarget{{ID: "there", Name: "Other", Kind: settings.BackupS3}}
-	cur.SessionLog.Dir, in.SessionLog.Dir = "/here/logs", "/there/logs"
+
 	out := mergeSettings(cur, in)
-	if out.TrayClick != cur.TrayClick || out.TrayHeight != cur.TrayHeight {
-		t.Fatalf("device tray preferences replaced: click=%q height=%d", out.TrayClick, out.TrayHeight)
+	// What belongs to this device alone stays.
+	if out.MCPEnabled || out.MCPPort != cur.MCPPort {
+		t.Fatalf("a backup changed MCP: %v %d", out.MCPEnabled, out.MCPPort)
 	}
-	if out.SessionLog.Dir != "/here/logs" {
-		t.Fatalf("session log folder %q", out.SessionLog.Dir)
-	}
-	if out.RememberLayout || out.SidebarWidth != 260 || out.UIFont != "Local Font" || out.KeepAliveSeconds != 99 ||
-		!out.FilesDual || out.FilesSplit != 30 || out.EditorTreeWidth != 300 || out.EditorTreeHidden {
-		t.Fatalf("merged %+v", out)
+	if out.LocalBackup != cur.LocalBackup {
+		t.Fatalf("a backup changed the scheduled backup: %+v", out.LocalBackup)
 	}
 	if len(out.BackupTargets) != 1 || out.BackupTargets[0].ID != "here" {
 		t.Fatalf("backup locations %+v", out.BackupTargets)
+	}
+	// Every other preference comes from the backup, the layout and the
+	// fonts included.
+	if !out.RememberLayout || out.TrayClick != in.TrayClick || out.TrayHeight != in.TrayHeight ||
+		out.SidebarWidth != in.SidebarWidth || out.UIFont != in.UIFont || out.TerminalFont != in.TerminalFont ||
+		out.KeepAliveSeconds != 99 || out.FilesDual != in.FilesDual || out.FilesSplit != in.FilesSplit ||
+		out.EditorTreeWidth != in.EditorTreeWidth || out.EditorTreeHidden != in.EditorTreeHidden ||
+		out.SessionLog.Dir != "/there/logs" {
+		t.Fatalf("merged %+v", out)
 	}
 	if len(out.AIProviders) != 3 || out.AIProviders[1].Name != "B2" || out.AIProviders[2].ID != "c" {
 		t.Fatalf("providers %+v", out.AIProviders)

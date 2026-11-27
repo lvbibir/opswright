@@ -21,7 +21,7 @@ func TestStickySheets(t *testing.T) {
 		{"master password", a.openMasterPassword, a.masterPasswordView, &a.masterPwOpen},
 		{"backup location", func() { a.openTargetForm(nil) }, a.targetView, &a.targetEditing},
 		{"remote backups", func() {
-			a.remotes, a.listingRemote = &remoteList{target: settings.BackupTarget{ID: "nas", Name: "NAS", Kind: settings.BackupWebDAV}}, true
+			a.remotes, a.listingRemote = &remoteList{name: "NAS", icon: targetIcon(settings.BackupWebDAV), tint: "nas"}, true
 		}, a.remoteListView, &a.listingRemote},
 	} {
 		s.open()

@@ -10844,6 +10844,156 @@ func (msgs Messages) BackupSection() string {
 	return Catalog.Format(msgs.locale, "backupSection", nil)
 }
 
+// LocalBackupSection says "Scheduled Backup"
+// in the language the app shows.
+func LocalBackupSection() string { return In(i18n.Locale()).LocalBackupSection() }
+
+// LocalBackupSection says "Scheduled Backup"
+// in the language of msgs.
+func (msgs Messages) LocalBackupSection() string {
+	return Catalog.Format(msgs.locale, "localBackupSection", nil)
+}
+
+// LocalBackupNote says "Backs up to a folder on this computer on a schedule, sealed with your master password as an export is."
+// in the language the app shows.
+func LocalBackupNote() string { return In(i18n.Locale()).LocalBackupNote() }
+
+// LocalBackupNote says "Backs up to a folder on this computer on a schedule, sealed with your master password as an export is."
+// in the language of msgs.
+func (msgs Messages) LocalBackupNote() string {
+	return Catalog.Format(msgs.locale, "localBackupNote", nil)
+}
+
+// LocalBackupEnabled says "Scheduled backup"
+// in the language the app shows.
+func LocalBackupEnabled() string { return In(i18n.Locale()).LocalBackupEnabled() }
+
+// LocalBackupEnabled says "Scheduled backup"
+// in the language of msgs.
+func (msgs Messages) LocalBackupEnabled() string {
+	return Catalog.Format(msgs.locale, "localBackupEnabled", nil)
+}
+
+// LocalBackupEnabledNote says "Writes one sealed backup to the folder below on a schedule while Opswright is open."
+// in the language the app shows.
+func LocalBackupEnabledNote() string { return In(i18n.Locale()).LocalBackupEnabledNote() }
+
+// LocalBackupEnabledNote says "Writes one sealed backup to the folder below on a schedule while Opswright is open."
+// in the language of msgs.
+func (msgs Messages) LocalBackupEnabledNote() string {
+	return Catalog.Format(msgs.locale, "localBackupEnabledNote", nil)
+}
+
+// LocalBackupInterval says "How often"
+// in the language the app shows.
+func LocalBackupInterval() string { return In(i18n.Locale()).LocalBackupInterval() }
+
+// LocalBackupInterval says "How often"
+// in the language of msgs.
+func (msgs Messages) LocalBackupInterval() string {
+	return Catalog.Format(msgs.locale, "localBackupInterval", nil)
+}
+
+// LocalEveryDay says "Daily"
+// in the language the app shows.
+func LocalEveryDay() string { return In(i18n.Locale()).LocalEveryDay() }
+
+// LocalEveryDay says "Daily"
+// in the language of msgs.
+func (msgs Messages) LocalEveryDay() string {
+	return Catalog.Format(msgs.locale, "localEveryDay", nil)
+}
+
+// LocalEveryWeek says "Weekly"
+// in the language the app shows.
+func LocalEveryWeek() string { return In(i18n.Locale()).LocalEveryWeek() }
+
+// LocalEveryWeek says "Weekly"
+// in the language of msgs.
+func (msgs Messages) LocalEveryWeek() string {
+	return Catalog.Format(msgs.locale, "localEveryWeek", nil)
+}
+
+// LocalEveryMonth says "Monthly"
+// in the language the app shows.
+func LocalEveryMonth() string { return In(i18n.Locale()).LocalEveryMonth() }
+
+// LocalEveryMonth says "Monthly"
+// in the language of msgs.
+func (msgs Messages) LocalEveryMonth() string {
+	return Catalog.Format(msgs.locale, "localEveryMonth", nil)
+}
+
+// LocalBackupDir says "Backup folder"
+// in the language the app shows.
+func LocalBackupDir() string { return In(i18n.Locale()).LocalBackupDir() }
+
+// LocalBackupDir says "Backup folder"
+// in the language of msgs.
+func (msgs Messages) LocalBackupDir() string {
+	return Catalog.Format(msgs.locale, "localBackupDir", nil)
+}
+
+// LocalBackupChooseFolder says "Choose Folder…"
+// in the language the app shows.
+func LocalBackupChooseFolder() string { return In(i18n.Locale()).LocalBackupChooseFolder() }
+
+// LocalBackupChooseFolder says "Choose Folder…"
+// in the language of msgs.
+func (msgs Messages) LocalBackupChooseFolder() string {
+	return Catalog.Format(msgs.locale, "localBackupChooseFolder", nil)
+}
+
+// LocalBackupUseDefault says "Use Default Folder"
+// in the language the app shows.
+func LocalBackupUseDefault() string { return In(i18n.Locale()).LocalBackupUseDefault() }
+
+// LocalBackupUseDefault says "Use Default Folder"
+// in the language of msgs.
+func (msgs Messages) LocalBackupUseDefault() string {
+	return Catalog.Format(msgs.locale, "localBackupUseDefault", nil)
+}
+
+// LocalBackupDirInvalid says "Enter an absolute folder path."
+// in the language the app shows.
+func LocalBackupDirInvalid() string { return In(i18n.Locale()).LocalBackupDirInvalid() }
+
+// LocalBackupDirInvalid says "Enter an absolute folder path."
+// in the language of msgs.
+func (msgs Messages) LocalBackupDirInvalid() string {
+	return Catalog.Format(msgs.locale, "localBackupDirInvalid", nil)
+}
+
+// LocalBackupNow says "Back Up Now to Folder"
+// in the language the app shows.
+func LocalBackupNow() string { return In(i18n.Locale()).LocalBackupNow() }
+
+// LocalBackupNow says "Back Up Now to Folder"
+// in the language of msgs.
+func (msgs Messages) LocalBackupNow() string {
+	return Catalog.Format(msgs.locale, "localBackupNow", nil)
+}
+
+// LocalBackupFailed says "Couldn’t back up to this computer: {detail}"
+// in the language the app shows.
+func LocalBackupFailed(detail string) string { return In(i18n.Locale()).LocalBackupFailed(detail) }
+
+// LocalBackupFailed says "Couldn’t back up to this computer: {detail}"
+// in the language of msgs.
+func (msgs Messages) LocalBackupFailed(detail string) string {
+	return Catalog.Format(msgs.locale, "localBackupFailed", map[string]any{"detail": detail})
+}
+
+// RestoreFromLocal says "Restore from This Folder"
+// in the language the app shows.
+func RestoreFromLocal() string { return In(i18n.Locale()).RestoreFromLocal() }
+
+// RestoreFromLocal says "Restore from This Folder"
+// in the language of msgs.
+func (msgs Messages) RestoreFromLocal() string {
+	return Catalog.Format(msgs.locale, "restoreFromLocal", nil)
+}
+
 // BackupDesc says "Keep a copy of Opswright, or move it to another device, in one encrypted file, on this computer or in the cloud."
 // in the language the app shows.
 func BackupDesc() string { return In(i18n.Locale()).BackupDesc() }
@@ -11106,6 +11256,16 @@ func BackupTooCostly() string { return In(i18n.Locale()).BackupTooCostly() }
 // in the language of msgs.
 func (msgs Messages) BackupTooCostly() string {
 	return Catalog.Format(msgs.locale, "backupTooCostly", nil)
+}
+
+// BackupKeyMissing says "The backup key is missing. Lock Opswright and unlock it with your master password, then try again."
+// in the language the app shows.
+func BackupKeyMissing() string { return In(i18n.Locale()).BackupKeyMissing() }
+
+// BackupKeyMissing says "The backup key is missing. Lock Opswright and unlock it with your master password, then try again."
+// in the language of msgs.
+func (msgs Messages) BackupKeyMissing() string {
+	return Catalog.Format(msgs.locale, "backupKeyMissing", nil)
 }
 
 // CostlyTitle says "This May Take a While"

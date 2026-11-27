@@ -172,6 +172,7 @@ func backupSecretKeys(snap assets.Snapshot, provs []settings.AIProvider) []strin
 func (a *App) collectBackup(secrets bool) (backupPayload, error) {
 	p := backupPayload{Assets: a.store.Snapshot(), Settings: a.settings}
 	p.Settings.BackupTargets = nil
+	p.Settings.LocalBackup = settings.LocalBackup{}
 	p.Settings.Background = settings.DefaultBackground()
 	// What starts a program on this computer is not taken by a restore,
 	// so it is not put in a backup either.
@@ -406,28 +407,22 @@ func backupIDs(snap assets.Snapshot, provs []settings.AIProvider) []string {
 }
 
 // mergeSettings are the preferences of a backup, in, over those of this
-// device, cur: what belongs to this device stays (the window's layout, the
-// layout of its files panes and editor windows, the fonts
-// installed here, the MCP endpoint, the places it backs up to, the folder
-// of its session logs, the external
-// ACP agents it starts and its default agent), AI providers are merged by
-// ID and the hosts that confirmed AI use are joined.
+// device, cur: what belongs to this device alone stays (the background
+// image, the MCP endpoint, the places it backs up to and its scheduled
+// backup to a folder on it, and the external ACP agents it starts and its
+// default agent); every other preference, the layout, the fonts and the
+// session log folder included, comes from the backup. AI providers are
+// merged by ID and the hosts that confirmed AI use are joined.
 func mergeSettings(cur, in settings.Settings) settings.Settings {
 	out := in
 	out.Background = cur.Background
-	out.RememberLayout = cur.RememberLayout
-	out.SidebarWidth, out.SidebarHidden = cur.SidebarWidth, cur.SidebarHidden
-	out.TrayClick, out.TrayHeight = cur.TrayClick, cur.TrayHeight
-	out.UIFont, out.TerminalFont = cur.UIFont, cur.TerminalFont
-	out.FilesDual, out.FilesSplit = cur.FilesDual, cur.FilesSplit
-	out.EditorTreeWidth, out.EditorTreeHidden = cur.EditorTreeWidth, cur.EditorTreeHidden
 	// A backup never turns the MCP endpoint on, nor lets it use the keys
 	// of this computer: that is asked here.
 	out.MCPEnabled, out.MCPPort, out.LocalKeysMCP = cur.MCPEnabled, cur.MCPPort, cur.LocalKeysMCP
-	// Nor does it choose where this device backs up to, nor where it
-	// keeps its session logs.
+	// Nor does it choose where this device backs up to, by hand or on a
+	// schedule.
 	out.BackupTargets = slices.Clone(cur.BackupTargets)
-	out.SessionLog = cur.SessionLog
+	out.LocalBackup = cur.LocalBackup
 	// Nor does it add or change a program this computer starts: an ACP
 	// agent's executable and arguments, and the default agent that may
 	// name one, stay as they are here. A legacy single agent in the
@@ -470,6 +465,8 @@ func backupErrText(m locales.Messages, err error) string {
 		return m.ErrCloudAuth()
 	case errors.Is(err, backup.ErrNotFound):
 		return m.ErrCloudNotFound()
+	case errors.Is(err, keychain.ErrNotFound):
+		return m.BackupKeyMissing()
 	case errors.Is(err, errBackupProxy):
 		return m.ErrBackupProxyMissing()
 	}
@@ -706,6 +703,7 @@ func (a *App) backupSection(c *ui.Context, m locales.Messages, tok theme.Tokens)
 			}
 		})
 	})
+	a.localBackupSection(c, m, tok)
 	a.cloudSection(c, m, tok)
 }
 

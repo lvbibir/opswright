@@ -675,6 +675,12 @@ type App struct {
 	remotes       *remoteList
 	listingRemote bool
 	gistAPI       string
+	// localBusy is set while a backup to the folder on this computer is
+	// written; localDir and localDirFocus are the backup folder field's
+	// text and whether it has the keyboard.
+	localBusy     bool
+	localDir      string
+	localDirFocus bool
 }
 
 // New opens the app's data.
@@ -785,6 +791,7 @@ func (a *App) syncChoices() {
 	a.aiWait = float64(a.settings.AIRequestTimeout)
 	a.aiCalls = maxToolCallsText(a.settings.AIMaxToolCalls)
 	a.mcpPort = float64(a.settings.MCPPort)
+	a.localDir = a.settings.LocalBackup.Dir
 }
 
 // Settings returns the settings in effect.

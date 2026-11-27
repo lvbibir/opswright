@@ -12,6 +12,7 @@ import (
 	"slices"
 	"strconv"
 	"strings"
+	"time"
 
 	"github.com/lvbibir/opswright/internal/highlight"
 	"github.com/lvbibir/opswright/internal/keymap"
@@ -246,6 +247,9 @@ type Settings struct {
 	// BackupTargets are the places this device backs up to. They belong
 	// to this device: a backup neither holds nor replaces them.
 	BackupTargets []BackupTarget `json:"backupTargets,omitempty"`
+	// LocalBackup is the scheduled backup to a folder on this computer.
+	// It belongs to this device: a backup neither holds nor replaces it.
+	LocalBackup LocalBackup `json:"localBackup"`
 	// SessionLog is where the logs of terminal sessions go. It belongs to
 	// this device.
 	SessionLog SessionLog `json:"sessionLog"`
@@ -378,6 +382,20 @@ func backupIDOK(id string) bool {
 	return true
 }
 
+// normalizeLocalBackup keeps a valid interval, a bounded keep and an
+// absolute folder, or the defaults.
+func (s *Settings) normalizeLocalBackup(d Settings) {
+	if s.LocalBackup.Keep < 0 || s.LocalBackup.Keep > LocalBackupKeepMax {
+		s.LocalBackup.Keep = d.LocalBackup.Keep
+	}
+	if !slices.Contains(LocalIntervals, s.LocalBackup.Interval) {
+		s.LocalBackup.Interval = d.LocalBackup.Interval
+	}
+	if s.LocalBackup.Dir = strings.TrimSpace(s.LocalBackup.Dir); !filepath.IsAbs(s.LocalBackup.Dir) {
+		s.LocalBackup.Dir = ""
+	}
+}
+
 // normalizeBackups drops targets of no kind or ID, or an ID twice, and
 // bounds the rest.
 func (s *Settings) normalizeBackups() {
@@ -408,6 +426,52 @@ func (s Settings) BackupTarget(id string) (BackupTarget, bool) {
 		}
 	}
 	return BackupTarget{}, false
+}
+
+// The intervals between scheduled local backups.
+const (
+	LocalDaily   = "daily"
+	LocalWeekly  = "weekly"
+	LocalMonthly = "monthly"
+)
+
+// LocalIntervals are the intervals a scheduled local backup may have.
+var LocalIntervals = []string{LocalDaily, LocalWeekly, LocalMonthly}
+
+// LocalBackupKeepDefault is how many of this device's local backups a new
+// schedule keeps; LocalBackupKeepMax bounds it.
+const (
+	LocalBackupKeepDefault = 7
+	LocalBackupKeepMax     = 100
+)
+
+// LocalBackup is the scheduled backup to a folder on this computer: a
+// sealed backup file, as an export is, written there on a schedule and
+// pruned to Keep of this device's own. It belongs to this device: a
+// backup neither holds nor replaces it.
+type LocalBackup struct {
+	// Enabled is whether a backup is made on a schedule at all.
+	Enabled bool `json:"enabled"`
+	// Interval is how often one is made: LocalDaily, LocalWeekly or
+	// LocalMonthly.
+	Interval string `json:"interval"`
+	// Keep is how many of this device's backups stay there; older ones are
+	// deleted after a backup. 0 keeps them all.
+	Keep int `json:"keep"`
+	// Dir is the folder the backups go to, an absolute path; "" is
+	// opswright_bak beside the data folder.
+	Dir string `json:"dir,omitempty"`
+}
+
+// LocalEvery is the time between scheduled local backups of interval.
+func LocalEvery(interval string) time.Duration {
+	switch interval {
+	case LocalWeekly:
+		return 7 * 24 * time.Hour
+	case LocalMonthly:
+		return 30 * 24 * time.Hour
+	}
+	return 24 * time.Hour
 }
 
 // ACPConfig describes one external ACP backend. ID names it among the
@@ -577,6 +641,12 @@ const (
 	AIMaxToolCallsMax   = 10_000
 )
 
+// localBackupDefault is the default scheduled backup: on, daily, keeping
+// a week's worth.
+func localBackupDefault() LocalBackup {
+	return LocalBackup{Enabled: true, Interval: LocalDaily, Keep: LocalBackupKeepDefault}
+}
+
 // The bounds of AIRequestTimeout, in seconds, and its default.
 const (
 	DefaultAIRequestTimeout = 120
@@ -724,7 +794,7 @@ const (
 // Default returns the defaults.
 func Default() Settings {
 	return Settings{Background: DefaultBackground(), Theme: theme.Auto, CloseBehavior: CloseToTray, TrayIcon: TrayIconColor, TrayClick: TrayClickPanel, TrayHeight: DefaultTrayHeight, CheckUpdates: true, UpdateIntervalHours: 1, TerminalFontSize: 13, TerminalLineHeight: 100, TerminalCharWidth: 100, TerminalCursorStyle: CursorBlock, TerminalCursorBlink: true, TerminalScrollOnKey: true, TerminalCompletion: CompletionInline, KeepAliveSeconds: 30, AutoReconnect: true, ReturnToFolder: true, SidebarWidth: 240, MonospacedOnly: true, TransferConcurrency: 3, KeepAwake: true, OpenConfirmMB: 10, FilesSplit: 50, FilesEdge: FilesRight, TerminalRightClick: RightClickMenu, EditorTreeWidth: 240, TerminalTransfers: true, OSC52Write: OSC52Ask, OSC52MaxBytes: OSC52MaxDefault, OSC52Notify: true, MetricsEnabled: true, MetricsInterval: 2,
-		AIDefaultAgent: "builtin", AIDefaultMode: "ask", AIReviewStrictness: AIReviewStandard, AIContextLines: 200, AIAuditRetentionDays: 90, AIRequestTimeout: DefaultAIRequestTimeout, AIRedact: true, MCPPort: MCPPortDefault, LocalKeys: true, Highlight: Highlight{On: true}}
+		AIDefaultAgent: "builtin", AIDefaultMode: "ask", AIReviewStrictness: AIReviewStandard, AIContextLines: 200, AIAuditRetentionDays: 90, AIRequestTimeout: DefaultAIRequestTimeout, AIRedact: true, MCPPort: MCPPortDefault, LocalKeys: true, LocalBackup: localBackupDefault(), Highlight: Highlight{On: true}}
 }
 
 // ResolveOSC52Write is the write policy in effect. A host value of allow,
@@ -860,6 +930,7 @@ func (s *Settings) Normalize() {
 	s.Shortcuts = keys
 	s.normalizeAI(d)
 	s.normalizeBackups()
+	s.normalizeLocalBackup(d)
 	if s.SessionLog.Dir = strings.TrimSpace(s.SessionLog.Dir); !filepath.IsAbs(s.SessionLog.Dir) {
 		s.SessionLog.Dir = ""
 	}

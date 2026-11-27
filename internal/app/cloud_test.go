@@ -120,6 +120,7 @@ func TestCloudTargetForm(t *testing.T) {
 	if !tt.HasText(en.CloudBackupSection()) || !tt.HasText(en.NoBackupTargets()) {
 		t.Fatalf("texts %q", tt.Texts())
 	}
+	scrollSettingsTo(t, tt, en.AddBackupTarget())
 	mustClick(t, tt, en.AddBackupTarget())
 	tt.Frame()
 	f := a.target
@@ -236,6 +237,7 @@ func TestCloudBackupAndRestore(t *testing.T) {
 		t.Fatalf("texts %q", stt.Texts())
 	}
 	// Backing up by hand seals with the place's key, without asking.
+	scrollSettingsTo(t, stt, en.BackupNow())
 	mustClick(t, stt, en.BackupNow())
 	st := src.cloudNow().of(tg.ID)
 	waitForIn(t, stt, slowWait, "upload", func() bool { return !st.Last.IsZero() || st.err != nil })
@@ -472,7 +474,7 @@ func TestCloudBackupNowKey(t *testing.T) {
 		t.Fatalf("state %+v", st)
 	}
 	tt.Frame()
-	if !tt.HasText(en.BackupUploadFailed("NAS", en.ErrGeneric(secretStoreErrorText(en, keychain.ErrNotFound)))) {
+	if !tt.HasText(en.BackupUploadFailed("NAS", en.BackupKeyMissing())) {
 		t.Fatalf("texts %q", tt.Texts())
 	}
 }

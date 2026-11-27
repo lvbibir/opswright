@@ -7,6 +7,7 @@ import (
 	"slices"
 	"strings"
 	"testing"
+	"time"
 
 	"github.com/lvbibir/opswright/internal/highlight"
 	"github.com/lvbibir/opswright/internal/theme"
@@ -214,6 +215,30 @@ func TestBackupTargets(t *testing.T) {
 	}
 	if _, ok := s.BackupTarget("ftp"); ok {
 		t.Error("a target of no kind was kept")
+	}
+}
+
+// TestLocalBackup: the scheduled backup defaults to on, daily, keeping a
+// week, and an invalid interval, keep or folder falls back.
+func TestLocalBackup(t *testing.T) {
+	d := Default()
+	if !d.LocalBackup.Enabled || d.LocalBackup.Interval != LocalDaily || d.LocalBackup.Keep != LocalBackupKeepDefault || d.LocalBackup.Dir != "" {
+		t.Fatalf("default %+v", d.LocalBackup)
+	}
+	s := d
+	s.LocalBackup = LocalBackup{Enabled: true, Interval: "hourly", Keep: LocalBackupKeepMax + 1, Dir: "relative/path"}
+	s.Normalize()
+	if s.LocalBackup.Interval != LocalDaily || s.LocalBackup.Keep != LocalBackupKeepDefault || s.LocalBackup.Dir != "" {
+		t.Fatalf("normalized %+v", s.LocalBackup)
+	}
+	abs := filepath.Join(string(filepath.Separator), "bak")
+	s.LocalBackup = LocalBackup{Interval: LocalMonthly, Keep: 0, Dir: abs}
+	s.Normalize()
+	if s.LocalBackup.Interval != LocalMonthly || s.LocalBackup.Keep != 0 || s.LocalBackup.Dir != abs {
+		t.Fatalf("kept %+v", s.LocalBackup)
+	}
+	if LocalEvery(LocalDaily) != 24*time.Hour || LocalEvery(LocalWeekly) != 7*24*time.Hour || LocalEvery(LocalMonthly) != 30*24*time.Hour {
+		t.Fatal("interval")
 	}
 }
 

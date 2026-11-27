@@ -328,6 +328,7 @@ func (a *App) autoBackup(now time.Time) {
 	if !a.unlocked() {
 		return
 	}
+	a.autoLocalBackup(now)
 	for _, t := range a.settings.BackupTargets {
 		if t.AutoHours == 0 {
 			continue
@@ -594,9 +595,15 @@ func (a *App) TestTarget(m locales.Messages) bool {
 	return true
 }
 
-// remoteList is the sheet of the backups in a place, to restore one.
+// remoteList is the sheet of the backups in a place, to restore one: a
+// cloud location, or the folder on this computer.
 type remoteList struct {
-	target  settings.BackupTarget
+	// name is the place's name, shown under the title; icon and tint draw
+	// its tile; local is the folder on this computer.
+	name    string
+	icon    *icons.Icon
+	tint    string
+	local   bool
 	r       backup.Remote
 	loading bool
 	objs    []backup.Object
@@ -616,11 +623,28 @@ func (a *App) OpenRemoteList(id string) {
 		return
 	}
 	r, err := a.targetRemote(t)
-	l := &remoteList{target: t, r: r, loading: err == nil, err: err}
+	l := &remoteList{name: t.Name, icon: targetIcon(t.Kind), tint: t.ID, r: r, loading: err == nil, err: err}
 	a.remotes, a.listingRemote = l, true
 	if err != nil {
 		return
 	}
+	ctx := a.cloudCtx
+	go func() {
+		objs, err := r.List(ctx)
+		backup.SortNewest(objs)
+		a.post(func() { l.loading, l.objs, l.err = false, objs, err })
+	}()
+}
+
+// OpenLocalList shows the backups in the folder on this computer, listed
+// off the UI thread.
+func (a *App) OpenLocalList() {
+	r := a.localBackupRemote()
+	if r == nil {
+		return
+	}
+	l := &remoteList{name: r.Dir, icon: icons.LocalDisk, tint: "local", local: true, r: r, loading: true}
+	a.remotes, a.listingRemote = l, true
 	ctx := a.cloudCtx
 	go func() {
 		objs, err := r.List(ctx)
@@ -931,11 +955,15 @@ func (a *App) remoteListView(c *ui.Context, m locales.Messages) {
 	tok := currentTokens(c)
 	sheet(stickyModal(c, &a.listingRemote, func() {
 		ui.Column(c).Gap(18).Width(480).Shrink(1).MinHeight(0).Children(func() {
+			title := m.RestoreFromTarget()
+			if l.local {
+				title = m.RestoreFromLocal()
+			}
 			ui.Row(c).Gap(12).AlignItems(ui.Center).Children(func() {
-				tile(c, targetIcon(l.target.Kind), tok.Tint(l.target.ID), 36)
+				tile(c, l.icon, tok.Tint(l.tint), 36)
 				ui.Column(c).Gap(1).Shrink(1).Children(func() {
-					sheetTitle(c, m.RestoreFromTarget())
-					ui.Text(c, l.target.Name).FontSize(theme.Footnote).TextColor(tok.TextMuted).SingleLine()
+					sheetTitle(c, title)
+					ui.Text(c, l.name).FontSize(theme.Footnote).TextColor(tok.TextMuted).SingleLine()
 				})
 			})
 			switch {
