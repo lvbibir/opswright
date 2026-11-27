@@ -38,7 +38,7 @@ func (a *App) lockView(c *ui.Context) {
 	}
 	// A store ready for its first password; one that already has a
 	// master.enc, or holds secrets without one, asks for the password.
-	first := a.kc.CanUsePassword()
+	first := a.kc.CanUsePassword() || a.kc.CanSetPassword()
 	title, note, action := m.AppLockedTitle(), m.AppLockedPrompt(), m.AppLockUnlock()
 	if first {
 		title, note, action = m.MasterPasswordFirstTitle(), m.MasterPasswordFirstNote(), m.MasterPasswordSet()

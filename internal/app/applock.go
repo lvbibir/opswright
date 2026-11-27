@@ -157,6 +157,17 @@ func (a *App) probeUnlock() {
 	kc := a.kc
 	go func() {
 		err := kc.TryUnlock()
+		if err == nil && !kc.Has(keychain.BackupKey) {
+			// A store without a backup key (from before it existed, or a
+			// former install): it is made when the master password is
+			// entered, so do not open silently. A store that already has
+			// master.enc waits for the password; one without it takes its
+			// first, sealing the key it already holds.
+			if kc.PasswordProtected() {
+				_ = kc.Lock()
+			}
+			return
+		}
 		a.post(func() {
 			if err == nil {
 				a.openStoreNow()
@@ -260,7 +271,7 @@ func (a *App) SubmitAppUnlock(m locales.Messages) bool {
 	if l.password == "" {
 		return false
 	}
-	setup := a.kc.CanUsePassword()
+	setup := a.kc.CanUsePassword() || a.kc.CanSetPassword()
 	if setup {
 		switch {
 		case len([]rune(l.password)) < minMasterPassword:
@@ -282,12 +293,15 @@ func (a *App) SubmitAppUnlock(m locales.Messages) bool {
 }
 
 // setOrUnlockMaster opens the store with pw. Without a master password
-// yet, it sets that password: the master key of a former Opswright, which
-// the OS keychain still holds, is sealed under it first, and a store
-// without one starts a new key.
+// yet, it sets that password: an empty store starts a new key, and one a
+// former install left open, opened by the key this computer cached, seals
+// the key it already holds.
 func (a *App) setOrUnlockMaster(pw []byte) error {
-	if a.kc.CanUsePassword() {
+	switch {
+	case a.kc.CanUsePassword():
 		return a.kc.SetupPassword(pw)
+	case a.kc.CanSetPassword():
+		return a.kc.SealPassword(pw)
 	}
 	return a.kc.UnlockPassword(pw)
 }

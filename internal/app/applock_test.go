@@ -312,3 +312,110 @@ func TestAppLockIdleHidesWindows(t *testing.T) {
 		t.Fatal("sleep locked the app")
 	}
 }
+
+// TestAppLockMakesMissingBackupKey: a store that is protected but has no
+// backup key is not opened silently; the master password is asked for, and
+// entering it makes the key, so a backup can be made.
+func TestAppLockMakesMissingBackupKey(t *testing.T) {
+	dir := t.TempDir()
+	system := keychain.NewMemory()
+	platform := func() Platform {
+		return Platform{DataDir: dir, HomeDir: dir, CacheDir: filepath.Join(dir, "cache"), KDF: cheapKDF, System: system}
+	}
+	a, err := New(platform())
+	if err != nil {
+		t.Fatal(err)
+	}
+	t.Cleanup(a.Close)
+	a.Start()
+	tt := ui.NewTester(a.View, 1200, 760)
+	tt.SetLocale("en")
+	tt.Frame()
+	setMasterPassword(t, a, tt, "correct horse")
+	if err := a.kc.Delete(keychain.BackupKey); err != nil {
+		t.Fatal(err)
+	}
+	a.Close()
+
+	again, err := New(platform())
+	if err != nil {
+		t.Fatal(err)
+	}
+	t.Cleanup(again.Close)
+	again.Start()
+	stt := ui.NewTester(again.View, 1200, 760)
+	stt.SetLocale("en")
+	stt.Frame()
+	if !again.appLocked() {
+		t.Fatal("a store without a backup key opened by itself")
+	}
+	if stt.HasText(en.MasterPasswordFirstTitle()) {
+		t.Fatal("a protected store offered to set a password instead of asking for one")
+	}
+	unlockApp(t, again, stt, "correct horse")
+	if again.appLocked() {
+		t.Fatalf("the password did not open the store: %q", again.lock.err)
+	}
+	if _, err := again.kc.BackupKey(); err != nil {
+		t.Fatalf("the backup key was not made: %v", err)
+	}
+}
+
+// TestAppLockSealsFormerInstallKey: a store without master.enc, opened by
+// the key this computer cached, is not opened silently; the lock screen
+// sets the first master password, which seals the key it holds and makes
+// the backup key.
+func TestAppLockSealsFormerInstallKey(t *testing.T) {
+	dir := t.TempDir()
+	system := keychain.NewMemory()
+	platform := func() Platform {
+		return Platform{DataDir: dir, HomeDir: dir, CacheDir: filepath.Join(dir, "cache"), KDF: cheapKDF, System: system}
+	}
+	a, err := New(platform())
+	if err != nil {
+		t.Fatal(err)
+	}
+	t.Cleanup(a.Close)
+	a.Start()
+	tt := ui.NewTester(a.View, 1200, 760)
+	tt.SetLocale("en")
+	tt.Frame()
+	setMasterPassword(t, a, tt, "correct horse")
+	if err := a.kc.Set(keychain.Cred("c1", keychain.Password), []byte("hunter2")); err != nil {
+		t.Fatal(err)
+	}
+	if err := a.kc.Delete(keychain.BackupKey); err != nil {
+		t.Fatal(err)
+	}
+	a.Close()
+	// A former install: secrets.enc without master.enc.
+	if err := os.Remove(filepath.Join(dir, "master.enc")); err != nil {
+		t.Fatal(err)
+	}
+
+	again, err := New(platform())
+	if err != nil {
+		t.Fatal(err)
+	}
+	t.Cleanup(again.Close)
+	again.Start()
+	stt := ui.NewTester(again.View, 1200, 760)
+	stt.SetLocale("en")
+	stt.Frame()
+	if !again.appLocked() {
+		t.Fatal("a former install opened by itself")
+	}
+	if !again.kc.CanSetPassword() {
+		t.Fatal("the former install did not offer to set a password")
+	}
+	setMasterPassword(t, again, stt, "correct horse")
+	if !again.kc.PasswordProtected() {
+		t.Fatal("the store did not take a master password")
+	}
+	if _, err := again.kc.BackupKey(); err != nil {
+		t.Fatalf("the backup key was not made: %v", err)
+	}
+	if got, err := again.kc.Get(keychain.Cred("c1", keychain.Password)); err != nil || string(got) != "hunter2" {
+		t.Fatalf("the store lost its secrets: %q %v", got, err)
+	}
+}

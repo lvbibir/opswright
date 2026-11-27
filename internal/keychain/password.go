@@ -49,6 +49,20 @@ func (k *Keychain) CanUsePassword() bool {
 	return err == nil && !b.protected && !b.exists && len(b.key) == 0
 }
 
+// CanSetPassword reports whether the store can take a master password now
+// by sealing the key it already holds: it is open and unprotected, so a
+// former install, opened by the key this computer cached, can take its
+// first password without any secret becoming unopenable.
+func (k *Keychain) CanSetPassword() bool {
+	k.mu.Lock()
+	defer k.mu.Unlock()
+	if k.closed {
+		return false
+	}
+	b, ok := k.b.(*encryptedStore)
+	return ok && !b.protected && len(b.key) == chacha20poly1305.KeySize
+}
+
 // SetupPassword creates the master key of an empty, locked store under the
 // master password, unlocks the store with it, and caches that key in this
 // computer's keychain.
@@ -91,6 +105,46 @@ func (k *Keychain) setup(password []byte) error {
 	}
 	b.protected = true
 	system := b.system
+	k.mu.Unlock()
+	if err := k.ensureBackupKey(password); err != nil {
+		return err
+	}
+	cacheMaster(system, key)
+	return nil
+}
+
+// SealPassword seals the master key an open, unprotected store already
+// holds under password, in place of the new key SetupPassword would make:
+// the store keeps its secrets, and takes the backup key from here on.
+func (k *Keychain) SealPassword(password []byte) error {
+	k.unlockMu.Lock()
+	defer k.unlockMu.Unlock()
+	k.mu.Lock()
+	b, ok := k.b.(*encryptedStore)
+	switch {
+	case !ok:
+		k.mu.Unlock()
+		return &OpError{Op: "master-password-write", Err: ErrUnavailable}
+	case b.protected:
+		k.mu.Unlock()
+		return &OpError{Op: "master-password-write", Err: ErrPasswordSetup}
+	case len(b.key) != chacha20poly1305.KeySize:
+		k.mu.Unlock()
+		return &OpError{Op: "master-password-write", Err: ErrLocked}
+	}
+	key := append([]byte(nil), b.key...)
+	path, kdf, system := b.masterPath, b.kdf, b.system
+	k.mu.Unlock()
+	defer clear(key)
+	if err := sealMaster(path, key, password, kdf); err != nil {
+		return err
+	}
+	k.mu.Lock()
+	if k.closed {
+		k.mu.Unlock()
+		return errors.Join(&OpError{Op: "closed", Err: ErrLocked}, removeMaster(path))
+	}
+	b.protected = true
 	k.mu.Unlock()
 	if err := k.ensureBackupKey(password); err != nil {
 		return err

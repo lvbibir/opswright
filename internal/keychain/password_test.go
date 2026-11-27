@@ -268,3 +268,52 @@ func TestForgetSystem(t *testing.T) {
 	}
 	mustGet(t, k, "secret", []byte("value"))
 }
+
+// TestSealPasswordExistingStore: a store without master.enc, opened by the
+// key this computer cached, takes its first password by sealing the key it
+// holds, keeping its secrets and making the backup key.
+func TestSealPasswordExistingStore(t *testing.T) {
+	o := options(t)
+	k := openLockedTest(t, o)
+	if err := k.SetupPassword([]byte("first-pw")); err != nil {
+		t.Fatal(err)
+	}
+	if err := k.Set("secret", []byte("value")); err != nil {
+		t.Fatal(err)
+	}
+	if err := k.Delete(BackupKey); err != nil {
+		t.Fatal(err)
+	}
+	if err := k.Close(); err != nil {
+		t.Fatal(err)
+	}
+	if err := os.Remove(masterPath(o)); err != nil {
+		t.Fatal(err)
+	}
+	k2 := openLockedTest(t, o)
+	if err := k2.TryUnlock(); err != nil {
+		t.Fatal(err)
+	}
+	if !k2.CanSetPassword() || k2.CanUsePassword() {
+		t.Fatalf("can set=%v can use=%v", k2.CanSetPassword(), k2.CanUsePassword())
+	}
+	mustGet(t, k2, "secret", []byte("value"))
+	if err := k2.SealPassword([]byte("second-pw")); err != nil {
+		t.Fatal(err)
+	}
+	if !k2.PasswordProtected() || !k2.Unlocked() {
+		t.Fatal("the store took no password")
+	}
+	if _, err := k2.BackupKey(); err != nil {
+		t.Fatalf("no backup key: %v", err)
+	}
+	if err := k2.Close(); err != nil {
+		t.Fatal(err)
+	}
+	// The password opens it from here on; the secrets stay.
+	k3 := openLockedTest(t, o)
+	if err := k3.UnlockPassword([]byte("second-pw")); err != nil {
+		t.Fatal(err)
+	}
+	mustGet(t, k3, "secret", []byte("value"))
+}
