@@ -34,7 +34,7 @@ def package(build_dir, version, arch):
 
 
 if __name__ == "__main__":
-    if len(sys.argv) != 3 or sys.argv[2] not in ("amd64", "arm64"):
-        sys.exit("usage: windows-portable.py <windows-build-dir> <amd64|arm64>")
+    if len(sys.argv) != 3 or sys.argv[2] != "amd64":
+        sys.exit("usage: windows-portable.py <windows-build-dir> amd64")
     config = json.loads(Path("mygo.json").read_text(encoding="utf-8"))
     print(package(Path(sys.argv[1]), config["version"], sys.argv[2]))

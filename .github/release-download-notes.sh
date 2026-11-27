@@ -28,8 +28,6 @@ link() {
 # One assignment per link: in "$(a) · $(b)" only b's status reaches set -e
 win_x64_setup="$(link Installer 'opswright-setup-*-amd64.exe')"
 win_x64_portable="$(link 'Portable ZIP' 'opswright-*-windows-amd64-portable.zip')"
-win_arm_setup="$(link Installer 'opswright-setup-*-arm64.exe')"
-win_arm_portable="$(link 'Portable ZIP' 'opswright-*-windows-arm64-portable.zip')"
 checksums="$(link SHA256SUMS 'SHA256SUMS')"
 
 cat <<EOF
@@ -43,7 +41,6 @@ cat <<EOF
 | Architecture | Download |
 | --- | --- |
 | x64 | $win_x64_setup · $win_x64_portable |
-| Arm64 | $win_arm_setup · $win_arm_portable |
 
 The installer installs for the current user into \`%LOCALAPPDATA%\\Programs\` and supports in-app updates; no administrator rights needed.
 

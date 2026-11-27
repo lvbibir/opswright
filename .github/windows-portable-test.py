@@ -69,22 +69,6 @@ class WindowsPortableTest(unittest.TestCase):
             with zipfile.ZipFile(output) as archive:
                 self.assertEqual(archive.namelist(), ["Opswright.exe"])
 
-    def test_arm64_archive_skips_its_own_artifacts(self):
-        with tempfile.TemporaryDirectory() as work:
-            stage = Path(work)
-            (stage / "Opswright.exe").write_bytes(b"executable fixture")
-            for name in (
-                "opswright-setup-0.0.4-arm64.exe",
-                "opswright-0.0.4-windows-arm64.tar.gz",
-                "opswright-0.0.3-to-0.0.4-windows-arm64.delta",
-                "update-windows-arm64.json",
-            ):
-                (stage / name).write_bytes(b"excluded build artifact")
-            output = portable.package(stage, "0.0.4", "arm64")
-            self.assertEqual(output.name, "opswright-0.0.4-windows-arm64-portable.zip")
-            with zipfile.ZipFile(output) as archive:
-                self.assertEqual(archive.namelist(), ["Opswright.exe"])
-
     def test_download_link_requires_portable_asset(self):
         # Resolve Git Bash from PATH instead of Windows' System32 WSL launcher.
         bash = shutil.which("bash")
@@ -92,8 +76,7 @@ class WindowsPortableTest(unittest.TestCase):
         with tempfile.TemporaryDirectory() as work:
             dist = Path(work)
             for name in (
-                "opswright-setup-0.0.4-amd64.exe", "opswright-setup-0.0.4-arm64.exe",
-                "opswright-0.0.4-windows-arm64-portable.zip", "SHA256SUMS",
+                "opswright-setup-0.0.4-amd64.exe", "SHA256SUMS",
             ):
                 (dist / name).touch()
             command = [bash, (HERE / "release-download-notes.sh").as_posix(),
@@ -108,11 +91,6 @@ class WindowsPortableTest(unittest.TestCase):
                 f"[Portable ZIP](https://github.com/lvbibir/opswright/releases/download/v0.0.4/{name})",
                 result.stdout,
             )
-            for row in (
-                "| Arm64 | [Installer](https://github.com/lvbibir/opswright/releases/download/v0.0.4/opswright-setup-0.0.4-arm64.exe)"
-                " · [Portable ZIP](https://github.com/lvbibir/opswright/releases/download/v0.0.4/opswright-0.0.4-windows-arm64-portable.zip) |",
-            ):
-                self.assertIn(row, result.stdout)
             (dist / "opswright-0.0.5-windows-amd64-portable.zip").touch()
             result = subprocess.run(command, capture_output=True, encoding="utf-8")
             self.assertNotEqual(result.returncode, 0)

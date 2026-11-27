@@ -16,15 +16,15 @@ Settings → Secrets and variables → Actions → Repository secrets 中按需�
    同时按 `cliff.toml` 用 git-cliff 生成上一个正式标签以来的发布说明，并等待同一
    标签上的 `ci.yml` 通过；`bump.sh` 的版本号提交之前的提交已在 main 上通过完整
    CI 时（仍在运行则等它结束），标签上的 `ci.yml` 直接复用该结果，不再重复测试和构建
-2. `go tool mygo build` 构建并（配置了私钥时）签署 Windows（amd64/arm64）产物
+2. `go tool mygo build` 构建并（配置了私钥时）签署 Windows（amd64）产物
 3. 构建时把发布说明写入更新清单，供应用内更新窗口显示；验证更新清单有签名且带说明
 4. 所有平台构建成功且 CI 通过后，汇总全部安装包、更新归档、delta 与更新清单，
    生成 `SHA256SUMS`，在发布说明后追加下载链接，先建草稿上传全部资产，再自动发布为 latest
 
-Windows amd64 在 `windows-latest`、arm64 在 `windows-11-arm` 运行器上原生构建。
+Windows amd64 在 `windows-latest` 运行器上原生构建。
 
-Windows 的普通 CI、beta 与正式 Release 都额外按架构提供
-`opswright-<版本>-windows-<amd64|arm64>-portable.zip`；ZIP 直接归档 MyGo 构建的程序及
+Windows 的普通 CI、beta 与正式 Release 都额外提供
+`opswright-<版本>-windows-amd64-portable.zip`；ZIP 直接归档 MyGo 构建的程序及
 完整资源，排除安装器、安装脚本和更新产物；正式 Release 将其纳入 `SHA256SUMS`
 并提供下载链接，解压到可写目录后运行 `Opswright.exe` 即可，无需安装；应用数据仍保存在
 `%APPDATA%\Opswright`，已保存凭据仍绑定当前 Windows 用户，不代表数据可随 ZIP 跨设备迁移。
