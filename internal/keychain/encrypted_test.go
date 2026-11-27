@@ -14,24 +14,22 @@ import (
 
 func TestOpenFileFailureAndRetry(t *testing.T) {
 	o := options(t)
-	if err := os.WriteFile(filepath.Dir(o.Path), []byte("blocked directory"), 0o600); err != nil {
+	// A directory where the store file belongs: the store exists but cannot
+	// be read, on every platform. A path under a plain file would not do,
+	// because Windows reports it as not found, which OpenLocked takes for a
+	// new store rather than a read failure.
+	if err := os.MkdirAll(o.Path, 0o700); err != nil {
 		t.Fatal(err)
 	}
 	k, err := OpenLocked(o)
 	var oe *OpError
-	want := "file-read"
-	if runtime.GOOS == "windows" {
-		// Windows reads a path under a file as not found, so the store is
-		// new and making its folder fails at the first write instead.
-		want = "file-write"
-	}
 	if k != nil || !errors.As(err, &oe) {
 		t.Fatalf("failed stage: %v", err)
 	}
-	if want == "file-read" && oe.Op != want {
+	if oe.Op != "file-read" {
 		t.Fatalf("failed stage: %v", err)
 	}
-	if err := os.Remove(filepath.Dir(o.Path)); err != nil {
+	if err := os.Remove(o.Path); err != nil {
 		t.Fatal(err)
 	}
 	openTest(t, o)
