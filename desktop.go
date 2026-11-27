@@ -131,6 +131,12 @@ func (d *desktop) close(e *mygo.CloseEvent) {
 	}
 	e.PreventDefault()
 	if d.app.Settings().CloseBehavior == settings.CloseQuit {
+		// Panes open: closing the window ends them all and leaves the app
+		// running, asking nothing; a later close with none quits it.
+		if d.app.HasPanes() {
+			d.app.CloseAllPanes()
+			return
+		}
 		// Quit the whole app, including secondary windows; a cancelled editor
 		// close must keep the main window and its drafts alive too.
 		mygo.App.Quit()

@@ -934,6 +934,38 @@ func TestClosingFilesFocusesFirstTerminal(t *testing.T) {
 	}
 }
 
+// TestCloseAllPanes: a window close with panes open ends them all, so the
+// app stays running; HasPanes says whether any is open.
+func TestCloseAllPanes(t *testing.T) {
+	a, _ := newTestApp(t)
+	if a.HasPanes() {
+		t.Fatal("a fresh app reports panes")
+	}
+	a.CloseAllPanes() // nothing open
+	if a.HasPanes() || len(a.conns) != 0 {
+		t.Fatal("closing nothing changed the workspace")
+	}
+	pane := func(k layout.Kind) *conn {
+		a.nextConn++
+		c := &conn{id: a.nextConn, kind: k}
+		a.conns[c.id] = c
+		return c
+	}
+	first := a.ws.Open(pane(layout.Terminal).item())
+	a.ws.Place(pane(layout.Files).item(), first.Focus, layout.Right)
+	a.ws.Open(pane(layout.Monitor).item())
+	if !a.HasPanes() {
+		t.Fatal("open panes not reported")
+	}
+	if n := len(a.conns); n != 3 {
+		t.Fatalf("%d panes before closing, want 3", n)
+	}
+	a.CloseAllPanes()
+	if a.HasPanes() || len(a.conns) != 0 || len(a.ws.Tabs) != 0 {
+		t.Fatalf("%d panes, %d tabs left after closing all", len(a.conns), len(a.ws.Tabs))
+	}
+}
+
 // newLockedTestApp is newTestApp with a real encrypted store: the app
 // starts locked and its master password is set up by the lock screen.
 func newLockedTestApp(t *testing.T) (*App, *ui.Tester, string) {

@@ -615,7 +615,7 @@ func (a *App) tabEntries(m locales.Messages, i int) []menuEntry {
 		{Icon: icons.Host, Label: m.CloseHostTabs(), Disabled: same == 0, Do: closing(func(_ int, t *layout.Tab) bool { return a.tabHost(t) == host })},
 		{Label: m.CloseOtherHostTabs(), Disabled: others == 0, Do: closing(func(_ int, t *layout.Tab) bool { return a.tabHost(t) != host })},
 		menuSep,
-		{Icon: icons.Clear, Label: m.CloseAllTabs(), Danger: true, Do: closing(func(int, *layout.Tab) bool { return true })},
+		{Icon: icons.Clear, Label: m.CloseAllTabs(), Danger: true, Do: a.CloseAllPanes},
 	}
 }
 
@@ -679,6 +679,15 @@ func (a *App) copyTabAddress(t *layout.Tab) {
 		a.svc.WriteClipboard(addr)
 		a.toast(func(m locales.Messages) ui.Toast { return ui.Toast{Title: m.Copied(), Type: "success"} })
 	}
+}
+
+// HasPanes reports whether any pane is open.
+func (a *App) HasPanes() bool { return len(a.ws.Tabs) > 0 }
+
+// CloseAllPanes closes every pane and its connection, as the tab menu's
+// "close all tabs" does, leaving the workspace on the welcome page.
+func (a *App) CloseAllPanes() {
+	a.closeTabs(func(int, *layout.Tab) bool { return true })
 }
 
 // closeTabs closes the tabs that close says to, by their place and tab.
