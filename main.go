@@ -161,6 +161,12 @@ func updatePlugin() mygo.Plugin {
 }
 
 func main() {
+	// One instance at a time: a later launch hands its command line to the
+	// running one, which comes to the front, then exits. Take the lock before
+	// the data is touched, so two launches never move it at once.
+	if !mygo.App.RequestSingleInstanceLock() {
+		return
+	}
 	setupStorage()
 	mygo.Use(updatePlugin())
 	mygo.App.WhenReady(func() {
@@ -170,10 +176,13 @@ func main() {
 		p.SetTrayIcon = func(style string) error { return d.setTrayIcon(style) }
 		p.SetRememberLayout = changeRememberLayout
 		p.Relaunch = func() { mygo.App.Relaunch() }
-		p.ActivateMainWindow = func() {
+		// The main window, in front: the app lock's "show main", and a later
+		// launch of the app, which exits after handing us its command line.
+		showMain := func() {
 			d.show()
 			d.window.Focus()
 		}
+		p.ActivateMainWindow = showMain
 		// The idle and sleep choices hide the windows, never lock them.
 		p.HideWindows = func() {
 			if d != nil && d.trayErr == nil {
@@ -204,6 +213,7 @@ func main() {
 		})
 		rememberWindow(w, "main")
 		d = newDesktop(a, w)
+		mygo.App.OnSecondInstance(func([]string, string) { showMain() })
 		a.Start()
 		go updater.CleanLeftovers()
 		w.OnMinimize(func() {
