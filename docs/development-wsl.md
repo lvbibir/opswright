@@ -75,7 +75,7 @@ go run ./cmd/devproxy -addr 127.0.0.1:3128
 **安装器与更新.**
 
 - 默认跳过 setup.exe 安装器 (构建日志有 "install NSIS" 提示): 需要时 `sudo apt install nsis` 再构建; 自用直接跑 exe, 不必装.
-- 本 fork 不配置更新签名, 构建自动跳过更新清单 ("Not signing an update"), 不影响使用. 将来若要自更新: `go tool mygo keygen -o <目录>` 生成密钥对, 把输出的 `updates` 段写进 `mygo.json`, 构建时以 `MYGO_UPDATER_PRIVATE_KEY` 传入私钥. 注意 `mygo.json` 现有的 `publicKey` 是上游作者的密钥, 与本 fork 产物无关.
+- 本 fork 使用自有的更新签名密钥对 (Ed25519). 公钥写在 `mygo.json` 的 `updates.publicKey`; 私钥保存在仓库外 (本机为 `/root/opswright-signing/mygo-update.key`), 正式发布时由 CI 以 `MYGO_UPDATER_PRIVATE_KEY` secret 传入. 应用内自动更新只信任该私钥签名的清单, 丢失私钥会让已安装应用无法更新. 轮换或换机器: `go tool mygo keygen -o <目录>` 生成新密钥对, 把公钥写进 `mygo.json`, 私钥更新为仓库 secret.
 
 **上游同步.** 保持 fork 的改动少而集中 (品牌、配置、必要精简), 便于合并:
 
@@ -86,6 +86,6 @@ git merge upstream/main   # 或 git rebase upstream/main
 
 提交信息保持 conventional commits (feat/fix/chore…), 与上游一致.
 
-**CI.** 上游是私有仓库, 在 fork 上运行 Actions 消耗自己的分钟数; 纯文档改动会跳过 CI, 想彻底不跑可在 fork 的 Settings → Actions 禁用 (个人自用不需要 CI; 上游 `release.yml` 依赖作者签名密钥, 本 fork 用不了).
+**CI.** 上游是私有仓库, 在 fork 上运行 Actions 消耗自己的分钟数; 纯文档改动会跳过 CI, 想彻底不跑可在 fork 的 Settings → Actions 禁用 (个人自用不需要 CI). 本 fork 的正式发布走 `release.yml`, 需要仓库 secret `MYGO_UPDATER_PRIVATE_KEY` (见 [.github/RELEASING.md](../.github/RELEASING.md)).
 
 **安全与文案.** 不提交任何密钥 (`*.key` 已在 .gitignore); 用户可见文案必须中英双语齐全 (仅 `en` 与 `zh-Hans`) 并重新生成 catalog (见 AGENTS.md). 构建产物 (`/build/`, `/dist/`, `.mygo/` 等) 已在 .gitignore, 输出到仓库外或用 `-o` 指定即可, 不会弄脏工作区.
